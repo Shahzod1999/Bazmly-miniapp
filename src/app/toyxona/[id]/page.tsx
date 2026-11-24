@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import {
   ChevronLeft,
   Share2,
@@ -31,6 +32,7 @@ const DEFAULT_GALLERY = [
 
 export default function ToyxonaDetailPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -230,6 +232,29 @@ export default function ToyxonaDetailPage() {
             jamoasi sizning to'y, korporativ tadbir yoki yubileyingizni yuqori saviyada o'tkazishni ta'minlaydi.
           </p>
         </div>
+
+        {/* Row 5b: To'yxona menyu paketlari */}
+        <Link
+          href={`/toyxona/${params?.id ?? "99"}/menu`}
+          className={`flex items-center gap-3 p-3 rounded-2xl border active:scale-[0.99] transition-all ${
+            isDark
+              ? "bg-zinc-800/80 border-white/5 text-zinc-200"
+              : "bg-white border-zinc-100 text-zinc-800 shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
+          }`}
+        >
+          <img
+            src="/images/toyxona-menu/premium-stol.webp"
+            alt=""
+            className="w-16 h-16 rounded-xl object-cover shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <span className="block text-sm font-bold text-zinc-900 dark:text-white">Menyu paketlari</span>
+            <span className="block text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              Standart, Premium, VIP · 1 kishi 250 000 so&apos;mdan
+            </span>
+          </div>
+          <ArrowRight className="w-4 h-4 text-[#FF5A00] stroke-[2.5] shrink-0" />
+        </Link>
 
         {/* Row 6: Amenities Grid (6 cards) */}
         <div className="grid grid-cols-2 gap-3 pt-2">
