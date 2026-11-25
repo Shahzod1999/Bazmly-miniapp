@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/bottom-nav";
 import SplashScreen from "@/components/splash-screen";
 import AppToast from "@/components/app-toast";
+import { AppGate } from "@/components/app-gate";
 import { TelegramProvider } from "@/components/telegram-provider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -56,8 +57,10 @@ export default function RootLayout({
             
             {/* Centered Mobile-only Device Mock Frame */}
             <div className="w-full max-w-md min-h-screen bg-[var(--background)] flex flex-col shadow-2xl relative border-x border-brand-light-border dark:border-brand-dark-border">
-              {children}
-              <BottomNav />
+              <AppGate>
+                {children}
+                <BottomNav />
+              </AppGate>
             </div>
           </AuthProvider>
         </ThemeProvider>

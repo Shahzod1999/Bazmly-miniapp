@@ -5,15 +5,11 @@ import React, { Suspense, useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { comingSoon } from "@/components/app-toast";
+import { LanguageList, applyLanguage, savedLanguage } from "@/components/onboarding/onboarding-flow";
 import { useTheme } from "@/components/theme-provider";
 import {
   Globe,
-  Search,
-  Check,
-  Apple,
-  Lock,
   User,
-  ArrowRight,
   ChevronLeft,
   MapPin,
   Bell,
@@ -35,39 +31,7 @@ import { BookingHistoryList, NotificationsList } from "@/components/profile/prof
 import { useAuth } from "@/contexts/AuthContext";
 
 
-type Step =
-  | 1
-  | 2
-  | "login"
-  | "register_customer"
-  | "register_customer_phone_otp"
-  | "register_customer_email_otp"
-  | "register_customer_name"
-  | 3
-  | "partner_address"
-  | "region"
-  | "district"
-  | "partner_hours"
-  | 4
-  | "partner_price"
-  | 5
-  | 6
-  | "partner_password"
-  | 7
-  | 8;
 
-interface Language {
-  code: string;
-  name: string;
-  nativeName: string;
-  flag: string;
-}
-
-const LANGUAGES: Language[] = [
-  { code: "en", name: "English", nativeName: "English", flag: "/icons/eng.webp" },
-  { code: "ru", name: "Russian", nativeName: "Русский", flag: "/icons/ru.webp" },
-  { code: "uz", name: "Uzbek", nativeName: "O'zbekcha", flag: "/icons/uzb.webp" },
-];
 
 const FAQS = [
   {
@@ -99,42 +63,25 @@ export default function LoginPage() {
 function LoginContent() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { user, loading: authLoading, login, register, logout, updateProfile, deleteAccount, checkPhone } = useAuth();
+  const { user, loading: authLoading, logout, updateProfile, deleteAccount } = useAuth();
   const isDark = theme === "dark";
-  const formatPhone = (val: string) => {
-    if (!val) return "";
-    let out = "";
-    if (val.length <= 2) {
-      out = "(" + val;
-    } else if (val.length <= 5) {
-      out = "(" + val.slice(0, 2) + ") " + val.slice(2);
-    } else if (val.length <= 7) {
-      out = "(" + val.slice(0, 2) + ") " + val.slice(2, 5) + "-" + val.slice(5);
-    } else {
-      out = "(" + val.slice(0, 2) + ") " + val.slice(2, 5) + "-" + val.slice(5, 7) + "-" + val.slice(7, 9);
-    }
-    return out;
-  };
-  const [step, setStep] = useState<Step>(1);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [saving, setLoading] = useState(false);
   
   // Registration / Profile States
-  const [searchLang, setSearchLang] = useState("");
-  const [selectedLang, setSelectedLang] = useState("uz");
-  const [phone, setPhone] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [selectedLang, setSelectedLang] = useState(savedLanguage);
   const nextParam = useSearchParams().get("next");
   const nextPath = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
+
+  // Kirish tugagach boshlangan sahifaga qaytish (kirish ilova darvozasida, faqat Telegram orqali)
+  useEffect(() => {
+    if (user && nextPath) router.replace(nextPath);
+  }, [user, nextPath, router]);
   // Shahar tanlovi faqat shu qurilmada saqlanadi (backend profilida maydon yo'q)
   const [location, setLocation] = useState(() => {
     if (typeof window === "undefined") return "Tashkent, Tashkent city";
     return localStorage.getItem("location") || "Tashkent, Tashkent city";
   });
   
-  // New login/wizard states
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
   // Profile Edit Mode States
   const [isEditing, setIsEditing] = useState(false);
@@ -151,77 +98,7 @@ function LoginContent() {
   // Cards Management States
 
   
-  const handleCustomerFinalRegister = async () => {
-    setError("");
-    if (!fullName.trim()) {
-      setError("Ismingizni kiriting!");
-      return;
-    }
-    if (password.trim().length < 8) {
-      setError("Parol kamida 8 ta belgidan iborat bo'lsin!");
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const nameParts = fullName.trim().split(/\s+/);
-      const firstName = nameParts[0] || "Foydalanuvchi";
-      const lastName = nameParts.slice(1).join(" ");
-      let formattedPhone = phone.trim().replace(/\D/g, "");
-      if (!formattedPhone.startsWith("998")) {
-        formattedPhone = "998" + formattedPhone;
-      }
-      formattedPhone = "+" + formattedPhone;
-
-      await register({
-        phone: formattedPhone,
-        first_name: firstName,
-        last_name: lastName,
-        password: password.trim(),
-      });
-
-      showToast("Ro'yxatdan muvaffaqiyatli o'tdingiz!");
-      router.push(nextPath || "/feed");
-    } catch (err) {
-      setError(errorMessage(err, "Ro'yxatdan o'tishda xatolik yuz berdi"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePhoneCheckAndContinue = async () => {
-    if (phone.length < 9) {
-      setError("Telefon raqamingizni to'liq kiriting!");
-      return;
-    }
-    setError("");
-    let formattedPhone = phone.trim().replace(/\D/g, "");
-    if (!formattedPhone.startsWith("998")) {
-      formattedPhone = "998" + formattedPhone;
-    }
-    formattedPhone = "+" + formattedPhone;
-
-    setLoading(true);
-    try {
-      const result = await checkPhone(formattedPhone);
-      if (result.registered) {
-        if (result.password_required) {
-          showToast("Ushbu raqam allaqachon ro'yxatdan o'tgan. Iltimos parolingiz bilan kiring.");
-          setUsername(phone);
-          setStep("login");
-        } else {
-          setError("Bu raqam Telegram orqali ro'yxatdan o'tgan. Ilovani Telegram'da oching.");
-        }
-      } else {
-        // SMS tasdiqlash backend'da hali yo'q — to'g'ridan-to'g'ri ism va parol qadamiga o'tamiz
-        setStep("register_customer_name");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Raqamni tekshirib bo'lmadi");
-    } finally {
-      setLoading(false);
-    }
-  };
 
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -229,7 +106,6 @@ function LoginContent() {
 
   // Foydalanuvchi ma'lumotlari faqat AuthContext'dan
   const mounted = !authLoading;
-  const isRegistered = !!user;
   const userFullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "";
 
   // Dynamic bottom navigation bar visibility controller for cards sub-flows & logout drawers
@@ -293,7 +169,6 @@ function LoginContent() {
         last_name: lastName,
       });
       showToast("Profil muvaffaqiyatli saqlandi!");
-      setFullName(editName);
       setLocation(cleanLocation);
       localStorage.setItem("location", cleanLocation);
       setIsEditing(false);
@@ -308,9 +183,6 @@ function LoginContent() {
     setLoading(true);
     try {
       await deleteAccount();
-      setFullName("");
-      setPhone("");
-      setStep(1);
       setActiveModal(null);
       showToast("Akkaunt muvaffaqiyatli o'chirildi.");
     } catch (err) {
@@ -322,79 +194,14 @@ function LoginContent() {
 
   const handleLogout = async () => {
     await logout();
-    setFullName("");
-    setPhone("");
-    setStep(1);
     setActiveModal(null);
     showToast("Akkauntdan chiqildi.");
   };
 
-  const filteredLanguages = LANGUAGES.filter((l) =>
-    l.name.toLowerCase().includes(searchLang.toLowerCase()) ||
-    l.nativeName.toLowerCase().includes(searchLang.toLowerCase())
-  );
-
-  const handleNextStep = () => {
-    setError("");
-    if (step === 1) {
-      // Hozircha ilova faqat o'zbek tilida
-      if (selectedLang !== "uz") {
-        comingSoon("Boshqa tillar");
-        setSelectedLang("uz");
-        return;
-      }
-      setStep(2);
-    }
-  };
-
-  const handleBackStep = () => {
-    setError("");
-    if (step === 2) {
-      setStep(1);
-    } else if (step === "login" || step === "register_customer") {
-      setStep(2);
-    } else if (step === "register_customer_name") {
-      setStep("register_customer");
-    }
-  };
 
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
 
-    if (!username.trim() || !password.trim()) {
-      setError("Login va parolni to'liq kiriting!");
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const digitsOnly = username.trim().replace(/\D/g, "");
-      const isPhoneNumber = digitsOnly.length >= 7;
-
-      if (isPhoneNumber) {
-        let phoneToLogin = digitsOnly;
-        if (!phoneToLogin.startsWith("998") && phoneToLogin.length === 9) {
-          phoneToLogin = "998" + phoneToLogin;
-        }
-        if (!phoneToLogin.startsWith("+")) {
-          phoneToLogin = "+" + phoneToLogin;
-        }
-
-        await login({ phone: phoneToLogin, password: password.trim() });
-        showToast("Tizimga muvaffaqiyatli kirdingiz!");
-        router.push(nextPath || "/feed");
-        return;
-      } else {
-        setError("Telefon raqamini to'liq kiriting!");
-      }
-    } catch (err) {
-      setError(errorMessage(err, "Login yoki parol noto'g'ri!"));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const menuItems = [
     {
@@ -451,8 +258,7 @@ function LoginContent() {
         </div>
       )}
 
-      {isRegistered ? (
-        /* ==================== REGISTERED PROFILE VIEW ==================== */
+        {/* ==================== PROFILE VIEW ==================== */}
         <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"} transition-all duration-300 ${isBottomNavHidden ? "-mb-16" : ""}`}>
           {showLanguages ? (
             /* ==================== HIGH-FIDELITY REGISTERED LANGUAGE SETTINGS VIEW ==================== */
@@ -480,40 +286,8 @@ function LoginContent() {
                     <p className={`text-xl font-bold tracking-tight leading-tight ${isDark ? "text-white/95" : "text-zinc-800"}`}>tilda boshqaring</p>
                   </div>
 
-                  {/* Language Options Grid */}
-                  <div className="space-y-4">
-                    {[
-                      { code: "uz", label: "O'zbek tili", icon: "/icons/uzb.webp" },
-                      { code: "en", label: "Ingliz tili", icon: "/icons/eng.webp" },
-                      { code: "ru", label: "Rus tili", icon: "/icons/ru.webp" }
-                    ].map((opt) => {
-                      const isSelected = tempLanguage === opt.code;
-                      return (
-                        <button
-                          key={opt.code}
-                          type="button"
-                          onClick={() => setTempLanguage(opt.code)}
-                          className={`w-full flex items-center justify-between p-5 rounded-[20px] transition-all duration-200 active:scale-98 text-left ${
-                            isSelected
-                              ? "bg-primary text-white shadow-lg shadow-primary/20"
-                              : isDark ? "bg-[#393939] text-white hover:bg-zinc-800" : "bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
-                          }`}
-                        >
-                          <div className="flex items-center gap-4">
-                            <Image
-                              src={opt.icon}
-                              alt={opt.label}
-                              width={40}
-                              height={40}
-                              className="w-10 h-10 object-cover rounded-full shadow-sm"
-                            />
-                            <span className="text-base font-bold tracking-wide">{opt.label}</span>
-                          </div>
-                          {isSelected && <Check className="h-5 w-5 text-white" />}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {/* Til ro'yxati (Figma) */}
+                  <LanguageList selected={tempLanguage} onSelect={setTempLanguage} />
                 </div>
 
                 {/* Bottom Confirm Button */}
@@ -521,11 +295,7 @@ function LoginContent() {
                   <button
                     type="button"
                     onClick={() => {
-                      // Hozircha faqat o'zbek tili mavjud
-                      if (tempLanguage !== "uz") {
-                        comingSoon("Boshqa tillar");
-                        return;
-                      }
+                      if (!applyLanguage(tempLanguage)) return;
                       setSelectedLang(tempLanguage);
                       setShowLanguages(false);
                     }}
@@ -720,6 +490,7 @@ function LoginContent() {
               }`}>
                 <button
                   onClick={handleSaveProfile}
+                  disabled={saving}
                   className={`p-2 rounded-xl transition-all active:scale-95 ${
                     isDark 
                       ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" 
@@ -1121,461 +892,6 @@ function LoginContent() {
             </div>
           )}
         </div>
-      ) : (
-
-        /* ==================== ORIGINAL STEPPED REGISTRATION VIEW ==================== */
-        <div className="flex flex-col flex-1">
-          <Navbar />
-
-          <main className="flex-1 flex items-start justify-center pt-2 pb-10 px-4 max-w-md mx-auto w-full">
-            <div className={`w-full flex flex-col justify-between p-2 relative overflow-hidden transition-all duration-300 ${
-              isDark
-                ? "text-white"
-                : "text-zinc-900"
-            }`}>
-
-              {/* Wizard Navigation Header */}
-              {step !== 1 && step !== 2 && (
-                <div className="flex justify-end mb-4">
-                  {["register_customer", "register_customer_phone_otp", "register_customer_email_otp", "register_customer_name"].includes(String(step)) ? (
-                    <button
-                      onClick={() => setStep(2)}
-                      className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                        isDark ? "bg-white/5 hover:bg-white/10 text-white/80" : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800"
-                      }`}
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  ) : (
-                    <div className="h-9" />
-                  )}
-                </div>
-              )}
-
-              {/* Steps Content Area */}
-              <div className="flex-1 flex flex-col justify-between">
-                
-                {/* Step 1: Language Selection */}
-                {step === 1 && (
-                  <div className="space-y-5 flex-1 flex flex-col justify-between animate-scale-up">
-                    <div className="space-y-4">
-                      <h2 className={`text-xl font-bold text-left ${isDark ? "text-white" : "text-zinc-900"}`}>Tizim tilini tanlang</h2>
-
-                      {/* Language Search */}
-                      <div className="relative mt-2">
-                        <Search className="absolute inset-y-0 left-0 pl-3.5 h-5 w-5 my-auto text-zinc-400" />
-                        <input
-                          type="text"
-                          placeholder="Search"
-                          value={searchLang}
-                          onChange={(e) => setSearchLang(e.target.value)}
-                          className={`w-full pl-10 pr-4 py-3 rounded-[18px] border bg-transparent text-sm outline-none focus:border-[#FF5A00] transition-colors ${
-                            isDark
-                              ? "border-white/10 text-white placeholder-white/30"
-                              : "border-zinc-200 text-zinc-900 placeholder-zinc-400"
-                          }`}
-                        />
-                      </div>
-
-                      {/* Languages List */}
-                      <div className="space-y-2.5 max-h-[280px] overflow-y-auto pr-1">
-                        {filteredLanguages.map((lang) => {
-                          const isSelected = selectedLang === lang.code;
-                          return (
-                            <button
-                              key={lang.code}
-                              onClick={() => setSelectedLang(lang.code)}
-                              className={`w-full flex items-center justify-between p-3.5 px-4 rounded-[18px] transition-all duration-200 text-left cursor-pointer ${
-                                isSelected
-                                  ? (isDark ? "bg-[#FF5A00]/10 text-white" : "bg-[#FF5A00]/5 text-[#FF5A00]")
-                                  : (isDark ? "bg-transparent text-white/80 hover:bg-white/5" : "bg-transparent text-zinc-800 hover:bg-zinc-50")
-                              }`}
-                            >
-                              <div className="flex items-center gap-3.5">
-                                <Image
-                                  src={lang.flag}
-                                  alt={lang.name}
-                                  width={40}
-                                  height={40}
-                                  className={`w-10 h-10 rounded-full object-cover shrink-0 border shadow-sm ${
-                                    isDark ? "border-white/10" : "border-zinc-100"
-                                  }`}
-                                />
-                                <span className={`text-[15px] tracking-wide ${
-                                  isSelected 
-                                    ? (isDark ? "text-white font-bold" : "text-[#FF5A00] font-bold") 
-                                    : (isDark ? "text-white/80 font-semibold" : "text-zinc-800 font-semibold")
-                                }`}>
-                                  {lang.name}
-                                </span>
-                              </div>
-                              <div className={`w-5.5 h-5.5 rounded-full flex items-center justify-center shrink-0 border transition-all ${
-                                isSelected
-                                  ? "bg-[#FF5A00] border-[#FF5A00]"
-                                  : (isDark ? "border-white/25 bg-transparent" : "border-zinc-350 bg-transparent")
-                              }`}>
-                                {isSelected && <Check className="h-3 w-3 text-white stroke-[3.5px]" />}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={handleNextStep}
-                      className="w-full flex items-center justify-center gap-2 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] py-4 text-sm font-bold text-white shadow-lg active:scale-[0.99] transition-all mt-6 cursor-pointer"
-                    >
-                      Keyingisi <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                )}
-
-                {/* Step 2: Welcome Screen Options */}
-                {step === 2 && (
-                  <div className="space-y-6 flex-1 flex flex-col justify-center animate-scale-up py-4">
-                    {/* Section 1: Existing Account */}
-                    <div className="space-y-4">
-                      <p className={`text-center text-sm font-bold ${isDark ? "text-white/95" : "text-zinc-800"}`}>
-                        Akkauntingiz allaqachon mavjudmi?
-                      </p>
-                      <button
-                        onClick={() => setStep("login")}
-                        className="w-full py-3.5 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-md transition-all active:scale-[0.99] cursor-pointer"
-                      >
-                        Kirish
-                      </button>
-                    </div>
-
-                    {/* Divider Line */}
-                    <div className="border-b border-zinc-200 dark:border-white/10 my-2" />
-
-                    {/* Section 2: Create Account */}
-                    <div className="space-y-4">
-                      <p className={`text-center text-sm font-bold ${isDark ? "text-white/95" : "text-zinc-800"}`}>
-                        Akkaunt ochmoqchimisiz?
-                      </p>
-
-                      <div className="space-y-3.5">
-                        {/* Customer Account Button */}
-                        <button
-                          onClick={() => {
-                            setStep("register_customer");
-                          }}
-                          className="w-full py-3.5 rounded-[20px] border border-[#FF5A00] hover:bg-[#FF5A00]/5 text-[#FF5A00] font-bold text-sm transition-all active:scale-[0.99] cursor-pointer bg-transparent"
-                        >
-                          Mijoz uchun akkaunt
-                        </button>
-
-                        {/* Restaurant Account Button */}
-                        <button
-                          onClick={() => {
-                            comingSoon("Hamkorlar uchun ro'yxatdan o'tish");
-                          }}
-                          className="w-full py-3.5 rounded-[20px] border border-[#FF5A00] hover:bg-[#FF5A00]/5 text-[#FF5A00] font-bold text-sm transition-all active:scale-[0.99] cursor-pointer bg-transparent"
-                        >
-                          Restoran uchun akkaunt
-                        </button>
-
-                        {/* Toyxona Account Button */}
-                        <button
-                          onClick={() => {
-                            comingSoon("Hamkorlar uchun ro'yxatdan o'tish");
-                          }}
-                          className="w-full py-3.5 rounded-[20px] border border-[#FF5A00] hover:bg-[#FF5A00]/5 text-[#FF5A00] font-bold text-sm transition-all active:scale-[0.99] cursor-pointer bg-transparent"
-                        >
-                          To&apos;yxona uchun akkaunt
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step "login": Traditional Sign In form */}
-                {step === "login" && (
-                  <form onSubmit={handleLoginSubmit} className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
-                    <div className="space-y-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-left -ml-2">
-                          <button
-                            type="button"
-                            onClick={handleBackStep}
-                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
-                          >
-                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
-                          </button>
-                          <Lock className="h-6 w-6 text-[#FF5A00]" />
-                          <h2 className="text-xl font-black text-foreground dark:text-white">Kirish</h2>
-                        </div>
-                        <p className="text-xs text-foreground/50 dark:text-white/50 pl-7">
-                          Login va parolingizni kiritib tizimga kiring
-                        </p>
-                      </div>
-
-                      {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
-                          {error}
-                        </div>
-                      )}
-
-                      <div className="space-y-3">
-                        {/* Username Input */}
-                        <div className="rounded-xl border border-foreground/10 dark:border-white/10 bg-foreground/5 dark:bg-white/5 p-3.5 focus-within:ring-2 focus-within:ring-[#FF5A00]/50 transition-all">
-                          <label className="block text-[10px] font-bold text-foreground/45 dark:text-white/40 uppercase tracking-wider mb-1">
-                            Telefon raqami
-                          </label>
-                          <input
-                            type="tel"
-                            inputMode="tel"
-                            autoComplete="tel"
-                            required
-                            placeholder="90 123 45 67"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="block w-full border-0 bg-transparent p-0 text-foreground dark:text-white font-bold outline-none placeholder-foreground/20 dark:placeholder-white/20 focus:ring-0 text-sm"
-                          />
-                        </div>
-
-                        {/* Password Input */}
-                        <div className="rounded-xl border border-foreground/10 dark:border-white/10 bg-foreground/5 dark:bg-white/5 p-3.5 focus-within:ring-2 focus-within:ring-[#FF5A00]/50 transition-all">
-                          <label className="block text-[10px] font-bold text-foreground/45 dark:text-white/40 uppercase tracking-wider mb-1">
-                            Parol
-                          </label>
-                          <input
-                            type="password"
-                            required
-                            placeholder="••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="block w-full border-0 bg-transparent p-0 text-foreground dark:text-white font-bold outline-none placeholder-foreground/20 dark:placeholder-white/20 focus:ring-0 text-sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
-                    >
-                      Kirish <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </form>
-                )}
-
-                {/* Step "register_customer": Mijoz registration */}
-                {step === "register_customer" && (
-                  <div className="flex-1 flex flex-col justify-between animate-scale-up space-y-6">
-                    <div className="space-y-5">
-                      <div className="text-left space-y-1">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Akkaunt yaratish</h2>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>Telefon raqamingizni kiriting</p>
-                      </div>
-
-                      {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
-                          {error}
-                        </div>
-                      )}
-
-                      {/* Formatted Phone Input Box */}
-                      <div className={`flex items-center gap-3.5 px-4 py-1.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
-                        isDark 
-                          ? "bg-[#2C2C2E]/60 text-white" 
-                          : "bg-zinc-50 text-black"
-                      }`}>
-                        {/* Flag indicator +998 */}
-                        <div className="flex items-center gap-2 shrink-0 select-none">
-                          <Image src="/icons/uzb.webp" alt="UZ" width={22} height={22} className="w-5.5 h-5.5 rounded-full object-cover shadow-sm border border-zinc-200/50" />
-                          <span className="text-sm font-bold">+998</span>
-                        </div>
-                        <input
-                          type="tel"
-                          inputMode="numeric"
-                          aria-label="Telefon raqami"
-                          maxLength={14}
-                          value={formatPhone(phone)}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "");
-                            setPhone(val.substring(0, 9));
-                          }}
-                          placeholder="90 123 45 67"
-                          className="flex-1 bg-transparent text-sm font-bold tracking-wide outline-none border-none focus:ring-0 p-0"
-                        />
-                      </div>
-
-                      {/* Apple and Google Continuation Buttons */}
-                      <div className="space-y-3 pt-2">
-                        {/* Google Button */}
-                        <button
-                          type="button"
-                          onClick={() => comingSoon("Google orqali kirish")}
-                          className={`w-full flex items-center justify-center gap-2.5 py-3 rounded-2xl border text-xs font-bold transition-all active:scale-98 cursor-pointer ${
-                            isDark 
-                              ? "bg-[#2C2C2E]/60 hover:bg-[#3A3A3C] border-white/10 text-white" 
-                              : "bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-800"
-                          }`}
-                        >
-                          <svg className="h-4.5 w-4.5" viewBox="0 0 24 24">
-                            <path
-                              fill="#4285F4"
-                              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                            />
-                            <path
-                              fill="#34A853"
-                              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                            />
-                            <path
-                              fill="#FBBC05"
-                              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                            />
-                            <path
-                              fill="#EA4335"
-                              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                            />
-                          </svg>
-                          <span>Google orqali davom etish</span>
-                        </button>
-
-                        {/* Apple Button */}
-                        <button
-                          type="button"
-                          onClick={() => comingSoon("Apple orqali kirish")}
-                          className={`w-full flex items-center justify-center gap-2.5 py-3 rounded-2xl border text-xs font-bold transition-all active:scale-98 cursor-pointer ${
-                            isDark 
-                              ? "bg-[#2C2C2E]/60 hover:bg-[#3A3A3C] border-white/10 text-white" 
-                              : "bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-800"
-                          }`}
-                        >
-                          <Apple className="h-4.5 w-4.5" />
-                          <span>Apple orqali davom etish</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Orange Action Button */}
-                      <button
-                        type="button"
-                        onClick={handlePhoneCheckAndContinue}
-                        disabled={loading}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
-                          phone.length === 9
-                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
-                            : isDark
-                              ? "bg-white/10 text-white/30 cursor-not-allowed"
-                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
-                        }`}
-                      >
-                        Davom etish
-                      </button>
-
-
-                    </div>
-                  </div>
-                )}
-
-
-
-                {/* Step "register_customer_name": Name entry screen */}
-                {step === "register_customer_name" && (
-                  <div className="flex-1 flex flex-col justify-between animate-scale-up space-y-6">
-                    <div className="space-y-5">
-                      <div className="text-left space-y-1">
-                        <div className="flex items-center gap-1.5 -ml-2">
-                          <button
-                            type="button"
-                            onClick={handleBackStep}
-                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
-                          >
-                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
-                          </button>
-                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Ism va familiya</h2>
-                        </div>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>Ismingizni kiriting</p>
-                      </div>
-
-                      {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
-                          {error}
-                        </div>
-                      )}
-
-                      {/* Name Input Box */}
-                      <input
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        aria-label="Ism va familiya"
-                        placeholder="Ism va familiyangiz"
-                        className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
-                          isDark 
-                            ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
-                            : "bg-zinc-50 border-zinc-200 text-black focus:border-[#FF5A00]"
-                        } text-sm font-bold tracking-wide`}
-                      />
-
-                      {/* Password Input Box */}
-                      <input
-                        type="password"
-                        autoComplete="new-password"
-                        aria-label="Parol"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Parol (kamida 8 ta belgi)"
-                        className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
-                          isDark 
-                            ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
-                            : "bg-zinc-50 border-zinc-200 text-black focus:border-[#FF5A00]"
-                        } text-sm font-bold tracking-wide`}
-                      />
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Next/Finish Register Button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!fullName.trim()) {
-                            setError("Iltimos ismingizni kiriting!");
-                            return;
-                          }
-                          setError("");
-                          handleCustomerFinalRegister();
-                        }}
-                        disabled={loading}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
-                          fullName.trim() && password.trim().length >= 8
-                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
-                            : isDark
-                              ? "bg-white/10 text-white/30 cursor-not-allowed"
-                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
-                        }`}
-                      >
-                        Tasdiqlash
-                      </button>
-
-
-                    </div>
-                  </div>
-                )}
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-            </div>
-          </main>
-        </div>
-      )}
     </div>
   );
 }

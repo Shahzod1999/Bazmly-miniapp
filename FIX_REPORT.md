@@ -15,7 +15,7 @@ Avvalgi `fix/user-app` branchi (dizayni qayta chizilgan versiya) solishtirish uc
 | `npx tsc --noEmit` | 0 xato |
 | `npx eslint .` | 0 xato, 0 ogohlantirish (`eslint-disable` yo'q) |
 | `npm run build` | muvaffaqiyatli, 11 ta route |
-| `npm run test:e2e` | 13/13 o'tdi (backend mock bilan) |
+| `npm run test:e2e` | 15/15 o'tdi (backend mock bilan) |
 | `public/` hajmi | 42 MB → 480 KB (ishlatilmagan rasmlar o'chirildi, qolganlari WebP) |
 
 ---
@@ -27,7 +27,14 @@ Avvalgi `fix/user-app` branchi (dizayni qayta chizilgan versiya) solishtirish uc
 - Login sahifasidagi hamkor ro'yxatdan o'tish qadamlari (3–8), xodim kirishi, `admin/admin` "bypass" olib tashlandi.
 - "Restoran/To'yxona uchun akkaunt" tugmalari joyida — "Hamkorlar uchun ro'yxatdan o'tish tez orada".
 
-### Kirish (auth)
+### Birinchi ochilish va kirish (Figma bo'yicha, 26-noyabr)
+- Eski tanishtiruv (landing) sahifasi olib tashlandi.
+- Oqim: splash → logo → "Bazmlarni oson rejalashtiring" → "Tizim tilini tanlang" (O‘zbekcha, Русский, English) → Telegram orqali kirish → telefon raqami bo'lmasa "Akkaunt yaratish" ekranida "Telegram raqamini ulashish".
+- Kirish **faqat Telegram orqali**. Telefon/parol bilan kirish va ro'yxatdan o'tish formalari olib tashlandi; SMS-kod ekrani kerak emas (raqam Telegram kontaktidan olinadi).
+- Telegram tashqarisida "Telegram orqali kiring" ekrani (`NEXT_PUBLIC_TELEGRAM_BOT_URL` berilsa — bot havolasi tugmasi).
+- Profildagi "Tillar" bo'limi ham shu Figma ro'yxatida, 3 ta til. Rus va ingliz tillari hozircha "Tez orada".
+
+### Kirish (auth) — ichki qism
 - `AuthContext`: token bo'lsa `/users/me`, bo'lmasa Telegram `initData` bilan avtomatik kirish; token yangilash bitta so'rov bilan.
 - `localStorage` dagi `isRegistered`, `fullName`, `phone`, `my_local_bookings` va boshqa nusxalar o'rniga foydalanuvchi faqat API'dan.
 - Ro'yxatdan o'tish: telefon → (ro'yxatdan o'tgan bo'lsa) parol bilan kirish, aks holda ism + parol (kamida 8 belgi). Soxta SMS-kod va standart parollar (`Password123!`, `Partner123!`) yo'q. Xato bo'lsa xabar ko'rsatiladi, keyingi qadamga o'tilmaydi.

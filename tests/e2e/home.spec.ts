@@ -34,8 +34,7 @@ test("xato holati va qayta urinish", async ({ page }) => {
 });
 
 test("/admin mavjud emas (404)", async ({ page }) => {
-  await mockTelegram(page);
-  await mockApi(page, {});
+  await setup(page, {});
   const response = await page.goto("/admin");
   expect(response?.status()).toBe(404);
   await expect(page.getByText("Sahifa topilmadi")).toBeVisible();

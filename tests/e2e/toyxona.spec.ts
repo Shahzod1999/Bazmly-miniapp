@@ -35,7 +35,8 @@ test("to'yxona: sahifa → band qilish oynasi → bron", async ({ page }) => {
 
 test("to'yxona menyu paketlari — 'Tez orada' (endpoint yo'q)", async ({ page }) => {
   await mockTelegram(page);
-  await mockApi(page, { "GET /api/v1/venues/20": { body: hallDetail } });
+  const base = await signIn(page);
+  await mockApi(page, { ...base, "GET /api/v1/venues/20": { body: hallDetail } });
   await page.goto("/toyxona/20/menu");
   await expect(page.getByRole("heading", { name: "Tez orada" })).toBeVisible();
 });

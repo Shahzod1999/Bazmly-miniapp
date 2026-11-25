@@ -72,6 +72,7 @@ export async function signIn(page: Page): Promise<Handlers> {
   await page.addInitScript((t) => {
     localStorage.setItem("bazmly_access_token", t.access_token);
     localStorage.setItem("bazmly_refresh_token", t.refresh_token);
+    localStorage.setItem("bazmly-onboarded", "1");
   }, tokens);
   return {
     "GET /api/v1/users/me": { body: user },
