@@ -78,11 +78,6 @@ export interface TelegramContactShare {
   contact_data: string;
 }
 
-export interface StaffLogin {
-  login: string;
-  password: string;
-}
-
 export interface PasswordChange {
   current_password?: string | null;
   new_password: string;
@@ -108,36 +103,12 @@ export interface RegionRead {
   code: string;
 }
 
-export interface RegionCreate {
-  name: string;
-  code: string;
-}
-
-export interface RegionUpdate {
-  name?: string | null;
-  code?: string | null;
-}
-
 export interface DistrictRead {
   id: number;
   region_id: number;
   name: string;
   latitude: string;
   longitude: string;
-}
-
-export interface DistrictCreate {
-  region_id: number;
-  name: string;
-  latitude: number | string;
-  longitude: number | string;
-}
-
-export interface DistrictUpdate {
-  region_id?: number | null;
-  name?: string | null;
-  latitude?: number | string | null;
-  longitude?: number | string | null;
 }
 
 export interface NearestDistrictRead {
@@ -192,14 +163,6 @@ export interface FriendshipRead {
   status: FriendshipStatus;
 }
 
-export interface FriendshipCreate {
-  addressee_id: number;
-}
-
-export interface FriendshipRespond {
-  accept: boolean;
-}
-
 // Catalog & Services
 export interface AmenityRead {
   id: number;
@@ -229,12 +192,6 @@ export interface VenueServiceItemRead {
   sort_order: number;
 }
 
-export interface VenueServiceItemCreate {
-  name: string;
-  price: number | string;
-  sort_order?: number;
-}
-
 export interface VenueServiceRead {
   id: number;
   venue_group_id: number;
@@ -249,64 +206,14 @@ export interface VenueServiceRead {
   items?: VenueServiceItemRead[];
 }
 
-export interface VenueServiceCreate {
-  service_catalog_id: number;
-  price: number | string;
-  currency?: string;
-  price_unit?: ServicePriceUnit;
-  venue_id?: number | null;
-  sort_order?: number;
-  items?: VenueServiceItemCreate[];
-}
-
 // Venues & Venue Groups
-export type VenueGroupStatus = "active" | "inactive" | "suspended";
 export type VenueStatus = "active" | "draft" | "closed" | "suspended";
-
-export interface VenueGroupRead {
-  id: number;
-  owner_id: number;
-  primary_venue_type: VenueTypeSlug;
-  name: string;
-  description: string | null;
-  logo_url: string | null;
-  default_currency: string;
-  status: VenueGroupStatus;
-}
-
-export interface VenueGroupCreate {
-  primary_venue_type: VenueTypeSlug;
-  name: string;
-  description?: string | null;
-  logo_url?: string | null;
-  default_currency?: string;
-}
-
-export interface VenueGroupUpdate {
-  name?: string | null;
-  description?: string | null;
-  primary_venue_type?: VenueTypeSlug | null;
-  logo_url?: string | null;
-  default_currency?: string | null;
-  status?: VenueGroupStatus | null;
-}
 
 export interface VenueWorkingHoursRead {
   weekday: number; // 0 = Monday, 6 = Sunday
   opens_at: string | null;
   closes_at: string | null;
   is_closed: boolean;
-}
-
-export interface WorkingHoursCreate {
-  weekday: number;
-  opens_at?: string | null;
-  closes_at?: string | null;
-  is_closed?: boolean;
-}
-
-export interface WorkingHoursReplace {
-  days: WorkingHoursCreate[];
 }
 
 export interface VenuePhotoRead {
@@ -321,19 +228,6 @@ export interface VenueZoneRead {
   slug: string;
   name: string;
   sort_order: number;
-}
-
-export interface VenueTableRead {
-  id: number;
-  number: number;
-  seats: number;
-  zone_id: number | null;
-  is_active: boolean;
-}
-
-export interface TableCountsCreate {
-  counts: Record<string, number>; // e.g. { "2": 5, "4": 10, "6": 4 }
-  zone_id?: number | null;
 }
 
 export interface AvailableTableRead {
@@ -403,71 +297,6 @@ export interface VenueListItem {
   cover_url?: string | null;
 }
 
-export interface BranchListItem {
-  id: number;
-  name: string;
-  tagline: string | null;
-  status: string;
-}
-
-export interface VenueGroupWithBranchesRead {
-  group: VenueGroupRead;
-  branches: BranchListItem[];
-}
-
-export interface VenueCreate {
-  district_id: number;
-  street: string;
-  house_number: string;
-  latitude: number | string;
-  longitude: number | string;
-  phone: string;
-  name: string;
-  description?: string | null;
-  tagline?: string | null;
-  venue_type: VenueTypeSlug;
-  amenity_ids?: number[];
-  total_seats?: number | null;
-  capacity_min?: number | null;
-  capacity_max?: number | null;
-  base_price?: number | string | null;
-  currency?: string;
-  min_advance_booking_days?: number;
-  late_grace_minutes?: number;
-  requires_deposit?: boolean;
-  deposit_percent?: number | string | null;
-  manager_user_id?: number | null;
-}
-
-export interface VenueGroupWithBranchCreate {
-  group: VenueGroupCreate;
-  branch: VenueCreate;
-}
-
-export interface VenueUpdate {
-  name?: string | null;
-  description?: string | null;
-  tagline?: string | null;
-  district_id?: number | null;
-  street?: string | null;
-  house_number?: string | null;
-  latitude?: number | string | null;
-  longitude?: number | string | null;
-  phone?: string | null;
-  total_seats?: number | null;
-  capacity_min?: number | null;
-  capacity_max?: number | null;
-  base_price?: number | string | null;
-  min_advance_booking_days?: number | null;
-  late_grace_minutes?: number | null;
-  requires_deposit?: boolean | null;
-  deposit_percent?: number | string | null;
-  discount_percent?: number | string | null;
-  manager_user_id?: number | null;
-  venue_type?: VenueTypeSlug | null;
-  status?: VenueStatus | null;
-}
-
 export interface VenueSearchParams {
   query?: string | null;
   venue_type?: VenueTypeSlug | null;
@@ -484,26 +313,7 @@ export interface VenueSearchParams {
   offset?: number;
 }
 
-export interface VenueStatusCountsRead {
-  total: number;
-  active: number;
-  closed: number;
-}
-
 // Menu Items & Categories
-export interface MenuCategoryRead {
-  id: number;
-  name: string;
-  sort_order: number;
-  is_active: boolean;
-  item_count?: number;
-}
-
-export interface MenuCategoryCreate {
-  name: string;
-  sort_order?: number;
-}
-
 export type MenuItemStatus = "active" | "hidden" | "out_of_stock";
 
 export interface MenuItemVariantRead {
@@ -513,12 +323,6 @@ export interface MenuItemVariantRead {
   effective_price: string;
   sort_order: number;
   is_active: boolean;
-}
-
-export interface MenuItemVariantCreate {
-  name: string;
-  price: number | string;
-  sort_order?: number;
 }
 
 export interface MenuItemListItem {
@@ -548,28 +352,6 @@ export interface MenuItemRead {
   is_available: boolean;
   status: MenuItemStatus;
   variants: MenuItemVariantRead[];
-}
-
-export interface MenuItemCreate {
-  menu_category_id: number;
-  name: string;
-  description?: string | null;
-  base_price?: number | string | null;
-  currency?: string;
-  photo_url?: string | null;
-  has_variants?: boolean;
-  discount_percent?: number | string | null;
-  sort_order?: number;
-}
-
-export interface BodyVenueMenuCreateItem {
-  payload: MenuItemCreate;
-  variants?: MenuItemVariantCreate[] | null;
-}
-
-export interface BranchAvailabilityUpdate {
-  venue_ids: number[];
-  price_overrides?: Record<string, number>;
 }
 
 // Bookings
@@ -701,272 +483,10 @@ export interface BookingCancel {
   reason?: string | null;
 }
 
-export interface CheckInRequest {
-  qr_token: string;
-  venue_id: number;
-}
-
-export interface SeatedSummary {
-  booking_id: number;
-  checked_in_at: string | null;
-  checked_out_at: string | null;
-  seated_minutes: number | null;
-}
-
-// Orders & POS (Venue Live Orders)
-export type OrderKind = "dine_in" | "takeaway" | "event";
-export type OrderStatus = "open" | "paid" | "closed" | "cancelled";
-export type OrderItemStatus = "pending" | "cooking" | "served" | "cancelled";
-export type OrderPaymentMethod = "cash" | "uzcard" | "humo" | "visa" | "mastercard" | "qr_pay";
-
-export interface OrderItemCreate {
-  menu_item_id: number;
-  variant_id?: number | null;
-  quantity: number;
-  note?: string | null;
-}
-
-export interface OrderItemRead {
-  id: number;
-  menu_item_id: number;
-  variant_id: number | null;
-  quantity: number;
-  unit_price: string;
-  discount_amount: string;
-  total_price: string;
-  name_snapshot: string;
-  variant_name_snapshot: string | null;
-  status: OrderItemStatus;
-  note: string | null;
-  added_at: string;
-  served_at: string | null;
-}
-
-export interface OrderPaymentCreate {
-  method: OrderPaymentMethod;
-  amount: number | string;
-  provider_transaction_id?: string | null;
-  change_amount?: number | string | null;
-}
-
-export interface OrderPaymentRead {
-  id: number;
-  method: OrderPaymentMethod;
-  amount: string;
-  currency: string;
-  paid_at: string;
-  change_amount: string | null;
-}
-
-export interface OrderRead {
-  id: number;
-  venue_id: number;
-  table_id: number | null;
-  booking_id: number | null;
-  order_number: number;
-  business_date: string;
-  kind: OrderKind;
-  status: OrderStatus;
-  guests_count: number | null;
-  waiter_staff_id: number | null;
-  subtotal: string;
-  discount_amount: string;
-  service_charge: string;
-  total_amount: string;
-  currency: string;
-  opened_at: string;
-  closed_at: string | null;
-  cancelled_at: string | null;
-}
-
-export interface OrderListItem {
-  id: number;
-  order_number: number;
-  table_id: number | null;
-  table_number: number | null;
-  status: OrderStatus;
-  kind: OrderKind;
-  guests_count: number | null;
-  total_amount: string;
-  currency: string;
-  opened_at: string;
-  elapsed_seconds?: number;
-}
-
-export interface OrderDetailRead {
-  order: OrderRead;
-  items: OrderItemRead[];
-  payments: OrderPaymentRead[];
-  paid_amount: string;
-  elapsed_seconds?: number;
-}
-
-export interface OrderOpen {
-  table_id: number;
-  guests_count?: number | null;
-  kind?: OrderKind;
-}
-
-export interface OrderCancel {
-  reason?: string | null;
-}
-
-export interface ReceiptRead {
-  id: number;
-  order_id: number;
-  receipt_number: string;
-  printed_at: string;
-  fiscal_sign: string | null;
-  fiscal_serial: string | null;
-  payload: Record<string, any>;
-  reprinted_count: number;
-}
-
-export interface TableBoardRow {
-  table_id: number;
-  number: number;
-  seats: number;
-  zone_id: number | null;
-  order: OrderListItem | null;
-}
-
-export interface KitchenQueueItem {
-  id: number;
-  order_id: number;
-  table_number: number | null;
-  name_snapshot: string;
-  variant_name_snapshot: string | null;
-  quantity: number;
-  status: OrderItemStatus;
-  note: string | null;
-  added_at: string;
-}
 
 // Staff & Roles
-export type StaffRoleScope = "group" | "branch";
-
-export interface StaffRoleRead {
-  id: number;
-  slug: string;
-  scope: StaffRoleScope;
-  name: string;
-  sort_order: number;
-}
-
-export interface VenueStaffRead {
-  id: number;
-  venue_group_id: number;
-  venue_id: number | null;
-  user_id: number;
-  staff_role_id: number;
-  role_scope: string;
-  is_active: boolean;
-  invited_at: string;
-  activated_at: string | null;
-  deactivated_at: string | null;
-}
-
-export interface VenueStaffListItem {
-  id: number;
-  venue_id: number | null;
-  staff_role_id: number;
-  role_name: string;
-  is_active: boolean;
-  user: UserListItem;
-}
-
-export interface StaffInvitationCreate {
-  full_name: string;
-  phone: string;
-  staff_role_id: number;
-  venue_id?: number | null;
-}
-
-export interface StaffInvitationCreated {
-  id: number;
-  venue_group_id: number;
-  venue_id: number | null;
-  full_name: string;
-  phone: string;
-  staff_role_id: number;
-  accepted_at: string | null;
-  expires_at: string;
-  login: string;
-  temporary_password: string;
-}
-
-export interface InvitationAccept {
-  login: string;
-  temporary_password: string;
-  new_password: string;
-}
-
-export interface StaffCountsRead {
-  total: number;
-  active: number;
-  inactive: number;
-}
 
 // Analytics & Reports
-export interface StatsTotalsRead {
-  bookings_count: number;
-  guests_count: number;
-  no_show_count: number;
-  cancelled_count: number;
-  orders_count: number;
-  revenue: string;
-}
-
-export interface PeriodComparisonRead {
-  current: StatsTotalsRead;
-  previous: StatsTotalsRead;
-  revenue_delta_percent: string | null;
-  bookings_delta_percent: string | null;
-}
-
-export interface WeekdayBar {
-  weekday: number;
-  bookings_count: number;
-  revenue: string;
-}
-
-export interface VenueDailyStatsRead {
-  id: number;
-  venue_id: number;
-  business_date: string;
-  bookings_count: number;
-  guests_count: number;
-  no_show_count: number;
-  cancelled_count: number;
-  orders_count: number;
-  revenue: string;
-  avg_check: string;
-  occupancy_percent: string;
-  computed_at: string;
-}
-
-export interface DashboardRead {
-  group_id: number;
-  group_name: string;
-  venue_id: number | null;
-  venue_name: string | null;
-  is_open_now?: boolean;
-  branches_total: number;
-  branches_active: number;
-  branches_closed: number;
-  staff_total: number;
-  staff_active: number;
-  queue_count: number;
-  month_revenue: string;
-  month_bookings: number;
-  avg_check: string;
-  occupancy_percent: string;
-  currency: string;
-  comparison: PeriodComparisonRead;
-  week: WeekdayBar[];
-  today: VenueDailyStatsRead | null;
-}
-
 // Reviews
 export type ReviewStatus = "pending" | "published" | "rejected";
 
@@ -1070,7 +590,7 @@ export interface NotificationRead {
   type: string;
   title: string;
   body: string;
-  payload: Record<string, any> | null;
+  payload: Record<string, unknown> | null;
   read_at: string | null;
   sent_at: string;
 }
@@ -1090,6 +610,6 @@ export interface Page<T> {
 export interface ApiErrorResponse {
   code: string;
   message: string;
-  details?: Record<string, any> | null;
+  details?: Record<string, unknown> | null;
   request_id?: string;
 }

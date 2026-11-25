@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, CircleCheck, X } from "lucide-react";
-import type { MenuPackage } from "@/data/toyxona-menu";
+import type { MenuPackage } from "./types";
 import { hapticSelection } from "@/lib/telegram";
 
 interface PackageGalleryProps {
@@ -82,7 +83,7 @@ export default function PackageGallery({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <img src={photo.src} alt={photo.caption} className="absolute inset-0 w-full h-full object-cover" />
+        <Image src={photo.src} alt={photo.caption} fill priority sizes="(max-width: 480px) 100vw, 448px" className="object-cover" />
 
         {spots.map((spot, i) => {
           const n = i + 1;
@@ -189,12 +190,7 @@ export default function PackageGallery({
                 i === index ? "outline-2 outline-solid outline-[#FF5A00] -outline-offset-2" : ""
               }`}
             >
-              <img
-                src={thumb.src}
-                alt=""
-                loading="lazy"
-                className={`w-full h-full object-cover ${i === index ? "" : "opacity-55"}`}
-              />
+              <Image src={thumb.src} alt="" fill sizes="56px" className={`object-cover ${i === index ? "" : "opacity-55"}`} />
             </button>
           ))}
         </div>

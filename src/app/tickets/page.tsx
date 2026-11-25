@@ -1,159 +1,48 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ChevronRight, Check, Ticket, Calendar, MapPin, Loader2, QrCode, X } from "lucide-react";
+import { Ticket, Calendar, Loader2, QrCode, X } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/AuthContext";
 import { bookingService, BookingListItem } from "@/lib/api";
-
-interface Voucher {
-  id: string;
-  code: string;
-  description: string;
-  expirySeconds?: number;
-  expiryDate?: string;
-}
-
-const MOCK_VOUCHERS: Voucher[] = [
-  {
-    id: "v1",
-    code: "BAZMLY50E",
-    description: "-80 000 so'm oldindan buyurtma uchun promokod",
-    expirySeconds: 5 * 3600 + 35 * 60 + 49,
-  },
-  {
-    id: "v2",
-    code: "BAZMLYGOLD",
-    description: "-80 000 so'm oldindan buyurtma uchun promokod",
-    expiryDate: "09/19/2026",
-  },
-  {
-    id: "v3",
-    code: "BAZMLYVIP",
-    description: "-80 000 so'm oldindan buyurtma uchun promokod",
-    expirySeconds: 5 * 3600 + 35 * 60 + 49,
-  },
-  {
-    id: "v4",
-    code: "BAZMLY80K",
-    description: "-80 000 so'm oldindan buyurtma uchun promokod",
-    expirySeconds: 5 * 3600 + 35 * 60 + 49,
-  },
-];
+import { showToast } from "@/components/app-toast";
+import { BookingQr } from "@/components/booking/booking-qr";
+import { bookingStatus, canCancel, showsQr } from "@/lib/booking";
+import { formatDate, formatTime } from "@/lib/format";
+import { errorMessage, useApiQuery } from "@/lib/use-api";
 
 export default function VouchersAndTicketsPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState<"vouchers" | "tickets">("vouchers");
-  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  // Promokodlar backend'da hali yo'q — shu sababli chiptalar bo'limi birinchi ochiladi
+  const [activeTab, setActiveTab] = useState<"vouchers" | "tickets">("tickets");
   const [selectedBookingQr, setSelectedBookingQr] = useState<BookingListItem | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [timers, setTimers] = useState<Record<string, number>>({});
+  const [confirmCancelId, setConfirmCancelId] = useState<number | null>(null);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
 
-  // Real Bookings State
-  const [bookings, setBookings] = useState<BookingListItem[]>([]);
-  const [loadingBookings, setLoadingBookings] = useState(false);
-
-  // Load Bookings
-  const loadBookings = useCallback(async () => {
-    setLoadingBookings(true);
-    try {
-      let serverList: BookingListItem[] = [];
-      if (isAuthenticated) {
-        serverList = await bookingService.getMyBookings().catch(() => []);
-      }
-      const localRaw = typeof window !== "undefined" ? localStorage.getItem("my_local_bookings") : null;
-      const localList: BookingListItem[] = localRaw ? JSON.parse(localRaw) : [];
-
-      const seen = new Set<number>();
-      const combined: BookingListItem[] = [];
-      for (const item of [...localList, ...serverList]) {
-        if (!seen.has(item.id)) {
-          seen.add(item.id);
-          combined.push(item);
-        }
-      }
-      setBookings(combined);
-    } catch {
-      setBookings([]);
-    } finally {
-      setLoadingBookings(false);
-    }
-  }, [isAuthenticated]);
+  // Bronlar faqat backend'dan
+  const listQuery = useApiQuery(isAuthenticated ? "my-bookings" : null, () => bookingService.getMyBookings());
+  const bookings = listQuery.state.status === "success" ? [...listQuery.state.data].sort((a, b) => b.booking_date.localeCompare(a.booking_date)) : [];
+  const loadingBookings = authLoading || (isAuthenticated && listQuery.state.status === "loading");
+  const qrQuery = useApiQuery(selectedBookingQr ? `booking:${selectedBookingQr.id}` : null, () => bookingService.getBookingDetail(selectedBookingQr!.id));
 
   const handleCancelBooking = async (bookingId: number) => {
-    if (!confirm("Ushbu band qilishni bekor qilishni xohlaysizmi?")) return;
+    if (confirmCancelId !== bookingId) {
+      setConfirmCancelId(bookingId);
+      return;
+    }
+    setCancellingId(bookingId);
     try {
-      if (isAuthenticated) {
-        await bookingService.cancelBooking(bookingId, "Mijoz talabiga binoan").catch(() => {});
-      }
-      const localRaw = localStorage.getItem("my_local_bookings");
-      if (localRaw) {
-        const localList: BookingListItem[] = JSON.parse(localRaw);
-        const updated = localList.map((b) => (b.id === bookingId ? { ...b, status: "cancelled" as any } : b));
-        localStorage.setItem("my_local_bookings", JSON.stringify(updated));
-      }
-      setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, status: "cancelled" as any } : b)));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      alert("Bekor qilishda xatolik yuz berdi");
+      const updated = await bookingService.cancelBooking(bookingId, "Mijoz talabiga binoan");
+      listQuery.setData((prev) => prev.map((b) => (b.id === bookingId ? { ...b, status: updated.status } : b)));
+      showToast("Bron bekor qilindi");
+    } catch (err) {
+      showToast(errorMessage(err, "Bekor qilishda xatolik yuz berdi"), "error");
+    } finally {
+      setCancellingId(null);
+      setConfirmCancelId(null);
     }
-  };
-
-  useEffect(() => {
-    if (activeTab === "tickets") {
-      loadBookings();
-    }
-  }, [activeTab, loadBookings]);
-
-  // Real-time countdown timer tick effect
-  useEffect(() => {
-    const initialTimers: Record<string, number> = {};
-    MOCK_VOUCHERS.forEach((v) => {
-      if (v.expirySeconds !== undefined) {
-        initialTimers[v.id] = v.expirySeconds;
-      }
-    });
-    setTimers(initialTimers);
-
-    const interval = setInterval(() => {
-      setTimers((prev) => {
-        const next = { ...prev };
-        let updated = false;
-        Object.keys(next).forEach((key) => {
-          if (next[key] > 0) {
-            next[key] -= 1;
-            updated = true;
-          }
-        });
-        return updated ? next : prev;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatCountdown = (totalSeconds: number) => {
-    if (totalSeconds <= 0) return "00:00:00";
-    const hrs = Math.floor(totalSeconds / 3600);
-    const mins = Math.floor((totalSeconds % 3600) / 60);
-    const secs = totalSeconds % 60;
-    return [hrs, mins, secs].map((v) => v.toString().padStart(2, "0")).join(":");
-  };
-
-  const handleCopy = (code: string) => {
-    navigator.clipboard
-      .writeText(code)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      });
   };
 
   const isDark = theme === "dark";
@@ -161,7 +50,7 @@ export default function VouchersAndTicketsPage() {
   return (
     <div
       className={`absolute inset-0 pb-16 overflow-y-auto bg-[var(--background)] flex flex-col font-sans select-none transition-all duration-300 ${
-        selectedVoucher || selectedBookingQr ? "z-[80]" : "z-40"
+        selectedBookingQr ? "z-[80]" : "z-40"
       }`}
     >
       {/* Header with Switcher */}
@@ -202,66 +91,46 @@ export default function VouchersAndTicketsPage() {
       {/* Tab 1: Vouchers List */}
       {activeTab === "vouchers" && (
         <div className="flex-1 px-4 py-3 space-y-4">
-          {MOCK_VOUCHERS.map((voucher) => {
-            const timerVal = timers[voucher.id];
-            const isTimerActive = timerVal !== undefined;
-
-            return (
-              <div
-                key={voucher.id}
-                onClick={() => setSelectedVoucher(voucher)}
-                className={`group p-4 flex items-center justify-between gap-4 border cursor-pointer transition-all duration-300 shadow-sm transform active:scale-[0.98] ${
-                  isDark
-                    ? "border-[#2A2A2A]/40 bg-[#393939] hover:bg-[#252528] rounded-[22px]"
-                    : "border-transparent bg-zinc-100 hover:bg-zinc-200/80 rounded-[22px]"
-                }`}
-              >
-                <div
-                  className={`w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF6B00] flex flex-col items-center justify-center font-black text-white text-[10px] tracking-tighter leading-none ${
-                    isDark ? "shadow-[0_4px_12px_rgba(255,90,0,0.3)]" : "shadow-md shadow-[#FF6B00]/10"
-                  }`}
-                >
-                  <span className="scale-x-95">Bazmly</span>
-                </div>
-
-                <div className="flex-1 min-w-0 text-left">
-                  <h3
-                    className={`text-xs font-bold leading-normal break-words pr-2 ${
-                      isDark ? "text-white" : "text-zinc-900"
-                    }`}
-                  >
-                    {voucher.description}
-                  </h3>
-                  <div className="mt-1 flex items-center">
-                    {isTimerActive ? (
-                      <span className="text-[#FF6B00] text-xs font-bold font-mono tracking-wider animate-pulse">
-                        {formatCountdown(timerVal)}
-                      </span>
-                    ) : (
-                      <span className="text-[#8E8E93] text-xs font-semibold">
-                        {voucher.expiryDate}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="shrink-0">
-                  <ChevronRight
-                    className={`w-5 h-5 transition-colors ${
-                      isDark ? "text-white/30 group-hover:text-white" : "text-zinc-400 group-hover:text-zinc-600"
-                    }`}
-                  />
-                </div>
-              </div>
-            );
-          })}
+          <div
+            className={`p-4 flex items-center gap-4 border shadow-sm ${
+              isDark ? "border-[#2A2A2A]/40 bg-[#393939] rounded-[22px]" : "border-transparent bg-zinc-100 rounded-[22px]"
+            }`}
+          >
+            <div
+              className={`w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF6B00] flex flex-col items-center justify-center font-black text-white text-xs tracking-tighter leading-none ${
+                isDark ? "shadow-[0_4px_12px_rgba(255,90,0,0.3)]" : "shadow-md shadow-[#FF6B00]/10"
+              }`}
+            >
+              <span className="scale-x-95">Bazmly</span>
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <h3 className={`text-xs font-bold leading-normal ${isDark ? "text-white" : "text-zinc-900"}`}>Promokodlar tez orada</h3>
+              <p className="mt-1 text-[#8E8E93] text-xs font-semibold">Chegirma kodlari paydo bo&apos;lganda shu yerda ko&apos;rinadi.</p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Tab 2: My Tickets List */}
       {activeTab === "tickets" && (
         <div className="flex-1 px-4 py-3 space-y-4 text-left">
-          {loadingBookings ? (
+          {!authLoading && !isAuthenticated ? (
+            <div className="text-center py-16 space-y-3">
+              <Ticket className="h-12 w-12 text-zinc-500 mx-auto" />
+              <p className={`text-sm font-bold ${isDark ? "text-white" : "text-zinc-800"}`}>Chiptalarni ko&apos;rish uchun akkauntga kiring</p>
+              <Link href="/login?next=%2Ftickets" className="inline-block mt-2 px-5 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg">
+                Kirish
+              </Link>
+            </div>
+          ) : listQuery.state.status === "error" ? (
+            <div role="alert" className="text-center py-16 space-y-3">
+              <p className={`text-sm font-bold ${isDark ? "text-white" : "text-zinc-800"}`}>Chiptalarni yuklab bo&apos;lmadi</p>
+              <p className="text-xs text-zinc-400 max-w-xs mx-auto">{listQuery.state.error.message}</p>
+              <button type="button" onClick={listQuery.retry} className="inline-block mt-2 px-5 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg">
+                Qayta urinish
+              </button>
+            </div>
+          ) : loadingBookings ? (
             <div className="space-y-4 animate-pulse">
               {[1, 2].map((i) => (
                 <div
@@ -297,7 +166,7 @@ export default function VouchersAndTicketsPage() {
                     </h3>
                     <div className="flex items-center gap-2 text-xs text-zinc-400 mt-1">
                       <Calendar className="h-3.5 w-3.5 text-primary" />
-                      <span>{b.booking_date} • {b.start_time}</span>
+                      <span>{formatDate(b.booking_date)} • {formatTime(b.start_time)}</span>
                     </div>
                   </div>
                   <span
@@ -307,7 +176,7 @@ export default function VouchersAndTicketsPage() {
                         : "bg-amber-500/10 text-amber-500"
                     }`}
                   >
-                    {b.status}
+                    {bookingStatus(b.status).label}
                   </span>
                 </div>
 
@@ -318,13 +187,14 @@ export default function VouchersAndTicketsPage() {
                     {b.table_number && <span> ({b.table_number}-stol)</span>}
                   </div>
                   <div className="flex items-center gap-2">
-                    {b.status !== "cancelled" && (
+                    {canCancel(b.status) && (
                       <button
                         type="button"
+                        disabled={cancellingId === b.id}
                         onClick={() => handleCancelBooking(b.id)}
                         className="px-2.5 py-1.5 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 text-[11px] font-bold transition-all cursor-pointer"
                       >
-                        Bekor qilish
+                        {cancellingId === b.id ? "..." : confirmCancelId === b.id ? "Tasdiqlang" : "Bekor qilish"}
                       </button>
                     )}
                     <button
@@ -343,10 +213,10 @@ export default function VouchersAndTicketsPage() {
             <div className="text-center py-16 space-y-3">
               <Ticket className="h-12 w-12 text-zinc-500 mx-auto" />
               <p className={`text-sm font-bold ${isDark ? "text-white" : "text-zinc-800"}`}>
-                Sizda hali faol chiptalar yo'q
+                Sizda hali faol chiptalar yo&apos;q
               </p>
               <p className="text-xs text-zinc-400 max-w-xs mx-auto">
-                Joy yoki tadbir zallarini band qilganingizda, chiptalaringiz bu yerda ko'rinadi.
+                Joy yoki tadbir zallarini band qilganingizda, chiptalaringiz bu yerda ko&apos;rinadi.
               </p>
               <Link
                 href="/feed"
@@ -359,73 +229,15 @@ export default function VouchersAndTicketsPage() {
         </div>
       )}
 
-      {/* Copy Successful Toast */}
-      {copied && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[160] bg-emerald-500 text-white font-extrabold text-[11px] tracking-wider uppercase px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 animate-scale-up">
-          <Check className="w-4 h-4" />
-          <span>Muvaffaqiyatli nusxalandi!</span>
-        </div>
-      )}
-
       {/* Dimming Backdrop */}
-      {(selectedVoucher || selectedBookingQr) && (
+      {selectedBookingQr && (
         <div
-          onClick={() => {
-            setSelectedVoucher(null);
-            setSelectedBookingQr(null);
-          }}
+          onClick={() => setSelectedBookingQr(null)}
           className={`fixed inset-0 z-[140] backdrop-blur-[2px] transition-opacity duration-300 max-w-md mx-auto ${
             isDark ? "bg-black/75" : "bg-black/40"
           }`}
         />
       )}
-
-      {/* Slide-Up Voucher Drawer */}
-      <div
-        className={`fixed inset-x-0 bottom-0 z-[150] max-w-md mx-auto border-t rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 flex flex-col items-stretch transform ${
-          isDark ? "bg-[#393939] border-[#2A2A2A]/40" : "bg-white border-zinc-100"
-        } ${selectedVoucher ? "translate-y-0" : "translate-y-full"}`}
-      >
-        <div className={`w-9 h-1 rounded-full mx-auto mb-6 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
-
-        {selectedVoucher && (
-          <div className="space-y-6">
-            <div className="space-y-2 text-left">
-              <h2 className={`text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
-                Promokod {selectedVoucher.code}
-              </h2>
-              <p className={`text-xs font-semibold leading-relaxed ${isDark ? "text-white/70" : "text-zinc-500"}`}>
-                {selectedVoucher.description}
-              </p>
-            </div>
-
-            <div className="space-y-3.5 pt-2">
-              <button
-                onClick={() => handleCopy(selectedVoucher.code)}
-                className="w-full py-4 bg-[#FF6B00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF6B00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 animate-scale-up" />
-                    <span>Nusxa olindi!</span>
-                  </>
-                ) : (
-                  <span>Nusxa olish</span>
-                )}
-              </button>
-
-              <button
-                onClick={() => setSelectedVoucher(null)}
-                className={`w-full py-3 bg-transparent font-bold text-sm tracking-wide transition-colors cursor-pointer ${
-                  isDark ? "text-white/90 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
-                }`}
-              >
-                Ortga
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* QR Code Modal for Booking */}
       {selectedBookingQr && (
@@ -440,21 +252,29 @@ export default function VouchersAndTicketsPage() {
 
             <h3 className="font-extrabold text-base text-zinc-900">{selectedBookingQr.venue_name}</h3>
             <p className="text-xs text-zinc-500 font-bold">
-              {selectedBookingQr.booking_date} • {selectedBookingQr.start_time}
+              {formatDate(selectedBookingQr.booking_date)} • {formatTime(selectedBookingQr.start_time)}
             </p>
 
-            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-200">
-              <QrCode className="h-44 w-44 text-zinc-900" />
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-200 min-h-[200px] min-w-[200px] flex items-center justify-center">
+              {qrQuery.state.status === "success" && qrQuery.state.data.qr_token && showsQr(qrQuery.state.data.booking.status) ? (
+                <BookingQr token={qrQuery.state.data.qr_token} size={176} />
+              ) : qrQuery.state.status === "error" ? (
+                <button type="button" onClick={qrQuery.retry} className="text-xs font-bold text-[#FF6B00]">
+                  QR kodni yuklab bo&apos;lmadi. Qayta urinish
+                </button>
+              ) : qrQuery.state.status === "success" ? (
+                <p className="text-xs font-bold text-zinc-500 text-center px-4">Bu bron uchun QR kod faol emas</p>
+              ) : (
+                <Loader2 className="h-6 w-6 animate-spin text-[#FF6B00]" />
+              )}
             </div>
 
             <div className="text-center space-y-1">
               <p className="text-[11px] font-bold text-zinc-500">
-                Restoran administratoriga ushbu QR kodni ko'rsating
+                Restoran administratoriga ushbu QR kodni ko&apos;rsating
               </p>
               <p className="text-[10px] font-mono font-bold text-[#FF6B00] break-all">
-                {typeof window !== "undefined" && localStorage.getItem("my_booking_tokens")
-                  ? JSON.parse(localStorage.getItem("my_booking_tokens") || "{}")[selectedBookingQr.id] || `BZMLY-TICKET-${selectedBookingQr.id}`
-                  : `BZMLY-TICKET-${selectedBookingQr.id}`}
+                {qrQuery.state.status === "success" ? qrQuery.state.data.booking.ticket_code : ""}
               </p>
             </div>
 

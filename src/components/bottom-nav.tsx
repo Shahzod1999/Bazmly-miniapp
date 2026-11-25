@@ -1,35 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, ChevronLeft, CheckCircle, Aperture, AlertCircle } from "lucide-react";
+
 
 import { useTheme } from "@/components/theme-provider";
+import { comingSoon } from "@/components/app-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function BottomNav() {
   const pathname = usePathname();
   const { theme } = useTheme();
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const checkRegistration = () => {
-      setIsRegistered(localStorage.getItem("isRegistered") === "true");
-    };
-    checkRegistration();
-    window.addEventListener("isRegisteredChange", checkRegistration);
-    return () => {
-      window.removeEventListener("isRegisteredChange", checkRegistration);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (mounted) {
-      setIsRegistered(localStorage.getItem("isRegistered") === "true");
-    }
-  }, [pathname, mounted]);
+  const { isAuthenticated: isRegistered, loading } = useAuth();
+  const mounted = !loading;
 
   const isHiddenRoute = 
     pathname.startsWith("/venue/") ||
@@ -37,7 +22,6 @@ export default function BottomNav() {
     pathname.startsWith("/booking/") ||
     pathname.startsWith("/payment/") ||
     pathname.startsWith("/payment-success") ||
-    pathname.startsWith("/admin") ||
     (pathname.startsWith("/login") && mounted && !isRegistered) ||
     (pathname === "/" && mounted && !isRegistered);
 
@@ -58,116 +42,44 @@ export default function BottomNav() {
     };
   }, [pathname, isHiddenRoute, mounted]);
 
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState<string | null>(null);
-  const [loadingScan, setLoadingScan] = useState(false);
-  const [scanState, setScanState] = useState<"scanning" | "permission" | "my_qr">("permission");
-
-  // Real Camera Streaming Refs and States
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-
-  // Triggered when Scan button is clicked
-  const handleScanClick = () => {
-    setIsScanning(true);
-    setScanResult(null);
-    setLoadingScan(true);
-    setScanState("permission"); // Always start with permission check screen
-
-    // Simulate scanning/decoding delay of 2.8 seconds
-    setTimeout(() => {
-      setLoadingScan(false);
-      setScanResult("BZ-90214"); // Simulated valid ticket ID
-    }, 2800);
-  };
-
-  // Camera stream activation and release effect
-  useEffect(() => {
-    let activeStream: MediaStream | null = null;
-
-    if (isScanning && scanState === "scanning" && !scanResult) {
-      // Request access to rear environment camera
-      navigator.mediaDevices
-        .getUserMedia({
-          video: {
-            facingMode: "environment",
-            width: { ideal: 640 },
-            height: { ideal: 640 },
-          },
-          audio: false,
-        })
-        .then((stream) => {
-          activeStream = stream;
-          setMediaStream(stream);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play().catch((err) => console.log("Video play error:", err));
-          }
-        })
-        .catch((err) => {
-          console.warn("Camera blocked or unavailable, falling back to simulation:", err);
-        });
-    }
-
-    return () => {
-      // Stop all tracks to release camera hardware immediately on close or success
-      if (activeStream) {
-        activeStream.getTracks().forEach((track) => track.stop());
-      }
-      if (mediaStream) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-      }
-      setMediaStream(null);
-    };
-  }, [isScanning, scanState, scanResult]);
-
-  const closeScanner = () => {
-    // Release camera tracks
-    if (mediaStream) {
-      mediaStream.getTracks().forEach((track) => track.stop());
-      setMediaStream(null);
-    }
-    setIsScanning(false);
-    setScanResult(null);
-    setLoadingScan(false);
-    setScanState("permission");
-  };
+  // Skaner hali backend bilan ulanmagan — bosilganda "Tez orada"
+  const handleScanClick = () => comingSoon("QR skaner");
 
   // 5 navigation items including the central Scan button
   const navItems = [
     {
       name: "Asosiy",
       path: "/",
-      icon: "/logo-loading.png",
+      icon: "/logo-loading.webp",
       isActive: pathname === "/",
       isAction: false,
     },
     {
       name: "Voucher",
       path: "/tickets",
-      icon: "/icons/discount-shape.png",
+      icon: "/icons/discount-shape.webp",
       isActive: pathname.startsWith("/tickets") || pathname.startsWith("/payment-success"),
       isAction: false,
     },
     {
       name: "Skaner",
       path: "#scan",
-      icon: "/icons/scan-barcode.png",
-      isActive: isScanning,
+      icon: "/icons/scan-barcode.webp",
+      isActive: false,
       isAction: true,
       action: handleScanClick,
     },
     {
       name: "Joylar",
       path: "/feed",
-      icon: "/icons/receipt.png",
+      icon: "/icons/receipt.webp",
       isActive: pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment"),
       isAction: false,
     },
     {
       name: "Profilim",
       path: "/login",
-      icon: "/icons/user.png",
+      icon: "/icons/user.webp",
       isActive: pathname.startsWith("/login"),
       isAction: false,
     },
@@ -175,7 +87,6 @@ export default function BottomNav() {
 
   // Derive the active index dynamically based on routes and scanner state
   const getActiveIndex = () => {
-    if (isScanning) return 2;
     if (pathname === "/") return 0;
     if (pathname.startsWith("/tickets") || pathname.startsWith("/payment-success")) return 1;
     if (pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment")) return 3;
@@ -302,11 +213,7 @@ export default function BottomNav() {
                     onClick={item.action}
                     className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-300 ease-out"
                   >
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className={iconClass}
-                    />
+                    <Image src={item.icon} alt="" aria-hidden="true" width={20} height={20} className={iconClass} />
                     <span className={textClass}>
                       {item.name}
                     </span>
@@ -316,11 +223,7 @@ export default function BottomNav() {
                     href={item.path}
                     className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-300 ease-out"
                   >
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className={iconClass}
-                    />
+                    <Image src={item.icon} alt="" aria-hidden="true" width={20} height={20} className={iconClass} />
                     <span className={textClass}>
                       {item.name}
                     </span>
@@ -348,9 +251,11 @@ export default function BottomNav() {
           onClick={handleScanClick}
         >
           <button className="w-full h-full flex items-center justify-center cursor-pointer">
-            <img
-              src="/icons/scan-barcode.png"
+            <Image
+              src="/icons/scan-barcode.webp"
               alt="Skaner"
+              width={32}
+              height={32}
               className={`h-8 w-8 object-contain animate-scale-up ${
                 isDark ? "brightness-0 invert" : "filter-primary"
               }`}
@@ -360,238 +265,6 @@ export default function BottomNav() {
 
       </div>
 
-      {/* Skaner Modal interfeysi */}
-      {isScanning && (
-        <div className={`fixed inset-0 z-[100] flex flex-col justify-between max-w-md mx-auto shadow-2xl animate-fade-in overflow-hidden select-none transition-colors ${
-          isDark ? "bg-[#1C1C1E] text-white" : "bg-white text-zinc-900"
-        }`}>
-          
-          {/* Header */}
-          <div className="relative py-6 px-6 flex items-center justify-between z-20">
-            {scanState === "my_qr" ? (
-              <>
-                <button
-                  onClick={() => setScanState("scanning")}
-                  className={`w-9 h-9 rounded-full transition-all flex items-center justify-center cursor-pointer active:scale-90 border ${
-                    isDark ? "bg-white/10 hover:bg-white/20 text-white border-white/10" : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border-zinc-200 shadow-sm"
-                  }`}
-                >
-                  <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-                </button>
-                <div className={`absolute left-1/2 -translate-x-1/2 font-black text-lg tracking-tighter select-none scale-x-95 ${
-                  isDark ? "text-white" : "text-zinc-900"
-                }`}>
-                  Bazmly
-                </div>
-                <div className="w-9" />
-              </>
-            ) : (
-              <>
-                <div className={`absolute left-1/2 -translate-x-1/2 font-bold text-sm tracking-wide ${
-                  isDark ? "text-white/90" : "text-zinc-900"
-                }`}>
-                  QR kodni skanerlash
-                </div>
-                <div className="w-9" />
-                <button
-                  onClick={closeScanner}
-                  className={`w-9 h-9 rounded-full transition-all flex items-center justify-center cursor-pointer active:scale-90 border ${
-                    isDark ? "bg-white/10 hover:bg-white/20 text-white border-white/10" : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border-zinc-200 shadow-sm"
-                  }`}
-                >
-                  <X className="w-5 h-5 stroke-[2.5]" />
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Main Area */}
-          <div className="flex-1 flex flex-col items-center justify-center relative px-6 z-10">
-            
-            {scanState === "my_qr" ? (
-              /* State 3: User QR Code View */
-              <div className="flex flex-col items-center justify-center w-full animate-scale-up -mt-8">
-                {/* Rounded Card */}
-                <div className={`w-full max-w-[280px] rounded-[32px] p-6 shadow-2xl flex flex-col items-center gap-6 text-center border ${
-                  isDark ? "bg-[#2C2C2E] border-white/10 text-white" : "bg-white border-zinc-200 text-zinc-900 shadow-[0_15px_40px_rgba(0,0,0,0.06)]"
-                }`}>
-                  
-                  {/* Detailed SVG QR Code */}
-                  <div className="p-2 bg-white rounded-2xl border border-zinc-100 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="h-44 w-44 text-black">
-                      {/* Top-left position marker */}
-                      <rect x="0" y="0" width="28" height="28" fill="currentColor" rx="4" />
-                      <rect x="4" y="4" width="20" height="20" fill="white" rx="2" />
-                      <rect x="8" y="8" width="12" height="12" fill="currentColor" rx="1" />
-
-                      {/* Top-right position marker */}
-                      <rect x="72" y="0" width="28" height="28" fill="currentColor" rx="4" />
-                      <rect x="76" y="4" width="20" height="20" fill="white" rx="2" />
-                      <rect x="80" y="8" width="12" height="12" fill="currentColor" rx="1" />
-
-                      {/* Bottom-left position marker */}
-                      <rect x="0" y="72" width="28" height="28" fill="currentColor" rx="4" />
-                      <rect x="4" y="76" width="20" height="20" fill="white" rx="2" />
-                      <rect x="8" y="80" width="12" height="12" fill="currentColor" rx="1" />
-
-                      {/* Mock QR bits */}
-                      <rect x="36" y="0" width="8" height="8" fill="currentColor" rx="1" />
-                      <rect x="52" y="0" width="12" height="4" fill="currentColor" rx="1" />
-                      <rect x="60" y="4" width="4" height="8" fill="currentColor" rx="1" />
-                      
-                      <rect x="36" y="12" width="4" height="12" fill="currentColor" rx="1" />
-                      <rect x="48" y="16" width="8" height="8" fill="currentColor" rx="1" />
-                      <rect x="60" y="16" width="4" height="4" fill="currentColor" rx="1" />
-                      
-                      <rect x="36" y="28" width="16" height="4" fill="currentColor" rx="1" />
-                      <rect x="56" y="24" width="8" height="8" fill="currentColor" rx="1" />
-                      <rect x="84" y="32" width="8" height="8" fill="currentColor" rx="1" />
-                      
-                      <rect x="12" y="36" width="16" height="8" fill="currentColor" rx="1" />
-                      <rect x="0" y="48" width="8" height="16" fill="currentColor" rx="1" />
-                      <rect x="36" y="44" width="8" height="12" fill="currentColor" rx="1" />
-                      <rect x="48" y="40" width="12" height="4" fill="currentColor" rx="1" />
-                      <rect x="52" y="48" width="16" height="16" fill="currentColor" rx="1" />
-                      
-                      <rect x="76" y="48" width="8" height="8" fill="currentColor" rx="1" />
-                      <rect x="88" y="56" width="12" height="4" fill="currentColor" rx="1" />
-                      <rect x="72" y="68" width="8" height="16" fill="currentColor" rx="1" />
-                      <rect x="88" y="72" width="8" height="8" fill="currentColor" rx="1" />
-                      <rect x="84" y="84" width="16" height="16" fill="currentColor" rx="2" />
-                      
-                      <rect x="20" y="60" width="4" height="4" fill="currentColor" rx="0.5" />
-                      <rect x="36" y="68" width="12" height="4" fill="currentColor" rx="0.5" />
-                      <rect x="44" y="76" width="4" height="12" fill="currentColor" rx="0.5" />
-                      <rect x="60" y="76" width="8" height="4" fill="currentColor" rx="0.5" />
-                    </svg>
-                  </div>
-
-                  {/* Caption Text */}
-                  <p className={`text-[13px] font-bold tracking-tight px-4 leading-normal select-none ${
-                    isDark ? "text-white/90" : "text-zinc-800"
-                  }`}>
-                    Ushbu QR kodni sotuvchiga ko'rsating
-                  </p>
-                </div>
-              </div>
-            ) : (
-              /* State 1 & 2: Active Scanner Viewport */
-              <div className="flex flex-col items-center justify-center w-full animate-fade-in">
-                {/* Viewfinder frame container */}
-                <div className={`relative w-64 h-64 border-2 rounded-[28px] overflow-hidden flex items-center justify-center shadow-2xl transition-colors ${
-                  isDark ? "border-white/20 bg-black/40" : "border-zinc-300 bg-zinc-950"
-                }`}>
-                  {scanState === "scanning" ? (
-                    <>
-                      {/* Real-time HTML5 Back Camera Feed */}
-                      <video
-                        ref={videoRef}
-                        playsInline
-                        autoPlay
-                        muted
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-
-                      {/* Laser scan line over the video feed */}
-                      <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FF5A00] to-transparent shadow-[0_0_12px_rgba(255,90,0,0.8)] animate-laser z-10" />
-                    </>
-                  ) : (
-                    /* Blur camera placeholder for permission screen */
-                    <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 flex items-center justify-center select-none">
-                      <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/20 animate-pulse">
-                        <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
-                          <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0-6a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z" />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Glowing target corners */}
-                  <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#FF5A00] rounded-tl-xl z-10" />
-                  <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#FF5A00] rounded-tr-xl z-10" />
-                  <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#FF5A00] rounded-bl-xl z-10" />
-                  <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#FF5A00] rounded-br-xl z-10" />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Footer State-dependent Area */}
-          <div className="w-full px-6 pb-12 z-20 flex flex-col items-center">
-            {scanState === "permission" && (
-              /* State 2: Camera Permission bottom sheet drawer */
-              <div className={`w-full border-t rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl flex flex-col items-stretch animate-scale-up absolute bottom-0 left-0 right-0 transition-colors ${
-                isDark ? "bg-[#2C2C2E] border-white/10" : "bg-white border-zinc-200 shadow-[0_-10px_35px_rgba(0,0,0,0.08)]"
-              }`}>
-                {/* Drag pill handle */}
-                <div className={`w-9 h-1 rounded-full mx-auto mb-6 ${
-                  isDark ? "bg-white/20" : "bg-zinc-300"
-                }`} />
-                
-                <div className="space-y-6">
-                  <p className={`text-center font-bold text-[15px] leading-snug px-6 ${
-                    isDark ? "text-white" : "text-zinc-900"
-                  }`}>
-                    Ilovada kamera yoqishga ruxsat bering
-                  </p>
-
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => setScanState("scanning")}
-                      className="w-full py-4 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/25 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer"
-                    >
-                      Ruxsat berish
-                    </button>
-                    <button
-                      onClick={closeScanner}
-                      className={`w-full py-3 bg-transparent font-bold text-sm tracking-wide transition-colors cursor-pointer ${
-                        isDark ? "text-white/70 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
-                      }`}
-                    >
-                      Ruxsat yo'q
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {scanState === "scanning" && (
-              /* State 1: Active scan bottom triggers */
-              <div className="flex flex-col items-center justify-center animate-fade-in">
-                {/* Custom QR code active scan badge */}
-                <div 
-                  onClick={() => setScanState("my_qr")}
-                  className="w-14 h-14 bg-[#FF5A00] hover:bg-[#E05000] rounded-2xl flex items-center justify-center shadow-[0_6px_20px_rgba(255,90,0,0.35)] cursor-pointer transform active:scale-95 transition-all mb-2"
-                >
-                  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-                    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-                    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-                    <path d="M3 17v2a2 2 0 0 1 2 2h2" />
-                    <rect x="7" y="7" width="10" height="10" rx="1.5" />
-                  </svg>
-                </div>
-                <span className={`text-xs font-semibold tracking-wide ${
-                  isDark ? "text-white/90" : "text-zinc-800"
-                }`}>
-                  QR kod orqali
-                </span>
-              </div>
-            )}
-
-            {scanState === "my_qr" && (
-              /* State 3: User QR Code bottom close button */
-              <button
-                onClick={() => setScanState("scanning")}
-                className="w-full py-4 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/25 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 animate-fade-in cursor-pointer"
-              >
-                Ortga
-              </button>
-            )}
-          </div>
-
-        </div>
-      )}
     </>
   );
 }

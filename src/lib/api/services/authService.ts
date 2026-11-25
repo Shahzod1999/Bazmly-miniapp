@@ -1,17 +1,12 @@
 import { apiFetch, setTokens, clearTokens } from "../config";
 import {
-  PhoneCheck,
   PhoneCheckResult,
   PhoneRegister,
   PhoneLogin,
-  TelegramLogin,
-  TelegramContactShare,
-  StaffLogin,
   TokenPair,
   UserRead,
   UserProfileUpdate,
   PasswordChange,
-  RefreshRequest,
 } from "../types";
 
 export const authService = {
@@ -88,20 +83,6 @@ export const authService = {
       method: "POST",
       body: JSON.stringify(data),
     });
-  },
-
-  // Staff login with login & password
-  async loginStaff(data: StaffLogin): Promise<TokenPair> {
-    const res = await apiFetch<TokenPair>("/api/v1/auth/staff-login", {
-      method: "POST",
-      body: JSON.stringify(data),
-      skipAuth: true,
-    });
-    setTokens({
-      access_token: res.access_token,
-      refresh_token: res.refresh_token,
-    });
-    return res;
   },
 
   // Refresh token

@@ -6,6 +6,4 @@ export * from "./services/geoService";
 export * from "./services/catalogService";
 export * from "./services/venueService";
 export * from "./services/bookingService";
-export * from "./services/orderService";
-export * from "./services/partnerService";
 export * from "./services/engagementService";

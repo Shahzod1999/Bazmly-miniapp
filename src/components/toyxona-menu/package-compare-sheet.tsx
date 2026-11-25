@@ -1,11 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 import { Check, X } from "lucide-react";
-import { PACKAGE_COMPARE_ROWS, type MenuPackage } from "@/data/toyxona-menu";
+import type { CompareRow, MenuPackage } from "./types";
 
 interface PackageCompareSheetProps {
   packages: MenuPackage[];
+  /** Taqqoslash qatorlari */
+  rows: CompareRow[];
   onClose: () => void;
   onOpenGallery: (packageId: string) => void;
   onSelectPackage: (packageId: string) => void;
@@ -13,6 +16,7 @@ interface PackageCompareSheetProps {
 
 export default function PackageCompareSheet({
   packages,
+  rows,
   onClose,
   onOpenGallery,
   onSelectPackage,
@@ -75,9 +79,9 @@ export default function PackageCompareSheet({
                       type="button"
                       onClick={() => onOpenGallery(p.id)}
                       aria-label={`${p.name} stolini kattalashtirish`}
-                      className="block w-full h-12 rounded-lg overflow-hidden bg-zinc-100 dark:bg-white/5 cursor-zoom-in"
+                      className="relative block w-full h-12 rounded-lg overflow-hidden bg-zinc-100 dark:bg-white/5 cursor-zoom-in"
                     >
-                      <img src={p.photos[0]?.src} alt="" loading="lazy" className="w-full h-full object-cover" />
+                      {p.photos[0] && <Image src={p.photos[0].src} alt="" fill sizes="120px" className="object-cover" />}
                     </button>
                     <span className="block mt-1 text-sm font-bold text-zinc-900 dark:text-white">{p.name}</span>
                   </th>
@@ -85,7 +89,7 @@ export default function PackageCompareSheet({
               </tr>
             </thead>
             <tbody>
-              {PACKAGE_COMPARE_ROWS.map((row) => (
+              {rows.map((row) => (
                 <tr key={row.label} className="border-b border-zinc-100 dark:border-white/5">
                   <th scope="row" className="py-2.5 pr-2 text-left text-[13px] font-medium text-zinc-500 dark:text-zinc-400">
                     {row.label}

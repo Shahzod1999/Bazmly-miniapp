@@ -1,10 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/bottom-nav";
 import SplashScreen from "@/components/splash-screen";
+import AppToast from "@/components/app-toast";
+import { TelegramProvider } from "@/components/telegram-provider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -22,6 +25,13 @@ export const metadata: Metadata = {
   description: "Marosim zallari va restoranlarni bron qilish uchun premium Telegram Mini App.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,9 +43,14 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+      </head>
       <body className="min-h-full bg-[var(--background)] text-foreground transition-colors duration-300 flex justify-center items-stretch">
         <ThemeProvider>
+          <TelegramProvider />
           <AuthProvider>
+            <AppToast />
             {/* Global App Load Splash Screen */}
             <SplashScreen />
             

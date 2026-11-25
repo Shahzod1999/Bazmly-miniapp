@@ -100,3 +100,10 @@ body {
 .filter-primary {
   filter: invert(53%) sepia(85%) saturate(3574%) hue-rotate(346deg) brightness(102%) contrast(101%);
 }
+
+/* Telegram Mini App: viewport va safe-area (TelegramProvider yangilaydi; brauzerda 0) */
+:root {
+  --tg-viewport-height: 100dvh;
+  --tg-safe-top: 0px;
+  --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+}

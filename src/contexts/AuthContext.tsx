@@ -1,190 +1,200 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import {
-  UserRead,
-  PhoneLogin,
-  PhoneRegister,
-  StaffLogin,
-  UserProfileUpdate,
-  TokenPair,
-} from "@/lib/api/types";
-import {
-  authService,
-  userService,
-  getAccessToken,
-  getRefreshToken,
-  clearTokens,
-} from "@/lib/api";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import type { PhoneCheckResult, PhoneLogin, PhoneRegister, UserProfileUpdate, UserRead } from "@/lib/api/types";
+import { authService, userService, getAccessToken, getRefreshToken, clearTokens, isApiError } from "@/lib/api";
+import { getTelegramWebApp } from "@/lib/telegram";
 
 interface AuthContextType {
+  /** Joriy foydalanuvchi (yagona haqiqat manbai) */
   user: UserRead | null;
+  /** Sessiya tekshirilmoqda */
   loading: boolean;
   isAuthenticated: boolean;
-  isPartner: boolean;
-  isAdmin: boolean;
-  checkPhone: (phone: string) => Promise<{ phone: string; registered: boolean; password_required: boolean }>;
-  login: (data: PhoneLogin) => Promise<TokenPair>;
-  register: (data: PhoneRegister) => Promise<TokenPair>;
-  loginStaff: (data: StaffLogin) => Promise<TokenPair>;
-  loginTelegram: (initData: string) => Promise<TokenPair>;
+  /** Telegram orqali avtomatik kirish xato bilan tugadi */
+  telegramError: string | null;
+  checkPhone: (phone: string) => Promise<PhoneCheckResult>;
+  login: (data: PhoneLogin) => Promise<UserRead>;
+  register: (data: PhoneRegister) => Promise<UserRead>;
+  /** Telegram initData orqali qayta kirish */
+  loginWithTelegram: () => Promise<UserRead>;
+  shareTelegramContact: (contactData: string) => Promise<UserRead>;
+  completeProfile: (data: UserProfileUpdate) => Promise<UserRead>;
+  updateProfile: (data: UserProfileUpdate) => Promise<UserRead>;
+  refreshUser: () => Promise<UserRead | null>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
-  refreshUser: () => Promise<UserRead | null>;
-  updateProfile: (data: UserProfileUpdate) => Promise<UserRead>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Avvalgi versiyalar localStorage'da saqlagan, endi ishlatilmaydigan kalitlar
+const LEGACY_KEYS = [
+  "isRegistered",
+  "fullName",
+  "phone",
+  "userRole",
+  "venueHours",
+  "my_local_bookings",
+  "my_booking_tokens",
+];
+
+function cleanupLegacyStorage() {
+  try {
+    LEGACY_KEYS.forEach((key) => localStorage.removeItem(key));
+  } catch {
+    // localStorage mavjud bo'lmasa (masalan, maxfiy rejim) — tozalash shart emas
+  }
+}
+
+interface SessionResult {
+  user: UserRead | null;
+  telegramError: string | null;
+}
+
+/** Ilova ochilganda sessiyani tiklaydi: saqlangan token yoki Telegram initData orqali. */
+async function restoreSession(): Promise<SessionResult> {
+  if (getAccessToken()) {
+    try {
+      return { user: await userService.getMe(), telegramError: null };
+    } catch (err) {
+      if (isApiError(err) && (err.status === 401 || err.status === 403)) {
+        clearTokens();
+      } else {
+        // Tarmoq xatosi: token saqlanadi, foydalanuvchi qayta urinishi mumkin
+        return { user: null, telegramError: null };
+      }
+    }
+  }
+
+  const webApp = getTelegramWebApp();
+  if (webApp) {
+    try {
+      await authService.loginTelegram(webApp.initData);
+      return { user: await userService.getMe(), telegramError: null };
+    } catch (err) {
+      clearTokens();
+      return {
+        user: null,
+        telegramError: err instanceof Error ? err.message : "Telegram orqali kirib bo'lmadi",
+      };
+    }
+  }
+
+  return { user: null, telegramError: null };
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserRead | null>(null);
   const [loading, setLoading] = useState(true);
+  const [telegramError, setTelegramError] = useState<string | null>(null);
 
-  const syncLegacyStorage = (currentUser: UserRead | null) => {
-    if (typeof window === "undefined") return;
-    if (currentUser) {
-      localStorage.setItem("isRegistered", "true");
-      const fullName = `${currentUser.first_name || ""} ${currentUser.last_name || ""}`.trim() || "Foydalanuvchi";
-      localStorage.setItem("fullName", fullName);
-      if (currentUser.phone) localStorage.setItem("phone", currentUser.phone);
-      const isPrivileged =
-        currentUser.role === "partner" ||
-        currentUser.role === "venue_owner" ||
-        currentUser.role === "venue_staff" ||
-        currentUser.role === "admin" ||
-        currentUser.role === "staff";
-      localStorage.setItem("userRole", isPrivileged ? "partner" : "customer");
-    } else {
-      localStorage.setItem("isRegistered", "false");
-      localStorage.removeItem("fullName");
-      localStorage.removeItem("phone");
-      localStorage.removeItem("userRole");
-    }
-    window.dispatchEvent(new Event("isRegisteredChange"));
-  };
-
-  const refreshUser = useCallback(async (): Promise<UserRead | null> => {
-    const token = getAccessToken();
-    if (!token) {
-      setUser(null);
-      syncLegacyStorage(null);
+  useEffect(() => {
+    let alive = true;
+    cleanupLegacyStorage();
+    restoreSession().then((result) => {
+      if (!alive) return;
+      setUser(result.user);
+      setTelegramError(result.telegramError);
       setLoading(false);
+    });
+
+    const handleLogoutEvent = () => setUser(null);
+    window.addEventListener("auth:logout", handleLogoutEvent);
+    return () => {
+      alive = false;
+      window.removeEventListener("auth:logout", handleLogoutEvent);
+    };
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    if (!getAccessToken()) {
+      setUser(null);
       return null;
     }
+    const profile = await userService.getMe();
+    setUser(profile);
+    return profile;
+  }, []);
 
+  const checkPhone = useCallback((phone: string) => authService.checkPhone(phone), []);
+
+  const login = useCallback(async (data: PhoneLogin) => {
+    await authService.login(data);
+    const profile = await userService.getMe();
+    setUser(profile);
+    return profile;
+  }, []);
+
+  const register = useCallback(async (data: PhoneRegister) => {
+    await authService.register(data);
+    const profile = await userService.getMe();
+    setUser(profile);
+    return profile;
+  }, []);
+
+  const loginWithTelegram = useCallback(async () => {
+    const webApp = getTelegramWebApp();
+    if (!webApp) throw new Error("Ilova Telegram ichida ochilmagan");
+    await authService.loginTelegram(webApp.initData);
+    const profile = await userService.getMe();
+    setUser(profile);
+    setTelegramError(null);
+    return profile;
+  }, []);
+
+  const shareTelegramContact = useCallback(async (contactData: string) => {
+    const profile = await authService.shareTelegramContact(contactData);
+    setUser(profile);
+    return profile;
+  }, []);
+
+  const completeProfile = useCallback(async (data: UserProfileUpdate) => {
+    const profile = await authService.completeProfile(data);
+    setUser(profile);
+    return profile;
+  }, []);
+
+  const updateProfile = useCallback(async (data: UserProfileUpdate) => {
+    const profile = await userService.updateMe(data);
+    setUser(profile);
+    return profile;
+  }, []);
+
+  const logout = useCallback(async () => {
+    const refresh = getRefreshToken();
     try {
-      const profile = await userService.getMe();
-      setUser(profile);
-      syncLegacyStorage(profile);
-      return profile;
-    } catch (err: any) {
-      if (err?.status === 401 || err?.status === 403) {
-        clearTokens();
-      }
-      setUser(null);
-      syncLegacyStorage(null);
-      return null;
+      if (refresh) await authService.logout(refresh);
     } finally {
-      setLoading(false);
+      clearTokens();
+      setUser(null);
     }
   }, []);
 
-  useEffect(() => {
-    refreshUser();
-
-    const handleLogoutEvent = () => {
-      setUser(null);
-      syncLegacyStorage(null);
-    };
-
-    window.addEventListener("auth:logout", handleLogoutEvent);
-    return () => {
-      window.removeEventListener("auth:logout", handleLogoutEvent);
-    };
-  }, [refreshUser]);
-
-  const checkPhone = async (phone: string) => {
-    return authService.checkPhone(phone);
-  };
-
-  const login = async (data: PhoneLogin): Promise<TokenPair> => {
-    const tokens = await authService.login(data);
-    await refreshUser();
-    return tokens;
-  };
-
-  const register = async (data: PhoneRegister): Promise<TokenPair> => {
-    const tokens = await authService.register(data);
-    await refreshUser();
-    return tokens;
-  };
-
-  const loginStaff = async (data: StaffLogin): Promise<TokenPair> => {
-    const tokens = await authService.loginStaff(data);
-    await refreshUser();
-    return tokens;
-  };
-
-  const loginTelegram = async (initData: string): Promise<TokenPair> => {
-    const tokens = await authService.loginTelegram(initData);
-    await refreshUser();
-    return tokens;
-  };
-
-  const logout = async (): Promise<void> => {
-    const refresh = getRefreshToken();
-    if (refresh) {
-      try {
-        await authService.logout(refresh);
-      } catch {}
-    }
+  const deleteAccount = useCallback(async () => {
+    // Xato bo'lsa chaqiruvchi xabar ko'rsatadi; akkaunt o'chirilmagan bo'lsa sessiya saqlanadi
+    await userService.deleteMe();
     clearTokens();
     setUser(null);
-    syncLegacyStorage(null);
-  };
-
-  const deleteAccount = async (): Promise<void> => {
-    try {
-      await userService.deleteMe();
-    } catch {}
-    clearTokens();
-    setUser(null);
-    syncLegacyStorage(null);
-  };
-
-  const updateProfile = async (data: UserProfileUpdate): Promise<UserRead> => {
-    const updated = await userService.updateMe(data);
-    setUser(updated);
-    syncLegacyStorage(updated);
-    return updated;
-  };
-
-  const isAuthenticated = !!user;
-  const isPartner =
-    user?.role === "partner" ||
-    user?.role === "venue_owner" ||
-    user?.role === "venue_staff" ||
-    user?.role === "admin" ||
-    user?.role === "staff";
-  const isAdmin = user?.role === "admin";
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
-        isAuthenticated,
-        isPartner,
-        isAdmin,
+        isAuthenticated: !!user,
+        telegramError,
         checkPhone,
         login,
         register,
-        loginStaff,
-        loginTelegram,
+        loginWithTelegram,
+        shareTelegramContact,
+        completeProfile,
+        updateProfile,
+        refreshUser,
         logout,
         deleteAccount,
-        refreshUser,
-        updateProfile,
       }}
     >
       {children}
@@ -198,4 +208,10 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+}
+
+/** Foydalanuvchining to'liq ismi */
+export function fullNameOf(user: UserRead | null): string {
+  if (!user) return "";
+  return `${user.first_name || ""} ${user.last_name || ""}`.trim();
 }

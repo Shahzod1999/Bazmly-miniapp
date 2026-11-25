@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
 import { Check, ChevronDown, Images, Users } from "lucide-react";
-import { formatSom, type MenuPackage } from "@/data/toyxona-menu";
+import { formatSom } from "@/lib/format";
+import type { MenuPackage } from "./types";
 
 interface PackageCardProps {
   pkg: MenuPackage;
@@ -50,14 +52,9 @@ export default function PackageCard({
               type="button"
               onClick={() => onOpenPhoto(idx)}
               aria-label={`${pkg.name} paketi — ${idx + 1}-rasmni kattalashtirish`}
-              className="w-full h-full shrink-0 snap-start cursor-zoom-in"
+              className="relative w-full h-full shrink-0 snap-start cursor-zoom-in"
             >
-              <img
-                src={photo.src}
-                alt={photo.caption}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
+              <Image src={photo.src} alt={photo.caption} fill sizes="(max-width: 480px) 100vw, 448px" className="object-cover" />
             </button>
           ))}
         </div>

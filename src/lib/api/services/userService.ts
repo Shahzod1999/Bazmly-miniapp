@@ -5,9 +5,7 @@ import {
   DeviceRead,
   DeviceCreate,
   UserListItem,
-  FriendshipCreate,
   FriendshipRead,
-  FriendshipRespond,
   UserAddressRead,
   UserAddressCreate,
 } from "../types";

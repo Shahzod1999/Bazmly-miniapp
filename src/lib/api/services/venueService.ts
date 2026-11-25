@@ -19,7 +19,7 @@ export const venueService = {
   // Search & Filter venues
   async searchVenues(params?: VenueSearchParams): Promise<Page<VenueListItem>> {
     return apiFetch<Page<VenueListItem>>("/api/v1/venues/search", {
-      params: params as Record<string, any>,
+      params,
       skipAuth: true,
     });
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
@@ -29,9 +30,12 @@ export default function SplashScreen() {
       style={{ backgroundColor: "#E85102" }}
     >
       <div className="flex flex-col items-center justify-center animate-pulse">
-        <img
-          src="/logo-loading.png"
-          alt="Bazmly Loading"
+        <Image
+          src="/logo-loading.webp"
+          alt="Bazmly"
+          width={91}
+          height={99}
+          priority
           className="h-28 w-auto object-contain"
         />
       </div>

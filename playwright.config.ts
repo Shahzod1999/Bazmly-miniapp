@@ -1,0 +1,26 @@
+import { defineConfig, devices } from "@playwright/test";
+
+const PORT = Number(process.env.E2E_PORT || 3100);
+
+export default defineConfig({
+  testDir: "./tests/e2e",
+  timeout: 30_000,
+  expect: { timeout: 10_000 },
+  fullyParallel: true,
+  retries: process.env.CI ? 1 : 0,
+  reporter: [["list"]],
+  use: {
+    baseURL: `http://127.0.0.1:${PORT}`,
+    ...devices["iPhone 13"],
+    browserName: "chromium",
+    locale: "uz-UZ",
+    timezoneId: "Asia/Tashkent",
+    trace: "retain-on-failure",
+  },
+  webServer: {
+    command: process.env.E2E_SERVER_CMD || `npm run build && npm run start -- --port ${PORT}`,
+    url: `http://127.0.0.1:${PORT}`,
+    reuseExistingServer: !process.env.CI,
+    timeout: 300_000,
+  },
+});

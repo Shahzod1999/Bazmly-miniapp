@@ -1,5 +1,6 @@
 "use client";
 
+import { useTelegramBackButton } from "@/lib/telegram";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -10,7 +11,6 @@ import {
   BadgePercent,
   Star,
   Users,
-  Map,
   MapPin,
   ArrowRight,
   Snowflake,
@@ -18,17 +18,13 @@ import {
   Wifi,
   CheckCircle,
 } from "lucide-react";
+import Image from "next/image";
 import { useTheme } from "@/components/theme-provider";
 import ToyxonaFlowModal from "@/components/toyxona-flow-modal";
-
-const DEFAULT_GALLERY = [
-  "/images/home/rest1.png",
-  "/images/home/rest2.png",
-  "/images/home/rest3.png",
-  "/images/home/rest4.png",
-  "/images/home/rest5.png",
-  "/images/home/rest6.png",
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { engagementService, venueService } from "@/lib/api";
+import { formatRating, formatSom } from "@/lib/format";
+import { errorMessage, useApiQuery } from "@/lib/use-api";
 
 export default function ToyxonaDetailPage() {
   const router = useRouter();
@@ -36,10 +32,21 @@ export default function ToyxonaDetailPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const [activeImage, setActiveImage] = useState<string>("/images/home/top.png");
-  const [isSaved, setIsSaved] = useState(false);
+  const venueId = Number(params?.id);
+  const { user } = useAuth();
+  const detailQuery = useApiQuery(Number.isInteger(venueId) && venueId > 0 ? `venue:${venueId}` : null, () => venueService.getVenueDetail(venueId));
+  const detail = detailQuery.state.status === "success" ? detailQuery.state.data : null;
+  const venue = detail?.venue ?? null;
+  const gallery = (detail?.photos ?? []).map((p) => p.url);
+  const [pickedImage, setPickedImage] = useState<string | null>(null);
+  const activeImage = pickedImage ?? detail?.photos.find((p) => p.is_cover)?.url ?? gallery[0] ?? null;
+  const setActiveImage = setPickedImage;
+  const favorites = useApiQuery(user ? `favorites:${user.id}` : null, () => engagementService.getFavorites());
+  const [savedOverride, setSavedOverride] = useState<boolean | null>(null);
+  const isSaved = savedOverride ?? (favorites.state.status === "success" ? favorites.state.data.some((f) => f.venue.id === venueId) : false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  useTelegramBackButton(() => router.back(), !showBookingModal);
 
   useEffect(() => {
     if (toastMessage) {
@@ -48,17 +55,85 @@ export default function ToyxonaDetailPage() {
     }
   }, [toastMessage]);
 
-  const handleShare = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard?.writeText(window.location.href);
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
       setToastMessage("Havola buferga nusxalandi!");
+    } catch {
+      setToastMessage("Havolani nusxalab bo'lmadi");
     }
   };
 
-  const handleToggleSave = () => {
-    setIsSaved((prev) => !prev);
-    setToastMessage(!isSaved ? "Sevimlilarga saqlandi ❤️" : "Saqlanganlardan olib tashlandi");
+  const handleToggleSave = async () => {
+    if (!user) {
+      router.push(`/login?next=${encodeURIComponent(`/toyxona/${venueId}`)}`);
+      return;
+    }
+    try {
+      const res = await engagementService.toggleFavorite(venueId);
+      setSavedOverride(res.is_favorite);
+      setToastMessage(res.is_favorite ? "Sevimlilarga saqlandi ❤️" : "Saqlanganlardan olib tashlandi");
+    } catch (err) {
+      setToastMessage(errorMessage(err, "Saqlab bo'lmadi"));
+    }
   };
+
+  const openBooking = () => {
+    if (!user) {
+      router.push(`/login?next=${encodeURIComponent(`/toyxona/${venueId}`)}`);
+      return;
+    }
+    setShowBookingModal(true);
+  };
+
+  // Restoranlar o'z sahifasida ochiladi
+  const isRestaurant = detail !== null && detail.venue_type !== "toyxona";
+  useEffect(() => {
+    if (isRestaurant) router.replace(`/venue/${venueId}`);
+  }, [isRestaurant, router, venueId]);
+
+  if (detailQuery.state.status === "error" || !(venueId > 0)) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-sm font-bold">
+          {detailQuery.state.status === "error" ? errorMessage(detailQuery.state.error, "To'yxona ma'lumotlarini yuklab bo'lmadi") : "To'yxona topilmadi"}
+        </p>
+        <div className="flex gap-3">
+          <button type="button" onClick={() => router.back()} className="px-5 py-3 rounded-2xl border border-zinc-200 dark:border-white/10 text-sm font-bold">
+            Orqaga
+          </button>
+          {detailQuery.state.status === "error" && (
+            <button type="button" onClick={detailQuery.retry} className="px-5 py-3 rounded-2xl bg-[#FF5A00] text-white text-sm font-bold">
+              Qayta urinish
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (!detail || !venue || isRestaurant) {
+    return (
+      <div className={`w-full min-h-screen animate-pulse ${isDark ? "bg-[#1E1E1E]" : "bg-white"}`}>
+        <div className="w-full h-80 bg-zinc-200 dark:bg-zinc-800" />
+        <div className="p-5 space-y-3">
+          <div className="h-6 w-2/3 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-4 w-1/2 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-20 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+      </div>
+    );
+  }
+
+  const rating = formatRating(venue.rating_avg);
+  const discount = Number(venue.discount_percent || 0);
+  const capacity =
+    venue.capacity_min && venue.capacity_max
+      ? `${venue.capacity_min} - ${venue.capacity_max} gacha odam`
+      : venue.capacity_max
+      ? `${venue.capacity_max} gacha odam`
+      : null;
+  const address = `${venue.street}${venue.house_number ? `, ${venue.house_number}` : ""}`;
 
   return (
     <div
@@ -76,11 +151,11 @@ export default function ToyxonaDetailPage() {
 
       {/* Top Image Viewport (Full-bleed edge-to-edge) */}
       <div className="w-full h-80 sm:h-96 relative overflow-hidden shrink-0">
-        <img
-          src={activeImage}
-          alt="The Royal Grand"
-          className="w-full h-full object-cover transition-all duration-300"
-        />
+        {activeImage ? (
+          <Image src={activeImage} alt={venue.name} fill unoptimized priority sizes="448px" className="object-cover transition-all duration-300" />
+        ) : (
+          <div className="w-full h-full bg-zinc-200 dark:bg-zinc-800" aria-hidden="true" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
 
         {/* Top Navigation Buttons */}
@@ -115,7 +190,7 @@ export default function ToyxonaDetailPage() {
         {/* Bottom Gallery Thumbnails */}
         <div className="absolute bottom-3.5 left-0 right-0 z-10 flex justify-center px-4">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1 max-w-full">
-            {DEFAULT_GALLERY.map((thumb, idx) => {
+            {gallery.length > 1 && gallery.map((thumb, idx) => {
               const isSel = activeImage === thumb;
               return (
                 <button
@@ -128,11 +203,7 @@ export default function ToyxonaDetailPage() {
                       : "border-white/80 opacity-85 hover:opacity-100"
                   }`}
                 >
-                  <img
-                    src={thumb}
-                    alt={`Gallery ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+                  <Image src={thumb} alt={`${idx + 1}-rasm`} width={44} height={44} unoptimized className="w-full h-full object-cover" />
                 </button>
               );
             })}
@@ -144,25 +215,29 @@ export default function ToyxonaDetailPage() {
       <div className="p-5 space-y-4">
         {/* Row 1: Badges & Rating */}
         <div className="flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF8EE] border border-[#A7E9BE] text-[#16A34A] text-xs font-semibold">
-            <BadgePercent className="w-3.5 h-3.5" />
-            <span>10% chegirma</span>
-          </div>
+          {discount > 0 ? (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF8EE] border border-[#A7E9BE] text-[#16A34A] text-xs font-semibold">
+              <BadgePercent className="w-3.5 h-3.5" />
+              <span>{Math.round(discount)}% chegirma</span>
+            </div>
+          ) : (
+            <span />
+          )}
 
           <div className="flex items-center gap-1 text-xs font-semibold text-zinc-600 dark:text-zinc-400">
             <Star className="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]" />
-            <span>4.8 (356 ta sharh)</span>
+            <span>{rating ? `${rating} (${venue.reviews_count} ta sharh)` : "Hali baholanmagan"}</span>
           </div>
         </div>
 
         {/* Row 2: Title & Status */}
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            The Royal Grand
+            {venue.name}
           </h1>
           <div className="flex items-center gap-1.5 text-sm font-bold text-[#16A34A] dark:text-[#22C55E]">
-            <span className="w-2 h-2 rounded-full bg-[#16A34A] dark:bg-[#22C55E]" />
-            <span>Ochiq</span>
+            <span className={`w-2 h-2 rounded-full ${detail.is_open_now ? "bg-[#16A34A] dark:bg-[#22C55E]" : "bg-zinc-400"}`} />
+            <span className={detail.is_open_now ? "" : "text-zinc-500"}>{detail.is_open_now ? "Ochiq" : "Yopiq"}</span>
           </div>
         </div>
 
@@ -182,40 +257,41 @@ export default function ToyxonaDetailPage() {
               <circle cx="12" cy="12" r="2" />
               <path d="M6 12h.01M18 12h.01" />
             </svg>
-            <span>25,000,000 so'm</span>
+            <span>{venue.base_price ? `${formatSom(venue.base_price)} · 1 kishi` : "Narx kelishiladi"}</span>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <Users className="w-4 h-4 text-zinc-500 shrink-0" />
-            <span>500 - 1,200 gacha odam</span>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <Map className="w-4 h-4 text-zinc-500 shrink-0" />
-            <span>1 km uzoqda</span>
-            <span className="text-zinc-300 select-none">|</span>
-            <div className="inline-flex items-center gap-1 bg-[#16A34A] text-white px-2.5 py-0.5 rounded-lg text-xs font-bold">
-              <span className="text-[10px] font-black">%</span>
-              <span>Depozitlik</span>
+          {capacity && (
+            <div className="flex items-center gap-2.5">
+              <Users className="w-4 h-4 text-zinc-500 shrink-0" />
+              <span>{capacity}</span>
             </div>
-          </div>
+          )}
+
+          {venue.requires_deposit && (
+            <div className="flex items-center gap-2.5">
+              <div className="inline-flex items-center gap-1 bg-[#16A34A] text-white px-2.5 py-0.5 rounded-lg text-xs font-bold">
+                <span className="text-xs font-black">%</span>
+                <span>Depozitlik{venue.deposit_percent ? ` (${Math.round(Number(venue.deposit_percent))}%)` : ""}</span>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-2.5">
             <MapPin className="w-4 h-4 text-zinc-500 shrink-0" />
-            <span>Navoiy, O‘zbekiston ko‘chasi 27 - uy</span>
+            <span>{address}</span>
           </div>
         </div>
 
         {/* Row 4: Jami narx & Band qilish Button */}
         <div className="pt-2 pb-1 flex items-center justify-between gap-4">
           <div>
-            <span className="text-xs text-zinc-400 block font-normal">Jami narx</span>
+            <span className="text-xs text-zinc-400 block font-normal">Narx (1 kishi)</span>
             <span className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
-              25,000,000
+              {venue.base_price ? formatSom(venue.base_price) : "—"}
             </span>
           </div>
           <button
-            onClick={() => setShowBookingModal(true)}
+            onClick={openBooking}
             className="px-6 py-3.5 rounded-2xl bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-[#FF5A00]/25 cursor-pointer"
           >
             <span>Band qilish</span>
@@ -227,30 +303,26 @@ export default function ToyxonaDetailPage() {
         <div className="space-y-1.5 pt-2">
           <h2 className="text-base font-bold text-zinc-900 dark:text-white">Tavsif</h2>
           <p className="text-xs sm:text-[13px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            Hasidona Koshona - bu sizning unutilmas tadbirlaringiz uchun mo'ljallangan hashamatli majmua.
-            Modern klassika uslubidagi dizayn, keng va yorug' zal hamda professional xizmat ko'rsatish
-            jamoasi sizning to'y, korporativ tadbir yoki yubileyingizni yuqori saviyada o'tkazishni ta'minlaydi.
+            {venue.description || venue.tagline || "Tavsif hali qo'shilmagan."}
           </p>
         </div>
 
         {/* Row 5b: To'yxona menyu paketlari */}
         <Link
-          href={`/toyxona/${params?.id ?? "99"}/menu`}
+          href={`/toyxona/${venueId}/menu`}
           className={`flex items-center gap-3 p-3 rounded-2xl border active:scale-[0.99] transition-all ${
             isDark
               ? "bg-zinc-800/80 border-white/5 text-zinc-200"
               : "bg-white border-zinc-100 text-zinc-800 shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
           }`}
         >
-          <img
-            src="/images/toyxona-menu/premium-stol.webp"
-            alt=""
-            className="w-16 h-16 rounded-xl object-cover shrink-0"
-          />
+          <div className="w-16 h-16 rounded-xl shrink-0 bg-[#FFF4ED] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center" aria-hidden="true">
+            <Utensils className="w-7 h-7" />
+          </div>
           <div className="flex-1 min-w-0">
             <span className="block text-sm font-bold text-zinc-900 dark:text-white">Menyu paketlari</span>
             <span className="block text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Standart, Premium, VIP · 1 kishi 250 000 so&apos;mdan
+              Tez orada
             </span>
           </div>
           <ArrowRight className="w-4 h-4 text-[#FF5A00] stroke-[2.5] shrink-0" />
@@ -258,14 +330,7 @@ export default function ToyxonaDetailPage() {
 
         {/* Row 6: Amenities Grid (6 cards) */}
         <div className="grid grid-cols-2 gap-3 pt-2">
-          {[
-            { label: "Keng avtoturargoh", type: "parking" },
-            { label: "Akustik tizim", type: "audio" },
-            { label: "Katta sahna", type: "stage" },
-            { label: "Konditsioner", type: "ac" },
-            { label: "Professional oshxona", type: "kitchen" },
-            { label: "Yuqori tezlikdagi Wi-Fi", type: "wifi" },
-          ].map((item, idx) => (
+          {detail.amenities.map((amenity) => ({ label: amenity.name, type: amenity.slug, icon: amenity.icon_url })).map((item, idx) => (
             <div
               key={idx}
               className={`flex items-center gap-3 p-3 rounded-2xl border ${
@@ -309,6 +374,12 @@ export default function ToyxonaDetailPage() {
                 {item.type === "ac" && <Snowflake className="w-5 h-5 stroke-[2.2]" />}
                 {item.type === "kitchen" && <Utensils className="w-5 h-5 stroke-[2.2]" />}
                 {item.type === "wifi" && <Wifi className="w-5 h-5 stroke-[2.2]" />}
+                {!["parking", "audio", "stage", "ac", "kitchen", "wifi"].includes(item.type) &&
+                  (item.icon ? (
+                    <Image src={item.icon} alt="" width={20} height={20} unoptimized className="w-5 h-5 object-contain" />
+                  ) : (
+                    <CheckCircle className="w-5 h-5 stroke-[2.2]" />
+                  ))}
               </div>
               <span className="text-xs font-semibold leading-tight">{item.label}</span>
             </div>
@@ -318,30 +389,7 @@ export default function ToyxonaDetailPage() {
 
       {/* Booking Flow Modal when "Band qilish" is pressed */}
       {showBookingModal && (
-        <ToyxonaFlowModal
-          isOpen={showBookingModal}
-          onClose={() => setShowBookingModal(false)}
-          initialStep="step1"
-          theme={theme}
-          venue={{
-            id: 99,
-            name: "The Royal Grand",
-            price: "25,000,000 so'm",
-            capacity: "500 - 1,200 gacha odam",
-            img: activeImage,
-            rating: "4.8",
-            reviewsCount: "356 ta sharh",
-            distance: "1 km uzoqda",
-            address: "Navoiy, O‘zbekiston ko‘chasi 27 - uy",
-            discount: "10% chegirma",
-            description:
-              "Hasidona Koshona - bu sizning unutilmas tadbirlaringiz uchun mo'ljallangan hashamatli majmua. Modern klassika uslubidagi dizayn, keng va yorug' zal hamda professional xizmat ko'rsatish jamoasi sizning to'y, korporativ tadbir yoki yubileyingizni yuqori saviyada o'tkazishni ta'minlaydi.",
-          }}
-          onSuccess={() => {
-            setShowBookingModal(false);
-            setToastMessage("To'yxona muvaffaqiyatli band qilindi!");
-          }}
-        />
+        <ToyxonaFlowModal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} theme={theme} venue={detail} />
       )}
     </div>
   );

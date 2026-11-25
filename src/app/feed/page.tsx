@@ -1,39 +1,38 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
   ChevronDown,
   MapPin,
-  Phone,
-  Clock,
   CheckCircle,
-  X,
   Loader2,
   Calendar,
   Ticket,
 } from "lucide-react";
-import Navbar from "@/components/navbar";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/AuthContext";
+import { bookingStatus } from "@/lib/booking";
+import { formatDate, formatSom, formatTime } from "@/lib/format";
+import { useApiQuery } from "@/lib/use-api";
 import {
   geoService,
   bookingService,
-  venueService,
   RegionRead,
   DistrictRead,
   BookingListItem,
-  VenueListItem,
 } from "@/lib/api";
 
 export default function FeedPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const isDark = theme === "dark";
-  const [mounted, setMounted] = useState(false);
+  const mounted = !authLoading;
   const [showLocationSelect, setShowLocationSelect] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState("Toshkent");
+  const [currentLocation, setCurrentLocation] = useState(() =>
+    typeof window === "undefined" ? "Toshkent" : localStorage.getItem("feedLocation") || "Toshkent"
+  );
   
   // Real Geo States
   const [regions, setRegions] = useState<RegionRead[]>([]);
@@ -48,16 +47,14 @@ export default function FeedPage() {
   const [loadingGeo, setLoadingGeo] = useState(false);
   
   // Bookings & Venues data from backend
-  const [bookings, setBookings] = useState<BookingListItem[]>([]);
-  const [loadingBookings, setLoadingBookings] = useState(true);
+  const bookingsQuery = useApiQuery(isAuthenticated ? "my-bookings" : null, () => bookingService.getMyBookings());
+  const bookings: BookingListItem[] =
+    bookingsQuery.state.status === "success" ? [...bookingsQuery.state.data].sort((a, b) => b.booking_date.localeCompare(a.booking_date)) : [];
+  const loadingBookings = authLoading || (isAuthenticated && bookingsQuery.state.status === "loading");
   const [toastMessage, setToastMessage] = useState("");
 
   // Load regions on mount
   useEffect(() => {
-    setMounted(true);
-    const loc = localStorage.getItem("feedLocation") || "Toshkent";
-    setCurrentLocation(loc);
-
     geoService.getRegions()
       .then((res) => setRegions(res || []))
       .catch(() => {});
@@ -65,37 +62,23 @@ export default function FeedPage() {
 
   // Fetch districts when region selected
   useEffect(() => {
-    if (selectedRegionId) {
-      setLoadingGeo(true);
-      geoService.getDistricts(selectedRegionId)
-        .then((d) => setDistricts(d || []))
-        .catch(() => setDistricts([]))
-        .finally(() => setLoadingGeo(false));
-    } else {
-      setDistricts([]);
-    }
+    if (!selectedRegionId) return;
+    let alive = true;
+    geoService
+      .getDistricts(selectedRegionId)
+      .then((d) => {
+        if (alive) setDistricts(d || []);
+      })
+      .catch(() => {
+        if (alive) setDistricts([]);
+      })
+      .finally(() => {
+        if (alive) setLoadingGeo(false);
+      });
+    return () => {
+      alive = false;
+    };
   }, [selectedRegionId]);
-
-  // Load live user bookings
-  const loadBookings = useCallback(async () => {
-    setLoadingBookings(true);
-    try {
-      if (isAuthenticated) {
-        const list = await bookingService.getMyBookings();
-        setBookings(list || []);
-      } else {
-        setBookings([]);
-      }
-    } catch {
-      setBookings([]);
-    } finally {
-      setLoadingBookings(false);
-    }
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    loadBookings();
-  }, [loadBookings]);
 
   // Dynamic bottom navigation bar visibility controller
   useEffect(() => {
@@ -290,6 +273,8 @@ export default function FeedPage() {
                           key={region.id}
                           type="button"
                           onClick={() => {
+                            setLoadingGeo(true);
+                            setDistricts([]);
                             setSelectedRegionId(region.id);
                             setSelectedRegionName(region.name);
                             setSelectedDistrictId(null);
@@ -431,7 +416,23 @@ export default function FeedPage() {
 
           {/* Scrollable Bookings List */}
           <main className="flex-1 overflow-y-auto px-6 py-6 pb-10 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
-            {loadingBookings ? (
+            {!authLoading && !isAuthenticated ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+                <Ticket className="h-10 w-10 text-zinc-400" />
+                <p className="text-sm font-bold">Bronlaringizni ko&apos;rish uchun akkauntga kiring</p>
+                <Link href="/login?next=%2Ffeed" className="px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold">
+                  Kirish
+                </Link>
+              </div>
+            ) : bookingsQuery.state.status === "error" ? (
+              <div role="alert" className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+                <p className="text-sm font-bold">Bronlarni yuklab bo&apos;lmadi</p>
+                <p className="text-xs text-zinc-400">{bookingsQuery.state.error.message}</p>
+                <button type="button" onClick={bookingsQuery.retry} className="px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold">
+                  Qayta urinish
+                </button>
+              </div>
+            ) : loadingBookings ? (
               <div className="flex flex-col items-center justify-center py-20 gap-3">
                 <Loader2 className="h-8 w-8 text-primary animate-spin" />
                 <p className="text-xs text-zinc-400">Bronlar yuklanmoqda...</p>
@@ -440,7 +441,7 @@ export default function FeedPage() {
               bookings.map((booking) => (
                 <Link
                   key={booking.id}
-                  href={`/tickets?bookingId=${booking.id}`}
+                  href={`/payment/${booking.id}`}
                   className={`w-full rounded-3xl p-5 flex flex-col gap-4 transition-all duration-300 block text-left ${
                     isDark
                       ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10"
@@ -448,13 +449,14 @@ export default function FeedPage() {
                   }`}
                 >
                   <div className="flex items-start gap-4">
-                    <img
-                      src="/images/restaurant.png"
-                      alt={booking.venue_name}
-                      className={`w-20 h-20 rounded-2xl object-cover shrink-0 border shadow-md ${
+                    <div
+                      aria-hidden="true"
+                      className={`w-20 h-20 rounded-2xl shrink-0 border shadow-md flex items-center justify-center text-primary bg-primary/10 ${
                         isDark ? "border-white/5" : "border-zinc-100"
                       }`}
-                    />
+                    >
+                      <Ticket className="h-8 w-8" />
+                    </div>
 
                     <div className="space-y-1 pr-1 w-full min-w-0">
                       <h2
@@ -471,9 +473,9 @@ export default function FeedPage() {
                         }`}
                       >
                         <Calendar className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-                        <span>{booking.booking_date}</span>
+                        <span>{formatDate(booking.booking_date)}</span>
                         <span className={isDark ? "text-white/20" : "text-zinc-300"}>|</span>
-                        <span>{booking.start_time}</span>
+                        <span>{formatTime(booking.start_time)}</span>
                       </div>
 
                       <div
@@ -502,133 +504,28 @@ export default function FeedPage() {
                             : "bg-red-500/10 text-red-500"
                         }`}
                       >
-                        {booking.status === "confirmed"
-                          ? "Tasdiqlangan"
-                          : booking.status === "checked_in"
-                          ? "Tashrif buyurilgan"
-                          : booking.status === "pending"
-                          ? "Kutilmoqda"
-                          : "Bekor qilingan"}
+                        {bookingStatus(booking.status).label}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
                       <span className={isDark ? "text-white/40" : "text-zinc-400"}>Jami summa:</span>
                       <span className="font-bold text-primary">
-                        {Number(booking.total_amount || 0).toLocaleString()} {booking.currency || "UZS"}
+                        {formatSom(booking.total_amount)}
                       </span>
                     </div>
                   </div>
                 </Link>
               ))
             ) : (
-              /* Fallback / Default active sample bookings if user has no live bookings yet */
-              [
-                { id: "1", name: "Rest One", location: "Umid qo'rg'oni 765 - uy", time: "11:00 • 26/02/2026", table: "4 - stol", check: "0789 091172", showBanner: true },
-                { id: "2", name: "Versal Tantanalar Zali", location: "Chilonzor 12-uy", time: "18:00 • 15/03/2026", table: "Asosiy Zal", check: "0844 192831", showBanner: false },
-              ].map((item) => (
-                <div
-                  key={item.id}
-                  className={`w-full rounded-3xl p-5 flex flex-col gap-4 transition-all duration-300 ${
-                    isDark
-                      ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10"
-                      : "bg-white border border-[#FF6B00] shadow-md hover:shadow-lg"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <img
-                      src="/images/restaurant.png"
-                      alt={item.name}
-                      className={`w-20 h-20 rounded-2xl object-cover shrink-0 border shadow-md ${
-                        isDark ? "border-white/5" : "border-zinc-100"
-                      }`}
-                    />
-
-                    <div className="space-y-1 pr-1 w-full min-w-0">
-                      <h2
-                        className={`text-base font-bold tracking-wide truncate ${
-                          isDark ? "text-white" : "text-zinc-900"
-                        }`}
-                      >
-                        {item.name}
-                      </h2>
-
-                      <div
-                        className={`flex items-center gap-1.5 text-xs font-medium ${
-                          isDark ? "text-white/50" : "text-zinc-500"
-                        }`}
-                      >
-                        <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-                        <span>1 km</span>
-                        <span className={isDark ? "text-white/20" : "text-zinc-300"}>|</span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shrink-0" />
-                        <span className="text-[#10B981] font-bold">Ochiq</span>
-                      </div>
-
-                      <div
-                        className={`flex items-center gap-1.5 text-xs font-medium ${
-                          isDark ? "text-white/60" : "text-zinc-600"
-                        }`}
-                      >
-                        <Phone className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/40" : "text-zinc-400"}`} />
-                        <span>+998 99 123 45 67</span>
-                      </div>
-
-                      <div
-                        className={`flex items-center gap-1.5 text-xs font-medium truncate ${
-                          isDark ? "text-white/60" : "text-zinc-600"
-                        }`}
-                      >
-                        <MapPin className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/40" : "text-zinc-400"}`} />
-                        <span className="truncate">{item.location}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <hr className={`border-t ${isDark ? "border-white/5" : "border-zinc-100"}`} />
-
-                  <div className="space-y-2.5 text-xs font-semibold">
-                    <div className="flex justify-between items-center">
-                      <span className={isDark ? "text-white/40" : "text-zinc-400"}>Holat</span>
-                      <span className={`font-bold ${isDark ? "text-white" : "text-zinc-900"}`}>
-                        Band qilish tasdiqlandi
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className={isDark ? "text-white/40" : "text-zinc-400"}>Chek raqami:</span>
-                      <span className={`font-mono ${isDark ? "text-white/90" : "text-zinc-900"}`}>
-                        {item.check}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className={isDark ? "text-white/40" : "text-zinc-400"}>Belgilandi:</span>
-                      <span className={isDark ? "text-white/90" : "text-zinc-900"}>{item.time}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className={isDark ? "text-white/40" : "text-zinc-400"}>Stol / Zal:</span>
-                      <span className={isDark ? "text-white/90" : "text-zinc-900"}>{item.table}</span>
-                    </div>
-                  </div>
-
-                  {item.showBanner && (
-                    <div
-                      className={`w-full rounded-2xl py-3.5 px-4 flex items-center justify-between text-sm font-bold ${
-                        isDark
-                          ? "bg-[#FF6B00] text-white shadow-md animate-pulse"
-                          : "bg-white border border-[#FF6B00] text-[#FF6B00]"
-                      }`}
-                    >
-                      <span className={isDark ? "text-white" : "text-[#FF6B00] opacity-80 font-medium"}>
-                        Qoldi:
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Clock className={`h-4.5 w-4.5 shrink-0 ${isDark ? "text-white" : "text-[#FF6B00]"}`} />
-                        <span>2 soat 25 daqiqa</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))
+              <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+                <Ticket className="h-10 w-10 text-zinc-400" />
+                <p className="text-sm font-bold">Hali band qilingan joylar yo&apos;q</p>
+                <p className="text-xs text-zinc-400 max-w-xs">Restoran yoki to&apos;yxonani band qilganingizda shu yerda ko&apos;rinadi.</p>
+                <Link href="/" className="px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold">
+                  Joy tanlash
+                </Link>
+              </div>
             )}
           </main>
         </div>
