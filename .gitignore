@@ -66,3 +66,5 @@ dist/
 Bazmly-miniapp/
 Claude outputs/
 *.zip
+FIX_REPORT.md
+BAZMLY_FIX_PROMPT.md
