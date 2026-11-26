@@ -62,3 +62,7 @@ dist/
 # Temporary files
 *.tmp
 *.swp
+
+Bazmly-miniapp/
+Claude outputs/
+*.zip
