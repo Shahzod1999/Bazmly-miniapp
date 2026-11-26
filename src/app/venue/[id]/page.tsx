@@ -361,7 +361,7 @@ export default function VenueDetailPage({ params }: Props) {
             <button type="button" onClick={() => router.back()} className="px-5 py-3 rounded-2xl border border-zinc-200 dark:border-white/10 text-sm font-bold">
               Orqaga
             </button>
-            <button type="button" onClick={retryLoad} className="px-5 py-3 rounded-2xl bg-[#FF6B00] text-white text-sm font-bold">
+            <button type="button" onClick={retryLoad} className="px-5 py-3 rounded-2xl bg-[#E85102] text-white text-sm font-bold">
               Qayta urinish
             </button>
           </div>
@@ -436,7 +436,7 @@ export default function VenueDetailPage({ params }: Props) {
                   type="button"
                   onClick={() => setActiveImage(thumb)}
                   className={`w-11 h-11 rounded-[12px] overflow-hidden shrink-0 transition-all duration-300 cursor-pointer ${
-                    isSel ? "border-2 border-[#FF6B00] scale-105" : "border-0 opacity-80 hover:opacity-100"
+                    isSel ? "border-2 border-[#E85102] scale-105" : "border-0 opacity-80 hover:opacity-100"
                   }`}
                 >
                   <Image src={thumb} alt={`${idx + 1}-rasm`} width={44} height={44} unoptimized className="w-full h-full object-cover" />
@@ -500,7 +500,7 @@ export default function VenueDetailPage({ params }: Props) {
                 isDark ? "text-white/70" : "text-zinc-600"
               }`}
             >
-              <Users className="h-4 w-4 text-[#FF6B00]" />
+              <Users className="h-4 w-4 text-[#E85102]" />
               <span>Sig&apos;imi: {venueDetail?.venue.total_seats ? `${venueDetail.venue.total_seats} ta o'rin` : "—"}</span>
             </div>
 
@@ -571,7 +571,7 @@ export default function VenueDetailPage({ params }: Props) {
           <div
             className={`flex items-center border rounded-2xl overflow-hidden transition-all duration-300 ${
               isDark
-                ? "bg-[#393939] border-white/5 focus-within:border-[#FF6B00]/50"
+                ? "bg-[#393939] border-white/5 focus-within:border-[#E85102]/50"
                 : "bg-zinc-100 border-transparent focus-within:bg-zinc-200/50"
             }`}
           >
@@ -609,7 +609,7 @@ export default function VenueDetailPage({ params }: Props) {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer border ${
                     isActive
-                      ? "bg-[#FF6B00] border-[#FF6B00] text-white shadow-sm"
+                      ? "bg-[#E85102] border-[#E85102] text-white shadow-sm"
                       : isDark
                       ? "bg-[#393939] border-white/5 text-white/60 hover:text-white"
                       : "bg-white border-zinc-200 text-zinc-700 hover:text-zinc-950"
@@ -686,7 +686,7 @@ export default function VenueDetailPage({ params }: Props) {
                         onClick={() => handleAddItem(food.id)}
                         className={`absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-md flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-all z-10 ${
                           isDark
-                            ? "bg-[#FF6B00] text-white"
+                            ? "bg-[#E85102] text-white"
                             : "bg-white border border-zinc-200 text-zinc-950 cursor-pointer"
                         }`}
                       >
@@ -718,7 +718,7 @@ export default function VenueDetailPage({ params }: Props) {
       >
         <button
           onClick={() => setShowPartySheet(true)}
-          className="w-full py-4 rounded-[24px] bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/25 cursor-pointer"
+          className="w-full py-4 rounded-[24px] bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#E85102]/25 cursor-pointer"
         >
           <span>{cartTotal > 0 ? `${formatPrice(cartTotal)} • Bron qilish` : "Bron qilish"}</span>
         </button>
@@ -799,7 +799,7 @@ export default function VenueDetailPage({ params }: Props) {
                         {rev.author.avatar_url ? (
                           <Image src={rev.author.avatar_url} alt={rev.author.first_name} width={36} height={36} unoptimized className="w-full h-full object-cover" />
                         ) : (
-                          <span className="w-full h-full flex items-center justify-center text-xs font-bold text-[#FF6B00]">
+                          <span className="w-full h-full flex items-center justify-center text-xs font-bold text-[#E85102]">
                             {rev.author.first_name?.[0]?.toUpperCase() ?? "?"}
                           </span>
                         )}
@@ -842,7 +842,7 @@ export default function VenueDetailPage({ params }: Props) {
               onSubmit={handleSendReview}
               className={`flex items-center rounded-full px-4 py-3 gap-3 border transition-all ${
                 isDark
-                  ? "bg-[#393939] border-white/5 focus-within:border-[#FF6B00]/40"
+                  ? "bg-[#393939] border-white/5 focus-within:border-[#E85102]/40"
                   : "bg-zinc-100 border-transparent focus-within:bg-zinc-200/50"
               }`}
             >
@@ -858,7 +858,7 @@ export default function VenueDetailPage({ params }: Props) {
               <button
                 type="submit"
                 disabled={!newReviewText.trim()}
-                className="p-1.5 rounded-full bg-transparent text-[#FF6B00] hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 flex items-center justify-center cursor-pointer"
+                className="p-1.5 rounded-full bg-transparent text-[#E85102] hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 flex items-center justify-center cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -909,7 +909,7 @@ export default function VenueDetailPage({ params }: Props) {
                       onClick={() => setPartySize(num)}
                       className={`flex-1 py-3 text-sm font-extrabold rounded-2xl transition-all cursor-pointer ${
                         isSelected
-                          ? "border border-[#FF5A00] bg-[#FF5A00]/10 text-[#FF5A00] scale-105"
+                          ? "border border-[#E85102] bg-[#E85102]/10 text-[#E85102] scale-105"
                           : isDark
                           ? "border border-white/5 bg-zinc-900 text-white hover:bg-zinc-800"
                           : "border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50"
@@ -934,7 +934,7 @@ export default function VenueDetailPage({ params }: Props) {
                   `/booking/${id}?guests=${partySize}&items=${itemsQuery}`
                 );
               }}
-              className="w-full py-4.5 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer"
+              className="w-full py-4.5 bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#E85102]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer"
             >
               Stol tanlash va davom etish
             </button>
@@ -1041,7 +1041,7 @@ export default function VenueDetailPage({ params }: Props) {
               <button
                 type="submit"
                 disabled={!newMessageText.trim()}
-                className="w-11 h-11 rounded-2xl bg-primary hover:bg-[#E05000] text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:scale-100 active:scale-95 cursor-pointer shadow-md shadow-primary/20"
+                className="w-11 h-11 rounded-2xl bg-primary hover:bg-[#C94600] text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:scale-100 active:scale-95 cursor-pointer shadow-md shadow-primary/20"
               >
                 <Send className="w-4 h-4" />
               </button>

@@ -37,7 +37,7 @@ export default function PackageCard({
   return (
     <article
       className={`relative rounded-2xl overflow-hidden bg-white dark:bg-[#252528] shadow-[0_2px_12px_rgba(28,20,16,0.06)] transition-shadow ${
-        selected ? "ring-2 ring-[#FF5A00]" : "ring-1 ring-zinc-100 dark:ring-white/5"
+        selected ? "ring-2 ring-[#E85102]" : "ring-1 ring-zinc-100 dark:ring-white/5"
       }`}
     >
       {/* Rasm karuseli */}
@@ -75,7 +75,7 @@ export default function PackageCard({
             <div className="flex items-center gap-2">
               <h3 className="text-[17px] leading-6 font-bold text-zinc-900 dark:text-white">{pkg.name}</h3>
               {pkg.popular && (
-                <span className="h-5 px-2 inline-flex items-center rounded-md bg-[#FFF2EA] text-[#B03D00] dark:bg-[#FF5A00]/15 dark:text-[#FF8A4C] text-xs font-semibold">
+                <span className="h-5 px-2 inline-flex items-center rounded-md bg-[#FFF2EA] text-[#E85102] dark:bg-[#E85102]/15 dark:text-[#E85102] text-xs font-semibold">
                   Ommabop
                 </span>
               )}
@@ -93,7 +93,7 @@ export default function PackageCard({
             <span
               className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
                 selected
-                  ? "bg-[#FF5A00] text-white"
+                  ? "bg-[#E85102] text-white"
                   : "border-2 border-zinc-300 dark:border-white/25 bg-white dark:bg-transparent"
               }`}
             >
@@ -104,7 +104,7 @@ export default function PackageCard({
 
         <div className="flex items-baseline gap-1.5 mt-3">
           <span className="text-[13px] font-medium text-zinc-500 dark:text-zinc-400">1 kishi —</span>
-          <span className="text-[22px] leading-7 font-extrabold tracking-tight text-[#C24400] dark:text-[#FF8A4C]">
+          <span className="text-[22px] leading-7 font-extrabold tracking-tight text-[#E85102] dark:text-[#E85102]">
             {formatSom(pkg.pricePerGuest)}
           </span>
         </div>

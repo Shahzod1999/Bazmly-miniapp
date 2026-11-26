@@ -458,7 +458,7 @@ function LoginContent() {
 
                 {/* Support Contact Section */}
                 <div className={`w-full border rounded-3xl p-5 flex flex-col gap-4 shadow-xl mt-2 ${
-                  isDark ? "bg-[#221A15] border-[#FF6B00]/10" : "bg-orange-50/50 border-orange-100"
+                  isDark ? "bg-[#221A15] border-[#E85102]/10" : "bg-[#E85102]/5 border-[#E85102]/15"
                 }`}>
                   <div className="space-y-1">
                     <h4 className={`text-sm font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Savolingizga javob topmadingizmi?</h4>
@@ -471,7 +471,7 @@ function LoginContent() {
                     href="https://t.me/bazmly_support"
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full py-3.5 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-xs tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20"
+                    className="w-full py-3.5 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-xs tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#E85102]/20"
                   >
                     <svg className="h-4.5 w-4.5 fill-current" viewBox="0 0 24 24">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15.82-.77 4.47-1.09 6.16-.13.72-.4 1-.66 1.03-.57.05-1-.38-1.55-.74-.86-.57-1.34-.86-2.18-1.41-.97-.64-.34-.99.21-1.56.14-.15 2.65-2.42 2.7-2.63.01-.03.01-.13-.05-.18-.06-.05-.14-.03-.21-.02-.09.02-1.54.98-4.36 2.88-.41.28-.79.42-1.12.41-.37-.01-1.08-.21-1.61-.38-.65-.21-1.17-.32-1.12-.68.02-.19.28-.38.77-.57 3.01-1.31 5.02-2.18 6.03-2.6 2.87-1.19 3.47-1.4 3.86-1.4.08 0 .28.02.4.12.1.09.13.21.14.31.01.07-.01.2-.02.26z"/>
@@ -650,7 +650,7 @@ function LoginContent() {
                       className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-sm ${
                         isDark 
                           ? "bg-white/5 border border-white/10 text-white hover:bg-[#252528]" 
-                          : "bg-white border border-primary text-primary hover:bg-orange-50"
+                          : "bg-white border border-primary text-primary hover:bg-[#E85102]/5"
                       }`}
                     >
                       Profilni tahrirlash

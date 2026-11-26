@@ -45,7 +45,7 @@ function ProgressBar({ step }: { step: number }) {
           <div
             key={s}
             className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-              isFilled ? "bg-[#FF6B00]" : "bg-zinc-200 dark:bg-zinc-800"
+              isFilled ? "bg-[#E85102]" : "bg-zinc-200 dark:bg-zinc-800"
             }`}
           />
         );
@@ -164,7 +164,7 @@ function BookingContent({ id }: { id: string }) {
       <div className="flex flex-col items-center justify-center gap-4 px-6 py-24 text-center">
         <p className="text-sm font-bold text-zinc-700 dark:text-zinc-200">Muassasa ma&apos;lumotlarini yuklab bo&apos;lmadi</p>
         <p className="text-xs text-zinc-500">{detailQuery.state.error.message}</p>
-        <button type="button" onClick={detailQuery.retry} className="px-5 py-3 rounded-2xl bg-[#FF6B00] text-white text-sm font-bold">
+        <button type="button" onClick={detailQuery.retry} className="px-5 py-3 rounded-2xl bg-[#E85102] text-white text-sm font-bold">
           Qayta urinish
         </button>
       </div>
@@ -248,14 +248,14 @@ function BookingContent({ id }: { id: string }) {
         )}
 
         <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 select-none bg-zinc-100 dark:bg-white/5 px-3.5 py-1.5 rounded-full border border-zinc-200/70 dark:border-white/5 shadow-2xs">
-          <MapPin className="h-3.5 w-3.5 text-[#FF6B00]" />
+          <MapPin className="h-3.5 w-3.5 text-[#E85102]" />
           <span className="truncate max-w-[120px]">{venueName}</span>
         </div>
       </div>
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[999] px-4 py-3 rounded-2xl bg-[#FF6B00] text-white text-xs font-bold shadow-2xl flex items-center gap-2 border border-white/20 animate-fade-in">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[999] px-4 py-3 rounded-2xl bg-[#E85102] text-white text-xs font-bold shadow-2xl flex items-center gap-2 border border-white/20 animate-fade-in">
           <CheckCircle className="h-4.5 w-4.5 shrink-0 animate-bounce" />
           <span>{toastMessage}</span>
         </div>
@@ -317,7 +317,7 @@ function BookingContent({ id }: { id: string }) {
                 <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 py-3">Avval sana va vaqtni tanlang</p>
               )}
               {tablesQuery.state.status === "error" && (
-                <button type="button" onClick={tablesQuery.retry} className="text-xs font-bold text-[#FF6B00] py-3">
+                <button type="button" onClick={tablesQuery.retry} className="text-xs font-bold text-[#E85102] py-3">
                   Stollarni yuklab bo&apos;lmadi. Qayta urinish
                 </button>
               )}
@@ -336,7 +336,7 @@ function BookingContent({ id }: { id: string }) {
                     aria-label={`${num}-stol, ${table.seats} o'rin`}
                     className={`flex-1 min-w-[42px] h-[72px] rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 cursor-pointer border ${
                       isSelected
-                        ? "bg-[#FF6B00] border-[#FF6B00] text-white shadow-lg shadow-[#FF6B00]/25 scale-105"
+                        ? "bg-[#E85102] border-[#E85102] text-white shadow-lg shadow-[#E85102]/25 scale-105"
                         : "bg-zinc-100 hover:bg-zinc-200/70 dark:bg-[#2C2C2E] dark:hover:bg-zinc-700 border-zinc-200/80 dark:border-white/5 text-zinc-700 dark:text-zinc-300 shadow-2xs"
                     }`}
                   >
@@ -386,7 +386,7 @@ function BookingContent({ id }: { id: string }) {
                     }}
                     className={`w-[58px] py-3.5 rounded-2xl shrink-0 flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 cursor-pointer border ${
                       isSelected
-                        ? "bg-[#FF6B00] border-[#FF6B00] text-white shadow-lg shadow-[#FF6B00]/25 scale-105"
+                        ? "bg-[#E85102] border-[#E85102] text-white shadow-lg shadow-[#E85102]/25 scale-105"
                         : "bg-zinc-100 hover:bg-zinc-200/70 dark:bg-[#2C2C2E] dark:hover:bg-zinc-700 border-zinc-200/80 dark:border-white/5 text-zinc-600 dark:text-zinc-400 shadow-2xs"
                     }`}
                   >
@@ -440,7 +440,7 @@ function BookingContent({ id }: { id: string }) {
                     }}
                     className={`px-5 py-3 rounded-2xl text-xs font-black shrink-0 flex items-center gap-1.5 active:scale-95 transition-all duration-200 cursor-pointer border ${
                       isSelected
-                        ? "bg-[#FF6B00] border-[#FF6B00] text-white shadow-lg shadow-[#FF6B00]/25 scale-105"
+                        ? "bg-[#E85102] border-[#E85102] text-white shadow-lg shadow-[#E85102]/25 scale-105"
                         : "bg-zinc-100 hover:bg-zinc-200/70 dark:bg-[#2C2C2E] dark:hover:bg-zinc-700 border-zinc-200/80 dark:border-white/5 text-zinc-800 dark:text-white shadow-2xs"
                     }`}
                   >
@@ -463,7 +463,7 @@ function BookingContent({ id }: { id: string }) {
               }
               setBookingStep("details");
             }}
-            className="w-full py-4.5 rounded-2xl font-extrabold text-sm tracking-wide transition-all bg-[#FF6B00] hover:bg-[#E05000] text-white active:scale-[0.98] shadow-xl shadow-[#FF6B00]/25 cursor-pointer select-none shrink-0"
+            className="w-full py-4.5 rounded-2xl font-extrabold text-sm tracking-wide transition-all bg-[#E85102] hover:bg-[#C94600] text-white active:scale-[0.98] shadow-xl shadow-[#E85102]/25 cursor-pointer select-none shrink-0"
           >
             Keyingisi
           </button>
@@ -484,7 +484,7 @@ function BookingContent({ id }: { id: string }) {
           <div className="space-y-6">
             <div className="space-y-2.5 text-left">
               <label className="block text-sm font-bold text-zinc-800 dark:text-white tracking-wide">Ism/Familiya</label>
-              <div className="flex items-center gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 focus-within:border-[#FF6B00] transition-colors">
+              <div className="flex items-center gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 focus-within:border-[#E85102] transition-colors">
                 <span className="text-zinc-500 text-base">👤</span>
                 <input
                   type="text"
@@ -498,7 +498,7 @@ function BookingContent({ id }: { id: string }) {
 
             <div className="space-y-2.5 text-left">
               <label className="block text-sm font-bold text-zinc-800 dark:text-white tracking-wide">Telefon raqam</label>
-              <div className="flex items-center gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 focus-within:border-[#FF6B00] transition-colors">
+              <div className="flex items-center gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 focus-within:border-[#E85102] transition-colors">
                 <span className="text-zinc-500 text-base">📞</span>
                 <input
                   type="text"
@@ -525,7 +525,7 @@ function BookingContent({ id }: { id: string }) {
 
           <button
             onClick={() => setBookingStep("checkout")}
-            className="w-full py-4.5 rounded-[24px] font-extrabold text-sm tracking-wide transition-all bg-[#FF6B00] hover:bg-[#E05000] text-white active:scale-[0.98] shadow-xl shadow-[#FF6B00]/25 cursor-pointer"
+            className="w-full py-4.5 rounded-[24px] font-extrabold text-sm tracking-wide transition-all bg-[#E85102] hover:bg-[#C94600] text-white active:scale-[0.98] shadow-xl shadow-[#E85102]/25 cursor-pointer"
           >
             Tasdiqlash va davom etish
           </button>
@@ -539,14 +539,14 @@ function BookingContent({ id }: { id: string }) {
           <button
             type="button"
             onClick={() => comingSoon("Onlayn to'lov")}
-            className="rounded-[26px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-4.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none hover:border-[#FF6B00]/40 transition-all cursor-pointer group"
+            className="rounded-[26px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-4.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none hover:border-[#E85102]/40 transition-all cursor-pointer group"
           >
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-orange-500/10 dark:bg-orange-500/15 border border-[#FF6B00]/20 flex items-center justify-center text-[#FF6B00] shadow-xs group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-[#E85102]/10 dark:bg-[#E85102]/15 border border-[#E85102]/20 flex items-center justify-center text-[#E85102] shadow-xs group-hover:scale-105 transition-transform shrink-0">
                 <CreditCard className="h-6 w-6" />
               </div>
               <div className="space-y-0.5">
-                <p className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-[#FF6B00] transition-colors">
+                <p className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-[#E85102] transition-colors">
                   Onlayn to&apos;lov
                 </p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
@@ -564,14 +564,14 @@ function BookingContent({ id }: { id: string }) {
           <button
             type="button"
             onClick={() => comingSoon("Promokodlar")}
-            className="rounded-[26px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-4.5 flex items-center justify-between cursor-pointer hover:border-[#FF6B00]/40 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none group"
+            className="rounded-[26px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-4.5 flex items-center justify-between cursor-pointer hover:border-[#E85102]/40 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none group"
           >
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-orange-500/10 dark:bg-orange-500/15 border border-[#FF6B00]/20 flex items-center justify-center text-[#FF6B00] shadow-xs group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-[#E85102]/10 dark:bg-[#E85102]/15 border border-[#E85102]/20 flex items-center justify-center text-[#E85102] shadow-xs group-hover:scale-105 transition-transform shrink-0">
                 <Percent className="h-6 w-6" />
               </div>
               <div className="space-y-0.5">
-                <p className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-[#FF6B00] transition-colors">
+                <p className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-[#E85102] transition-colors">
                   Promokod kiriting
                 </p>
                 <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">Tez orada</p>
@@ -625,7 +625,7 @@ function BookingContent({ id }: { id: string }) {
                 <span className="text-xs text-zinc-400">Muassasa bron yaratilgach hisoblaydi</span>
               </div>
               {preorderCount > 0 && (
-                <div className="text-2xl sm:text-3xl font-black text-[#FF6B00] tracking-tight">
+                <div className="text-2xl sm:text-3xl font-black text-[#E85102] tracking-tight">
                   {formatPrice(preorderTotal)}
                 </div>
               )}
@@ -644,7 +644,7 @@ function BookingContent({ id }: { id: string }) {
             type="button"
             onClick={handleCompletePayment}
             disabled={loading}
-            className="w-full py-4.5 rounded-2xl bg-gradient-to-r from-[#FF6B00] to-[#FF7A1A] hover:from-[#E05000] hover:to-[#FF6B00] text-white font-black text-base tracking-wide transition-all active:scale-[0.98] shadow-xl shadow-[#FF6B00]/30 flex items-center justify-center gap-2 select-none cursor-pointer disabled:opacity-50"
+            className="w-full py-4.5 rounded-2xl bg-gradient-to-r from-[#E85102] to-[#E85102] hover:from-[#C94600] hover:to-[#E85102] text-white font-black text-base tracking-wide transition-all active:scale-[0.98] shadow-xl shadow-[#E85102]/30 flex items-center justify-center gap-2 select-none cursor-pointer disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -681,11 +681,11 @@ function BookingContent({ id }: { id: string }) {
             <div className="p-5.5 space-y-4">
               <div className="space-y-1.5 text-left border-b border-zinc-100 dark:border-white/5 pb-3">
                 <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-bold">
-                  <Phone className="h-3.5 w-3.5 text-[#FF6B00]" />
+                  <Phone className="h-3.5 w-3.5 text-[#E85102]" />
                   <span>{venuePhone}</span>
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-bold">
-                  <MapPin className="h-3.5 w-3.5 text-[#FF6B00]" />
+                  <MapPin className="h-3.5 w-3.5 text-[#E85102]" />
                   <span className="truncate">{venueLocation}</span>
                 </div>
               </div>
@@ -693,7 +693,7 @@ function BookingContent({ id }: { id: string }) {
               <div className="space-y-3 text-xs text-left">
                 <div className="flex justify-between items-center">
                   <span className="text-zinc-500 font-semibold">Holat:</span>
-                  <span className={`font-extrabold ${createdBooking?.status === "confirmed" ? "text-emerald-600 dark:text-emerald-400" : "text-[#FF6B00]"}`}>
+                  <span className={`font-extrabold ${createdBooking?.status === "confirmed" ? "text-emerald-600 dark:text-emerald-400" : "text-[#E85102]"}`}>
                     {createdBooking ? bookingStatus(createdBooking.status).label : ""}
                   </span>
                 </div>
@@ -719,7 +719,7 @@ function BookingContent({ id }: { id: string }) {
 
                 <div className="flex justify-between items-center pt-1.5">
                   <span className="text-zinc-500 font-semibold">Jami summa:</span>
-                  <div className="px-3 py-1 bg-[#FF6B00] text-white font-black rounded-lg text-xs tracking-wide shadow-md shadow-[#FF6B00]/15">
+                  <div className="px-3 py-1 bg-[#E85102] text-white font-black rounded-lg text-xs tracking-wide shadow-md shadow-[#E85102]/15">
                     {formatPrice(createdBooking?.total_amount ?? 0)}
                   </div>
                 </div>
@@ -740,7 +740,7 @@ function BookingContent({ id }: { id: string }) {
               <button
                 type="button"
                 onClick={() => setBookingStep("qr")}
-                className="px-4.5 py-3 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 flex items-center gap-2.5 text-[#FF6B00] hover:bg-[#FF6B00]/20 active:scale-95 transition-all text-[11px] font-extrabold uppercase tracking-wide cursor-pointer"
+                className="px-4.5 py-3 rounded-full bg-[#E85102]/10 border border-[#E85102]/20 flex items-center gap-2.5 text-[#E85102] hover:bg-[#E85102]/20 active:scale-95 transition-all text-[11px] font-extrabold uppercase tracking-wide cursor-pointer"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>QR kod orqali ko&apos;rish</span>
@@ -751,7 +751,7 @@ function BookingContent({ id }: { id: string }) {
           <div className="space-y-2.5">
             <Link
               href="/tickets"
-              className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-extrabold text-sm tracking-wide transition-all active:scale-[0.98] shadow-lg shadow-[#FF6B00]/20 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-4 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm tracking-wide transition-all active:scale-[0.98] shadow-lg shadow-[#E85102]/20 flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Mening Chiptalarimga o&apos;tish</span>
               <ChevronRight className="h-4 w-4" />
@@ -791,7 +791,7 @@ function BookingContent({ id }: { id: string }) {
 
           <button
             onClick={() => setBookingStep("ticket")}
-            className="w-full py-4.5 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-extrabold text-sm tracking-wide transition-all active:scale-[0.98] shadow-xl shadow-[#FF6B00]/20 select-none shrink-0 cursor-pointer"
+            className="w-full py-4.5 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm tracking-wide transition-all active:scale-[0.98] shadow-xl shadow-[#E85102]/20 select-none shrink-0 cursor-pointer"
           >
             Ortga
           </button>
@@ -812,7 +812,7 @@ export default function BookingPage({ params }: Props) {
         <Suspense
           fallback={
             <div className="flex items-center justify-center h-64 bg-[var(--background)] text-white">
-              <Loader2 className="animate-spin h-8 w-8 text-[#FF6B00]" />
+              <Loader2 className="animate-spin h-8 w-8 text-[#E85102]" />
             </div>
           }
         >

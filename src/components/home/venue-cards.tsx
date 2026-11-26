@@ -125,11 +125,11 @@ export function FeaturedVenueCard({ venue, isToyxona, dark }: CardProps) {
                 {price && (
                   <>
                     <span className="text-xs text-zinc-400 block font-medium">Narx (1 kishi):</span>
-                    <span className="text-base font-extrabold text-[#FF6B00]">{price}</span>
+                    <span className="text-base font-extrabold text-[#E85102]">{price}</span>
                   </>
                 )}
               </div>
-              <div className="py-2.5 px-5 rounded-full bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md shadow-[#FF6B00]/25">
+              <div className="py-2.5 px-5 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md shadow-[#E85102]/25">
                 <span>Band qilish</span>
                 <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
               </div>
@@ -188,7 +188,7 @@ export function GridVenueCard({ venue, isToyxona, dark }: CardProps) {
                 )}
           </div>
 
-          <div className="w-full py-2 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 bg-[#FF6B00] hover:bg-[#E05000] text-white active:scale-95 transition-all shadow-sm shadow-[#FF6B00]/20 mt-1">
+          <div className="w-full py-2 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 bg-[#E85102] hover:bg-[#C94600] text-white active:scale-95 transition-all shadow-sm shadow-[#E85102]/20 mt-1">
             <span>{isToyxona ? "Band qilish" : "Ko'rish"}</span>
             <ArrowRight className="h-3.5 w-3.5 stroke-[2.5] text-white" />
           </div>

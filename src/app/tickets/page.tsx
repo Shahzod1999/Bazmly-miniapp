@@ -65,7 +65,7 @@ export default function VouchersAndTicketsPage() {
             onClick={() => setActiveTab("vouchers")}
             className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === "vouchers"
-                ? "bg-[#FF6B00] text-white shadow-md"
+                ? "bg-[#E85102] text-white shadow-md"
                 : isDark
                 ? "text-zinc-400 hover:text-white"
                 : "text-zinc-600 hover:text-zinc-900"
@@ -77,7 +77,7 @@ export default function VouchersAndTicketsPage() {
             onClick={() => setActiveTab("tickets")}
             className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === "tickets"
-                ? "bg-[#FF6B00] text-white shadow-md"
+                ? "bg-[#E85102] text-white shadow-md"
                 : isDark
                 ? "text-zinc-400 hover:text-white"
                 : "text-zinc-600 hover:text-zinc-900"
@@ -97,8 +97,8 @@ export default function VouchersAndTicketsPage() {
             }`}
           >
             <div
-              className={`w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF6B00] flex flex-col items-center justify-center font-black text-white text-xs tracking-tighter leading-none ${
-                isDark ? "shadow-[0_4px_12px_rgba(255,90,0,0.3)]" : "shadow-md shadow-[#FF6B00]/10"
+              className={`w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#E85102] flex flex-col items-center justify-center font-black text-white text-xs tracking-tighter leading-none ${
+                isDark ? "shadow-[0_4px_12px_rgba(232, 81, 2,0.3)]" : "shadow-md shadow-[#E85102]/10"
               }`}
             >
               <span className="scale-x-95">Bazmly</span>
@@ -118,7 +118,7 @@ export default function VouchersAndTicketsPage() {
             <div className="text-center py-16 space-y-3">
               <Ticket className="h-12 w-12 text-zinc-500 mx-auto" />
               <p className={`text-sm font-bold ${isDark ? "text-white" : "text-zinc-800"}`}>Chiptalarni ko&apos;rish uchun akkauntga kiring</p>
-              <Link href="/login?next=%2Ftickets" className="inline-block mt-2 px-5 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg">
+              <Link href="/login?next=%2Ftickets" className="inline-block mt-2 px-5 py-2.5 bg-[#E85102] text-white rounded-xl text-xs font-bold shadow-lg">
                 Kirish
               </Link>
             </div>
@@ -126,7 +126,7 @@ export default function VouchersAndTicketsPage() {
             <div role="alert" className="text-center py-16 space-y-3">
               <p className={`text-sm font-bold ${isDark ? "text-white" : "text-zinc-800"}`}>Chiptalarni yuklab bo&apos;lmadi</p>
               <p className="text-xs text-zinc-400 max-w-xs mx-auto">{listQuery.state.error.message}</p>
-              <button type="button" onClick={listQuery.retry} className="inline-block mt-2 px-5 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg">
+              <button type="button" onClick={listQuery.retry} className="inline-block mt-2 px-5 py-2.5 bg-[#E85102] text-white rounded-xl text-xs font-bold shadow-lg">
                 Qayta urinish
               </button>
             </div>
@@ -200,7 +200,7 @@ export default function VouchersAndTicketsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedBookingQr(b)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FF6B00] text-white text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#E85102] text-white text-xs font-bold active:scale-95 transition-all cursor-pointer"
                     >
                       <QrCode className="h-4 w-4" />
                       <span>QR Chipta</span>
@@ -220,7 +220,7 @@ export default function VouchersAndTicketsPage() {
               </p>
               <Link
                 href="/feed"
-                className="inline-block mt-2 px-5 py-2.5 bg-[#FF6B00] text-white rounded-xl text-xs font-bold shadow-lg"
+                className="inline-block mt-2 px-5 py-2.5 bg-[#E85102] text-white rounded-xl text-xs font-bold shadow-lg"
               >
                 Joy tanlash
               </Link>
@@ -259,13 +259,13 @@ export default function VouchersAndTicketsPage() {
               {qrQuery.state.status === "success" && qrQuery.state.data.qr_token && showsQr(qrQuery.state.data.booking.status) ? (
                 <BookingQr token={qrQuery.state.data.qr_token} size={176} />
               ) : qrQuery.state.status === "error" ? (
-                <button type="button" onClick={qrQuery.retry} className="text-xs font-bold text-[#FF6B00]">
+                <button type="button" onClick={qrQuery.retry} className="text-xs font-bold text-[#E85102]">
                   QR kodni yuklab bo&apos;lmadi. Qayta urinish
                 </button>
               ) : qrQuery.state.status === "success" ? (
                 <p className="text-xs font-bold text-zinc-500 text-center px-4">Bu bron uchun QR kod faol emas</p>
               ) : (
-                <Loader2 className="h-6 w-6 animate-spin text-[#FF6B00]" />
+                <Loader2 className="h-6 w-6 animate-spin text-[#E85102]" />
               )}
             </div>
 
@@ -273,14 +273,14 @@ export default function VouchersAndTicketsPage() {
               <p className="text-[11px] font-bold text-zinc-500">
                 Restoran administratoriga ushbu QR kodni ko&apos;rsating
               </p>
-              <p className="text-[10px] font-mono font-bold text-[#FF6B00] break-all">
+              <p className="text-[10px] font-mono font-bold text-[#E85102] break-all">
                 {qrQuery.state.status === "success" ? qrQuery.state.data.booking.ticket_code : ""}
               </p>
             </div>
 
             <button
               onClick={() => setSelectedBookingQr(null)}
-              className="w-full py-3.5 rounded-2xl bg-[#FF6B00] text-white font-bold text-xs shadow-lg"
+              className="w-full py-3.5 rounded-2xl bg-[#E85102] text-white font-bold text-xs shadow-lg"
             >
               Yopish
             </button>

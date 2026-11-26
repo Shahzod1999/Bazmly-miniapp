@@ -45,7 +45,7 @@ export default function ToyxonaMenuPage() {
 
       <main className="flex-1 px-4 pt-4 pb-8">
         <section className="flex flex-col items-center text-center gap-3 px-6 py-12 rounded-2xl bg-white dark:bg-[#252528] shadow-[0_2px_12px_rgba(28,20,16,0.06)]">
-          <div className="w-16 h-16 rounded-2xl bg-[#FFF2EA] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center" aria-hidden="true">
+          <div className="w-16 h-16 rounded-2xl bg-[#FFF2EA] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center" aria-hidden="true">
             <UtensilsCrossed className="w-8 h-8" />
           </div>
           <h2 className="text-lg font-bold">Tez orada</h2>
@@ -54,7 +54,7 @@ export default function ToyxonaMenuPage() {
           </p>
           <Link
             href={`/toyxona/${id}`}
-            className="mt-2 h-12 px-6 rounded-full bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-[#FF5A00]/25"
+            className="mt-2 h-12 px-6 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-[#E85102]/25"
           >
             Sanani band qilish
           </Link>

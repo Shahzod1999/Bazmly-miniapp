@@ -221,10 +221,10 @@ export default function FeedPage() {
                 className={`w-full p-4 rounded-2xl border flex items-center gap-3.5 transition-all text-left cursor-pointer ${
                   isDark
                     ? "bg-[#393939]/70 border-white/10 hover:bg-[#393939]"
-                    : "bg-orange-50 border-orange-200 hover:bg-orange-100"
+                    : "bg-[#E85102]/5 border-[#E85102]/25 hover:bg-[#E85102]/10"
                 }`}
               >
-                <div className="w-10 h-10 rounded-xl bg-[#FF6B00]/15 flex items-center justify-center text-[#FF6B00] shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#E85102]/15 flex items-center justify-center text-[#E85102] shrink-0">
                   {loadingGeo ? <Loader2 className="h-5 w-5 animate-spin" /> : <MapPin className="h-5 w-5" />}
                 </div>
                 <div>
@@ -369,7 +369,7 @@ export default function FeedPage() {
                 <button
                   type="button"
                   onClick={handleConfirmLocation}
-                  className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20 cursor-pointer"
+                  className="w-full py-4 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-[#E85102]/20 cursor-pointer"
                 >
                   Tasdiqlash
                 </button>
@@ -377,7 +377,7 @@ export default function FeedPage() {
                 <button
                   type="button"
                   onClick={() => setShowLocationSelect(false)}
-                  className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20 cursor-pointer"
+                  className="w-full py-4 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-[#E85102]/20 cursor-pointer"
                 >
                   Ortga
                 </button>
@@ -445,7 +445,7 @@ export default function FeedPage() {
                   className={`w-full rounded-3xl p-5 flex flex-col gap-4 transition-all duration-300 block text-left ${
                     isDark
                       ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10"
-                      : "bg-white border border-[#FF6B00] shadow-md hover:shadow-lg"
+                      : "bg-white border border-[#E85102] shadow-md hover:shadow-lg"
                   }`}
                 >
                   <div className="flex items-start gap-4">

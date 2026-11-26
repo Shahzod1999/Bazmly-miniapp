@@ -424,7 +424,7 @@ export default function WelcomePage() {
                 }`}
                 aria-label="Toggle theme"
               >
-                {theme === "dark" ? <Sun className="h-5 w-5 text-orange-400" /> : <Moon className="h-5 w-5 text-zinc-600" />}
+                {theme === "dark" ? <Sun className="h-5 w-5 text-[#E85102]" /> : <Moon className="h-5 w-5 text-zinc-600" />}
               </button>
 
               {/* Vouchers Link */}
@@ -454,11 +454,11 @@ export default function WelcomePage() {
               <div
                 className={`flex-1 h-[52px] relative flex items-center rounded-full overflow-hidden transition-all duration-300 ${
                   theme === "dark"
-                    ? "bg-[#252525] border border-white/5 focus-within:border-[#EA530E]/50"
-                    : "bg-[#F2F4F7] border border-transparent focus-within:ring-2 focus-within:ring-[#EA530E]/20"
+                    ? "bg-[#252525] border border-white/5 focus-within:border-[#E85102]/50"
+                    : "bg-[#F2F4F7] border border-transparent focus-within:ring-2 focus-within:ring-[#E85102]/20"
                 }`}
               >
-                <span className="pl-4 text-[#EA530E] flex items-center justify-center">
+                <span className="pl-4 text-[#E85102] flex items-center justify-center">
                   <Search className="w-5 h-5 stroke-[2.2]" />
                 </span>
                 <input
@@ -486,7 +486,7 @@ export default function WelcomePage() {
               <button
                 type="button"
                 onClick={() => setShowPartySheet(true)}
-                className={`w-[52px] h-[52px] rounded-[18px] bg-[#EA530E] hover:bg-[#D44607] text-white shadow-sm shadow-[#EA530E]/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer shrink-0 ${
+                className={`w-[52px] h-[52px] rounded-[18px] bg-[#E85102] hover:bg-[#C94600] text-white shadow-sm shadow-[#E85102]/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer shrink-0 ${
                   guestCountFilter ? "ring-2 ring-white ring-offset-1" : ""
                 }`}
                 aria-label="Filter"
@@ -508,7 +508,7 @@ export default function WelcomePage() {
             {(guestCountFilter || (selectedDistrictId !== null && selectedDistrictName) || searchQuery) && (
               <div className="flex flex-wrap items-center gap-2 pt-0.5 animate-fade-in">
                 {selectedDistrictId !== null && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00] text-xs font-bold">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E85102]/10 border border-[#E85102]/20 text-[#E85102] text-xs font-bold">
                     <MapPin className="h-3 w-3" />
                     <span className="truncate max-w-[140px]">{selectedDistrictName.split(", ").pop() || "Tuman"}</span>
                     <button
@@ -521,7 +521,7 @@ export default function WelcomePage() {
                   </div>
                 )}
                 {guestCountFilter && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00] text-xs font-bold">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E85102]/10 border border-[#E85102]/20 text-[#E85102] text-xs font-bold">
                     <span>{guestCountFilter} kishi</span>
                     <button
                       type="button"
@@ -533,7 +533,7 @@ export default function WelcomePage() {
                   </div>
                 )}
                 {searchQuery && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00] text-xs font-bold">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E85102]/10 border border-[#E85102]/20 text-[#E85102] text-xs font-bold">
                     <span>&quot;{searchQuery}&quot;</span>
                     <button
                       type="button"
@@ -564,7 +564,7 @@ export default function WelcomePage() {
                           : "bg-primary text-white border-primary shadow-md"
                         : theme === "dark"
                         ? "bg-[#393939] border-white/5 text-white/60 hover:text-white"
-                        : "bg-white border-zinc-200 text-zinc-800 hover:text-zinc-900"
+                        : "bg-white border-[#E85102] text-zinc-900 hover:bg-[#E85102]/5"
                     }`}
                   >
                     {tab}
@@ -587,7 +587,7 @@ export default function WelcomePage() {
                   type="button"
                   onClick={() => comingSoon("Aksiyalar")}
                   className={`text-xs font-bold hover:underline transition-colors ${
-                    theme === "dark" ? "text-white/40" : "text-[#FF6B00]"
+                    theme === "dark" ? "text-white/40" : "text-[#E85102]"
                   }`}
                 >
                   Barchasini ko&apos;rish
@@ -669,7 +669,7 @@ export default function WelcomePage() {
                 <Link
                   href="/feed"
                   className={`text-xs font-bold hover:underline transition-colors ${
-                    theme === "dark" ? "text-white/40" : "text-[#FF6B00]"
+                    theme === "dark" ? "text-white/40" : "text-[#E85102]"
                   }`}
                 >
                   Barchasini ko&apos;rish
@@ -703,7 +703,7 @@ export default function WelcomePage() {
                       <button
                         type="button"
                         onClick={loadVenues}
-                        className="px-4 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#E05000] text-white text-xs font-bold shadow-md shadow-[#FF6B00]/20 transition-all cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl bg-[#E85102] hover:bg-[#C94600] text-white text-xs font-bold shadow-md shadow-[#E85102]/20 transition-all cursor-pointer"
                       >
                         Qayta urinish
                       </button>
@@ -717,7 +717,7 @@ export default function WelcomePage() {
                     <div className={`py-12 px-6 text-center space-y-3 rounded-3xl border border-dashed ${
                       theme === "dark" ? "border-white/10 bg-white/[0.02]" : "border-zinc-200 bg-zinc-50"
                     }`}>
-                      <div className="w-12 h-12 rounded-2xl bg-[#FF6B00]/10 flex items-center justify-center text-[#FF6B00] mx-auto">
+                      <div className="w-12 h-12 rounded-2xl bg-[#E85102]/10 flex items-center justify-center text-[#E85102] mx-auto">
                         <Search className="h-6 w-6" />
                       </div>
                       <h3 className="text-sm font-bold text-foreground dark:text-white">
@@ -740,7 +740,7 @@ export default function WelcomePage() {
                             setSearchQuery("");
                             setGuestCountFilter(null);
                           }}
-                          className="px-4 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#E05000] text-white text-xs font-bold shadow-md shadow-[#FF6B00]/20 transition-all cursor-pointer"
+                          className="px-4 py-2.5 rounded-xl bg-[#E85102] hover:bg-[#C94600] text-white text-xs font-bold shadow-md shadow-[#E85102]/20 transition-all cursor-pointer"
                         >
                           Barcha muassasalarni ko&apos;rish
                         </button>
@@ -790,7 +790,7 @@ export default function WelcomePage() {
               </span>
               <button
                 onClick={() => setShowPartySheet(false)}
-                className="w-8 h-8 rounded-full bg-foreground/5 dark:bg-white/5 flex items-center justify-center text-foreground/60 dark:text-zinc-400 hover:text-[#FF6B00] dark:hover:text-white"
+                className="w-8 h-8 rounded-full bg-foreground/5 dark:bg-white/5 flex items-center justify-center text-foreground/60 dark:text-zinc-400 hover:text-[#E85102] dark:hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -807,7 +807,7 @@ export default function WelcomePage() {
                       onClick={() => setPartySize(num)}
                       className={`flex-1 py-3 text-base font-extrabold rounded-2xl transition-all cursor-pointer ${
                         isSelected
-                          ? "border border-[#FF6B00] bg-[#FF6B00]/5 text-[#FF6B00] scale-105"
+                          ? "border border-[#E85102] bg-[#E85102]/5 text-[#E85102] scale-105"
                           : "border border-brand-light-border dark:border-white/5 bg-foreground/5 dark:bg-zinc-900 text-foreground dark:text-white"
                       }`}
                     >
@@ -888,7 +888,7 @@ export default function WelcomePage() {
                 setGuestCountFilter(partySize);
 
               }}
-              className="w-full py-4.5 bg-[#FF6B00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF6B00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer"
+              className="w-full py-4.5 bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#E85102]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer"
             >
               Izlash ({partySize} kishi)
             </button>
@@ -911,7 +911,7 @@ export default function WelcomePage() {
               <ChevronLeft className="h-5 w-5" />
             </button>
 
-            <div className="flex-1 flex items-center bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/40 transition-all px-4 py-3">
+            <div className="flex-1 flex items-center bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-2xl overflow-hidden focus-within:border-[#E85102]/40 transition-all px-4 py-3">
               <Search className="h-4.5 w-4.5 text-foreground/40 dark:text-zinc-500 shrink-0" />
               <input
                 type="text"
@@ -938,7 +938,7 @@ export default function WelcomePage() {
             disabled={geoDetecting}
             className="w-full px-6 py-4.5 border-b border-brand-light-border dark:border-white/5 flex items-center gap-3.5 hover:bg-foreground/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left disabled:opacity-50"
           >
-            <div className="w-10 h-10 rounded-full bg-[#FF6B00]/10 flex items-center justify-center text-[#FF6B00] shrink-0">
+            <div className="w-10 h-10 rounded-full bg-[#E85102]/10 flex items-center justify-center text-[#E85102] shrink-0">
               {geoDetecting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
@@ -962,12 +962,12 @@ export default function WelcomePage() {
                 onClick={() => handleSelectDistrict(null, "Toshkent shahri (Barcha tumanlar)")}
                 className={`w-full py-3.5 px-4 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
                   selectedDistrictId === null
-                    ? "bg-[#FF6B00]/10 border-[#FF6B00] text-[#FF6B00] font-bold"
+                    ? "bg-[#E85102]/10 border-[#E85102] text-[#E85102] font-bold"
                     : "border-brand-light-border dark:border-white/5 bg-brand-light-card/60 dark:bg-[#393939]/40 hover:bg-foreground/5 dark:hover:bg-white/5 text-foreground dark:text-white"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-[#FF6B00]/15 flex items-center justify-center text-[#FF6B00] shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-[#E85102]/15 flex items-center justify-center text-[#E85102] shrink-0">
                     <Globe className="h-4.5 w-4.5" />
                   </div>
                   <div className="text-left">
@@ -975,7 +975,7 @@ export default function WelcomePage() {
                     <span className="text-[10px] opacity-60">Barcha restoran va to&apos;yxonalarni ko&apos;rish</span>
                   </div>
                 </div>
-                {selectedDistrictId === null && <Check className="h-4 w-4 text-[#FF6B00]" />}
+                {selectedDistrictId === null && <Check className="h-4 w-4 text-[#E85102]" />}
               </button>
             )}
             {/* Oxirgi manzillar (if any) */}
@@ -991,7 +991,7 @@ export default function WelcomePage() {
                       onClick={() => handleSelectDistrict(loc.district_id, loc.label)}
                       className="w-full py-3 px-3.5 rounded-xl border border-transparent hover:border-brand-light-border dark:hover:border-white/5 flex items-center gap-3 hover:bg-foreground/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left"
                     >
-                      <MapPin className="h-4 w-4 text-[#FF6B00] shrink-0" />
+                      <MapPin className="h-4 w-4 text-[#E85102] shrink-0" />
                       <span className="text-sm font-bold text-foreground/90 dark:text-white/90 truncate">{loc.label}</span>
                     </button>
                   ))}
@@ -1021,7 +1021,7 @@ export default function WelcomePage() {
                         key={region.id}
                         className={`rounded-2xl border transition-all overflow-hidden ${
                           isExpanded
-                            ? "border-[#FF6B00]/40 bg-[#FF6B00]/5 dark:bg-white/[0.02]"
+                            ? "border-[#E85102]/40 bg-[#E85102]/5 dark:bg-white/[0.02]"
                             : "border-brand-light-border dark:border-white/5 bg-brand-light-card/50 dark:bg-[#393939]/30"
                         }`}
                       >
@@ -1041,7 +1041,7 @@ export default function WelcomePage() {
                           </div>
                           <ChevronDown
                             className={`h-4 w-4 transition-transform duration-200 text-foreground/40 dark:text-zinc-400 ${
-                              isExpanded ? "rotate-180 text-[#FF6B00]" : ""
+                              isExpanded ? "rotate-180 text-[#E85102]" : ""
                             }`}
                           />
                         </button>
@@ -1051,7 +1051,7 @@ export default function WelcomePage() {
                           <div className="px-3 pb-3 pt-1 border-t border-brand-light-border/60 dark:border-white/5 space-y-1">
                             {isLoadingDistricts ? (
                               <div className="py-4 flex items-center justify-center gap-2 text-xs text-zinc-400">
-                                <Loader2 className="h-4 w-4 animate-spin text-[#FF6B00]" />
+                                <Loader2 className="h-4 w-4 animate-spin text-[#E85102]" />
                                 <span>Tumanlar yuklanmoqda...</span>
                               </div>
                             ) : districts.length > 0 ? (
@@ -1064,7 +1064,7 @@ export default function WelcomePage() {
                                     onClick={() => handleSelectDistrict(district.id, `${region.name}, ${district.name}`)}
                                     className={`w-full py-2.5 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${
                                       isCurrent
-                                        ? "bg-[#FF6B00] text-white shadow-sm"
+                                        ? "bg-[#E85102] text-white shadow-sm"
                                         : "hover:bg-foreground/5 dark:hover:bg-white/10 text-foreground/80 dark:text-white/80"
                                     }`}
                                   >

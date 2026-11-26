@@ -96,7 +96,7 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
             hapticSelection();
             onNext();
           }}
-          className="mt-8 w-full h-14 rounded-full bg-[#E85102] hover:bg-[#D44607] text-white text-lg font-bold active:scale-[0.99] transition-all"
+          className="mt-8 w-full h-14 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white text-lg font-bold active:scale-[0.99] transition-all"
         >
           Ro‘yxatdan o‘tish
         </button>
@@ -184,7 +184,7 @@ function LanguageScreen({ onNext }: { onNext: () => void }) {
       <button
         type="button"
         onClick={() => applyLanguage(selected) && onNext()}
-        className="w-full h-14 rounded-full bg-[#E85102] hover:bg-[#D44607] text-white text-lg font-semibold active:scale-[0.99] transition-all"
+        className="w-full h-14 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white text-lg font-semibold active:scale-[0.99] transition-all"
       >
         Davom etish
       </button>
@@ -314,7 +314,7 @@ function PrimaryButton({ children, onClick, disabled }: { children: React.ReactN
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="mt-auto w-full h-14 rounded-full bg-[#E85102] hover:bg-[#D44607] text-white text-lg font-semibold active:scale-[0.99] transition-all disabled:opacity-50"
+      className="mt-auto w-full h-14 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white text-lg font-semibold active:scale-[0.99] transition-all disabled:opacity-50"
     >
       {children}
     </button>

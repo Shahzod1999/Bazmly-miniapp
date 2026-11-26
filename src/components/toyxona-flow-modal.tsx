@@ -252,7 +252,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                         <div
                           className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                             isCompleted || isActive
-                              ? "bg-[#FF5A00] text-white"
+                              ? "bg-[#E85102] text-white"
                               : isDark
                               ? "bg-zinc-800 text-zinc-400"
                               : "bg-zinc-200 text-zinc-500"
@@ -295,7 +295,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                             idx === 0 || // between 1 and 2 is always orange
                             (idx === 1 && (currentStep as number) >= 2) || // between 2 and 3
                             (idx === 2 && (currentStep as number) >= 4) // between 3 and 4
-                              ? "bg-[#FF5A00]"
+                              ? "bg-[#E85102]"
                               : isDark
                               ? "bg-zinc-800"
                               : "bg-zinc-200"
@@ -338,7 +338,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                         aria-label={`${item.label}-sana${item.blocked ? ", band" : ""}`}
                         className={`w-[54px] sm:w-[58px] h-[82px] rounded-[18px] flex flex-col items-center justify-center shrink-0 transition-all cursor-pointer ${
                           isSelected
-                            ? "bg-[#FF5A00] text-white shadow-md shadow-[#FF5A00]/25"
+                            ? "bg-[#E85102] text-white shadow-md shadow-[#E85102]/25"
                             : isDark
                             ? "bg-[#2A2A2A] text-zinc-300 hover:bg-[#333333]"
                             : "bg-[#F5F5F7] text-zinc-800 hover:bg-[#EBECEF]"
@@ -354,7 +354,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                             isSelected
                               ? "text-white"
                               : item.highlight
-                              ? "text-[#FF5A00] font-semibold"
+                              ? "text-[#E85102] font-semibold"
                               : "text-zinc-400 dark:text-zinc-500"
                           }`}
                         >
@@ -365,7 +365,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                             isSelected
                               ? "text-white"
                               : item.highlight
-                              ? "text-[#FF5A00]"
+                              ? "text-[#E85102]"
                               : "text-zinc-900 dark:text-zinc-200"
                           }`}
                         >
@@ -397,7 +397,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                         onClick={() => setSelectedTime(isSelected ? "" : t.time)}
                         className={`py-2.5 px-2 rounded-full flex items-center justify-center gap-1 transition-all text-xs font-semibold cursor-pointer ${
                           isSelected
-                            ? "bg-[#FF5A00] text-white font-bold shadow-md shadow-[#FF5A00]/25"
+                            ? "bg-[#E85102] text-white font-bold shadow-md shadow-[#E85102]/25"
                             : isDark
                             ? "bg-[#2A2A2A] hover:bg-[#333333]"
                             : "bg-[#F5F5F7] hover:bg-[#EBECEF]"
@@ -411,7 +411,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                             isSelected
                               ? "text-white"
                               : t.highlight
-                              ? "text-[#FF5A00] font-bold"
+                              ? "text-[#E85102] font-bold"
                               : "text-zinc-700 dark:text-zinc-300"
                           }
                         >
@@ -437,7 +437,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                 }}
                 className={`w-full py-3.5 sm:py-4 rounded-full font-bold text-sm sm:text-base text-center transition-all ${
                   selectedDate && selectedTime
-                    ? "bg-[#FF5A00] hover:bg-[#E05000] text-white shadow-lg shadow-[#FF5A00]/25 active:scale-[0.99] cursor-pointer"
+                    ? "bg-[#E85102] hover:bg-[#C94600] text-white shadow-lg shadow-[#E85102]/25 active:scale-[0.99] cursor-pointer"
                     : isDark
                     ? "bg-[#382218] text-white/40 cursor-not-allowed"
                     : "bg-[#FFD6BF] text-white cursor-not-allowed"
@@ -480,7 +480,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                       onClick={() => setSelectedGuestTier(idx)}
                       className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
                         isSelected
-                          ? "border-[#FF5A00] bg-[#FFF9F6] dark:bg-[#FF5A00]/10"
+                          ? "border-[#E85102] bg-[#FFF9F6] dark:bg-[#E85102]/10"
                           : isDark
                           ? "border-white/10 bg-[#252528] hover:border-white/20"
                           : "border-zinc-200 bg-white hover:border-zinc-300"
@@ -496,7 +496,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                       <div
                         className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
                           isSelected
-                            ? "bg-[#FF5A00] text-white shadow-sm"
+                            ? "bg-[#E85102] text-white shadow-sm"
                             : "border border-zinc-300 dark:border-white/20"
                         }`}
                       >
@@ -516,7 +516,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
             >
               <button
                 onClick={() => setCurrentStep(3)}
-                className="w-full py-3.5 sm:py-4 rounded-full bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-sm sm:text-base text-center transition-all shadow-lg shadow-[#FF5A00]/25 active:scale-[0.99] cursor-pointer"
+                className="w-full py-3.5 sm:py-4 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-sm sm:text-base text-center transition-all shadow-lg shadow-[#E85102]/25 active:scale-[0.99] cursor-pointer"
               >
                 Keyingisi
               </button>
@@ -548,7 +548,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                   onClick={() => setCateringMode("custom")}
                   className={`p-3.5 sm:p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
                     cateringMode === "custom"
-                      ? "border-[#FF5A00] bg-[#FFF9F6] dark:bg-[#FF5A00]/10"
+                      ? "border-[#E85102] bg-[#FFF9F6] dark:bg-[#E85102]/10"
                       : isDark
                       ? "border-white/10 bg-[#252528] hover:border-white/20"
                       : "border-zinc-200 bg-white hover:border-zinc-300"
@@ -563,7 +563,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                   <div
                     className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
                       cateringMode === "custom"
-                        ? "bg-[#FF5A00] text-white shadow-sm"
+                        ? "bg-[#E85102] text-white shadow-sm"
                         : "border border-zinc-300 dark:border-white/20"
                     }`}
                   >
@@ -576,7 +576,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                   onClick={() => comingSoon("Tayyor dasturxon paketlari")}
                   className={`p-3.5 sm:p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
                     cateringMode === "ready"
-                      ? "border-[#FF5A00] bg-[#FFF9F6] dark:bg-[#FF5A00]/10"
+                      ? "border-[#E85102] bg-[#FFF9F6] dark:bg-[#E85102]/10"
                       : isDark
                       ? "border-white/10 bg-[#252528] hover:border-white/20"
                       : "border-zinc-200 bg-white hover:border-zinc-300"
@@ -591,7 +591,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                   <div
                     className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
                       cateringMode === "ready"
-                        ? "bg-[#FF5A00] text-white shadow-sm"
+                        ? "bg-[#E85102] text-white shadow-sm"
                         : "border border-zinc-300 dark:border-white/20"
                     }`}
                   >
@@ -603,7 +603,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               {/* Qo'shimcha xizmatlar (API) */}
               <div className="flex items-center justify-between pt-1">
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white">Qo&apos;shimcha xizmatlar</h3>
-                <span className="text-xs font-semibold text-[#FF5A00] bg-[#FFF2EA] dark:bg-[#FF5A00]/10 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-semibold text-[#E85102] bg-[#FFF2EA] dark:bg-[#E85102]/10 px-2.5 py-1 rounded-full">
                   Ixtiyoriy
                 </span>
               </div>
@@ -611,7 +611,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               <div className="space-y-2.5">
                 {servicesQuery.state.status === "loading" && <div className="h-16 rounded-2xl bg-zinc-100 dark:bg-white/5 animate-pulse" />}
                 {servicesQuery.state.status === "error" && (
-                  <button type="button" onClick={servicesQuery.retry} className="text-xs font-bold text-[#FF5A00]">
+                  <button type="button" onClick={servicesQuery.retry} className="text-xs font-bold text-[#E85102]">
                     Xizmatlarni yuklab bo&apos;lmadi. Qayta urinish
                   </button>
                 )}
@@ -629,13 +629,13 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                       onClick={() => toggleService(item.id)}
                       className={`w-full p-3 rounded-2xl border flex items-center gap-3.5 text-left transition-all shadow-[0_1px_4px_rgba(0,0,0,0.02)] ${
                         isSelected
-                          ? "border-[#FF5A00] bg-[#FFF9F6] dark:bg-[#FF5A00]/10"
+                          ? "border-[#E85102] bg-[#FFF9F6] dark:bg-[#E85102]/10"
                           : isDark
                           ? "bg-[#252528] border-white/5 text-white"
                           : "bg-white border-zinc-100 text-zinc-900"
                       }`}
                     >
-                      <div className="w-10 h-10 rounded-2xl bg-[#FFF5EF] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-2xl bg-[#FFF5EF] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center shrink-0">
                         {isSelected ? <Check className="w-5 h-5 stroke-[2.5]" /> : <Sparkles className="w-5 h-5 stroke-[2.2]" />}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -663,7 +663,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
 
               <button
                 onClick={() => setCurrentStep(4)}
-                className="w-full py-3.5 sm:py-4 rounded-full bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-sm sm:text-base text-center transition-all shadow-lg shadow-[#FF5A00]/25 active:scale-[0.99] cursor-pointer"
+                className="w-full py-3.5 sm:py-4 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-sm sm:text-base text-center transition-all shadow-lg shadow-[#E85102]/25 active:scale-[0.99] cursor-pointer"
               >
                 Keyingisi
               </button>
@@ -689,8 +689,8 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                 {/* Card Details */}
                 <div className="p-4 space-y-2">
                   {/* Selected Venue Tag */}
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#FF5A00]">
-                    <CheckCircle className="w-3.5 h-3.5 fill-[#FF5A00] text-white" />
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#E85102]">
+                    <CheckCircle className="w-3.5 h-3.5 fill-[#E85102] text-white" />
                     <span>Tanlangan to‘yxona</span>
                   </div>
 
@@ -701,7 +701,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
 
                   {/* Spec Row 1: Guests */}
                   <div className="flex items-center gap-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center shrink-0">
+                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center shrink-0">
                       <Users className="w-3.5 h-3.5" />
                     </div>
                     <span>{guestCount} mehmon · {dateText}, {selectedTime}–{endTime}</span>
@@ -709,7 +709,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
 
                   {/* Spec Row 2: Catering */}
                   <div className="flex items-center gap-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center shrink-0">
+                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center shrink-0">
                       <Utensils className="w-3.5 h-3.5" />
                     </div>
                     <span>
@@ -734,7 +734,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               {/* Section: Detailed Price Report */}
               <div className="space-y-2 pt-1">
                 <div className="flex items-center gap-2 text-sm font-bold text-zinc-900 dark:text-white">
-                  <Receipt className="w-4 h-4 text-[#FF5A00]" />
+                  <Receipt className="w-4 h-4 text-[#E85102]" />
                   <span>Tanlangan xizmatlar</span>
                 </div>
 
@@ -754,7 +754,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
 
                   {/* Yakuniy summa backend'da hisoblanadi */}
                   <div className="pt-0.5">
-                    <h4 className="text-xs font-bold text-[#FF5A00]">Yakuniy summa</h4>
+                    <h4 className="text-xs font-bold text-[#E85102]">Yakuniy summa</h4>
                     <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5 font-normal">
                       To‘yxona bron so‘rovini ko‘rib chiqqach hisoblaydi va tasdiqlaydi.
                     </p>
@@ -783,7 +783,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
                     placeholder="+998 90 123 45 67"
-                    className="w-full px-4 py-3 rounded-2xl border border-zinc-200 dark:border-white/10 bg-transparent text-sm font-semibold outline-none focus:border-[#FF5A00]"
+                    className="w-full px-4 py-3 rounded-2xl border border-zinc-200 dark:border-white/10 bg-transparent text-sm font-semibold outline-none focus:border-[#E85102]"
                   />
                 </div>
               )}
@@ -795,7 +795,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               <button
                 onClick={submitBooking}
                 disabled={submitting}
-                className="w-full py-4 rounded-full bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-base text-center transition-all shadow-lg shadow-[#FF5A00]/25 active:scale-[0.99] cursor-pointer"
+                className="w-full py-4 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-base text-center transition-all shadow-lg shadow-[#E85102]/25 active:scale-[0.99] cursor-pointer"
               >
                 {submitting ? "Yuborilmoqda..." : submitError ? "Qayta urinish" : "Band qilish"}
               </button>
@@ -818,21 +818,21 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                 </div>
 
                 <div className="p-4 space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#FF5A00]">
-                    <CheckCircle className="w-3.5 h-3.5 fill-[#FF5A00] text-white" />
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#E85102]">
+                    <CheckCircle className="w-3.5 h-3.5 fill-[#E85102] text-white" />
                     <span>Bron yuborildi</span>
                   </div>
                   <h3 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
                     {venue.venue.name}
                   </h3>
                   <div className="flex items-center gap-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center shrink-0">
+                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center shrink-0">
                       <Users className="w-3.5 h-3.5" />
                     </div>
                     <span>{booking ? `${booking.guests_count} mehmon` : ""}</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center shrink-0">
+                    <div className="w-5 h-5 rounded-md bg-[#FFF5EF] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center shrink-0">
                       <Utensils className="w-3.5 h-3.5" />
                     </div>
                     <span>
@@ -843,7 +843,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               </div>
 
               {Number(booking?.deposit_amount ?? 0) > 0 && (
-                <p className="rounded-2xl bg-[#FFF2EA] dark:bg-[#FF5A00]/10 p-3 text-xs font-semibold text-[#C24400] dark:text-[#FF8A4C]">
+                <p className="rounded-2xl bg-[#FFF2EA] dark:bg-[#E85102]/10 p-3 text-xs font-semibold text-[#E85102] dark:text-[#E85102]">
                   Depozit: {formatSom(booking?.deposit_amount ?? 0)} — to‘lov kutilmoqda. Onlayn to‘lov tez orada qo‘shiladi.
                 </p>
               )}
@@ -851,7 +851,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               {/* Section: Buyurtma tafsilotlari (Figma Screen 7) */}
               <div className="space-y-2.5 pt-1">
                 <div className="flex items-center gap-2 text-sm font-bold text-zinc-900 dark:text-white">
-                  <FileText className="w-4 h-4 text-[#FF5A00]" />
+                  <FileText className="w-4 h-4 text-[#E85102]" />
                   <span>Buyurtma tafsilotlari</span>
                 </div>
 
@@ -883,8 +883,8 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
                   <div className="h-px bg-zinc-100 dark:bg-white/10 my-1" />
 
                   <div className="flex justify-between items-center pt-1 text-sm font-bold">
-                    <span className="text-[#FF5A00]">Jami summa</span>
-                    <span className="text-[#FF5A00] font-black text-base">{formatSom(booking?.total_amount ?? 0)}</span>
+                    <span className="text-[#E85102]">Jami summa</span>
+                    <span className="text-[#E85102] font-black text-base">{formatSom(booking?.total_amount ?? 0)}</span>
                   </div>
                 </div>
               </div>
@@ -900,7 +900,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
             >
               <button
                 onClick={() => router.push(booking ? `/payment/${booking.id}` : "/tickets")}
-                className="w-full py-4 rounded-full bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-base shadow-lg shadow-[#FF5A00]/25 active:scale-95 transition-all cursor-pointer"
+                className="w-full py-4 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-base shadow-lg shadow-[#E85102]/25 active:scale-95 transition-all cursor-pointer"
               >
                 Chiptani ko‘rish
               </button>

@@ -100,7 +100,7 @@ export default function PackageGallery({
                 <span
                   className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-[13px] font-extrabold shadow-[0_2px_8px_rgba(0,0,0,0.45)] ${
                     isActive
-                      ? "bg-[#1C1410] text-white ring-[3px] ring-[#FF5A00]"
+                      ? "bg-[#1C1410] text-white ring-[3px] ring-[#E85102]"
                       : "bg-white text-[#1C1410]"
                   }`}
                 >
@@ -187,7 +187,7 @@ export default function PackageGallery({
               aria-label={`${i + 1}-rasm`}
               aria-current={i === index}
               className={`relative w-14 h-14 shrink-0 rounded-[10px] overflow-hidden bg-[#2A2522] cursor-pointer ${
-                i === index ? "outline-2 outline-solid outline-[#FF5A00] -outline-offset-2" : ""
+                i === index ? "outline-2 outline-solid outline-[#E85102] -outline-offset-2" : ""
               }`}
             >
               <Image src={thumb.src} alt="" fill sizes="56px" className={`object-cover ${i === index ? "" : "opacity-55"}`} />
@@ -205,7 +205,7 @@ export default function PackageGallery({
         <button
           type="button"
           onClick={onSelectPackage}
-          className="w-full h-14 rounded-2xl bg-[#FF5A00] hover:bg-[#E05000] text-white text-base font-bold active:scale-[0.99] transition-all cursor-pointer"
+          className="w-full h-14 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white text-base font-bold active:scale-[0.99] transition-all cursor-pointer"
         >
           {pkg.name} paketini tanlash
         </button>

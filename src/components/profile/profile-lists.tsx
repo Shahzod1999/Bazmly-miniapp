@@ -16,7 +16,7 @@ function StateMessage({ dark, text, onRetry }: { dark: boolean; text: string; on
     <div className={`py-10 text-center space-y-3 rounded-3xl border border-dashed ${dark ? "border-white/10" : "border-zinc-200"}`}>
       <p className={`text-sm font-semibold ${dark ? "text-white/60" : "text-zinc-500"}`}>{text}</p>
       {onRetry && (
-        <button type="button" onClick={onRetry} className="px-4 py-2.5 rounded-xl bg-[#FF6B00] text-white text-xs font-bold">
+        <button type="button" onClick={onRetry} className="px-4 py-2.5 rounded-xl bg-[#E85102] text-white text-xs font-bold">
           Qayta urinish
         </button>
       )}
@@ -39,7 +39,7 @@ function NotificationCard({ n, dark }: { n: NotificationRead; dark: boolean }) {
   return (
     <div
       className={`w-full border rounded-3xl p-5 flex items-start gap-4 relative shadow-lg ${
-        unread ? (dark ? "bg-[#221A15] border-white/5" : "bg-orange-50/50 border-orange-100") : dark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+        unread ? (dark ? "bg-[#221A15] border-white/5" : "bg-[#E85102]/5 border-[#E85102]/15") : dark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
       }`}
     >
       {unread && <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#E53E3E]" aria-label="O'qilmagan" />}
@@ -79,7 +79,7 @@ function HistoryCard({ booking, dark }: { booking: BookingListItem; dark: boolea
     <Link
       href={`/payment/${booking.id}`}
       className={`w-full rounded-3xl p-5 flex flex-col gap-4 transition-all duration-300 ${
-        dark ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10" : "bg-white border border-[#FF6B00] shadow-md hover:shadow-lg hover:border-primary/80"
+        dark ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10" : "bg-white border border-[#E85102] shadow-md hover:shadow-lg hover:border-primary/80"
       }`}
     >
       <div className="space-y-1 pr-1 w-full min-w-0">
@@ -124,12 +124,12 @@ function HistoryCard({ booking, dark }: { booking: BookingListItem; dark: boolea
       {(booking.status === "pending" || booking.status === "confirmed") && (
         <div
           className={`w-full rounded-2xl py-3.5 px-4 flex items-center justify-between text-sm font-bold ${
-            dark ? "bg-[#FF6B00] text-white shadow-md" : "bg-white border border-[#FF6B00] text-[#FF6B00]"
+            dark ? "bg-[#E85102] text-white shadow-md" : "bg-white border border-[#E85102] text-[#E85102]"
           }`}
         >
-          <span className={dark ? "text-white" : "text-[#FF6B00] opacity-80 font-medium"}>Sana:</span>
+          <span className={dark ? "text-white" : "text-[#E85102] opacity-80 font-medium"}>Sana:</span>
           <div className="flex items-center gap-2">
-            <Clock className={`h-4.5 w-4.5 shrink-0 ${dark ? "text-white" : "text-[#FF6B00]"}`} />
+            <Clock className={`h-4.5 w-4.5 shrink-0 ${dark ? "text-white" : "text-[#E85102]"}`} />
             <span>
               {formatDate(booking.booking_date)}, {formatTime(booking.start_time)}
             </span>

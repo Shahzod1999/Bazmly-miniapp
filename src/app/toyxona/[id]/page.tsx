@@ -103,7 +103,7 @@ export default function ToyxonaDetailPage() {
             Orqaga
           </button>
           {detailQuery.state.status === "error" && (
-            <button type="button" onClick={detailQuery.retry} className="px-5 py-3 rounded-2xl bg-[#FF5A00] text-white text-sm font-bold">
+            <button type="button" onClick={detailQuery.retry} className="px-5 py-3 rounded-2xl bg-[#E85102] text-white text-sm font-bold">
               Qayta urinish
             </button>
           )}
@@ -181,7 +181,7 @@ export default function ToyxonaDetailPage() {
               aria-label="Saqlash"
             >
               <Bookmark
-                className={`w-5 h-5 ${isSaved ? "fill-[#FF5A00] text-[#FF5A00]" : "text-white"}`}
+                className={`w-5 h-5 ${isSaved ? "fill-[#E85102] text-[#E85102]" : "text-white"}`}
               />
             </button>
           </div>
@@ -199,7 +199,7 @@ export default function ToyxonaDetailPage() {
                   onClick={() => setActiveImage(thumb)}
                   className={`w-11 h-11 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer shadow-sm ${
                     isSel
-                      ? "border-[#FF5A00] scale-105 opacity-100 ring-2 ring-[#FF5A00]/40"
+                      ? "border-[#E85102] scale-105 opacity-100 ring-2 ring-[#E85102]/40"
                       : "border-white/80 opacity-85 hover:opacity-100"
                   }`}
                 >
@@ -292,7 +292,7 @@ export default function ToyxonaDetailPage() {
           </div>
           <button
             onClick={openBooking}
-            className="px-6 py-3.5 rounded-2xl bg-[#FF5A00] hover:bg-[#E05000] text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-[#FF5A00]/25 cursor-pointer"
+            className="px-6 py-3.5 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-[#E85102]/25 cursor-pointer"
           >
             <span>Band qilish</span>
             <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -316,7 +316,7 @@ export default function ToyxonaDetailPage() {
               : "bg-white border-zinc-100 text-zinc-800 shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
           }`}
         >
-          <div className="w-16 h-16 rounded-xl shrink-0 bg-[#FFF4ED] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center" aria-hidden="true">
+          <div className="w-16 h-16 rounded-xl shrink-0 bg-[#FFF4ED] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center" aria-hidden="true">
             <Utensils className="w-7 h-7" />
           </div>
           <div className="flex-1 min-w-0">
@@ -325,7 +325,7 @@ export default function ToyxonaDetailPage() {
               Tez orada
             </span>
           </div>
-          <ArrowRight className="w-4 h-4 text-[#FF5A00] stroke-[2.5] shrink-0" />
+          <ArrowRight className="w-4 h-4 text-[#E85102] stroke-[2.5] shrink-0" />
         </Link>
 
         {/* Row 6: Amenities Grid (6 cards) */}
@@ -339,7 +339,7 @@ export default function ToyxonaDetailPage() {
                   : "bg-white border-zinc-100 text-zinc-800 shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
               }`}
             >
-              <div className="w-10 h-10 rounded-2xl bg-[#FFF4ED] dark:bg-[#FF5A00]/10 text-[#FF5A00] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFF4ED] dark:bg-[#E85102]/10 text-[#E85102] flex items-center justify-center shrink-0">
                 {item.type === "parking" && <span className="font-extrabold text-sm">P</span>}
                 {item.type === "audio" && (
                   <svg

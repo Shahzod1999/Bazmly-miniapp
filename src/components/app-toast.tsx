@@ -47,7 +47,7 @@ export default function AppToast() {
       key={toast.id}
       role={toast.tone === "error" ? "alert" : "status"}
       className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-[999] px-4 py-3 rounded-2xl text-white text-xs font-bold shadow-2xl flex items-center gap-2 border border-white/20 animate-fade-in max-w-[90vw] ${
-        toast.tone === "error" ? "bg-red-600" : "bg-[#FF6B00]"
+        toast.tone === "error" ? "bg-red-600" : "bg-[#E85102]"
       }`}
     >
       <Icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />

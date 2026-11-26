@@ -24,7 +24,7 @@ export default function PackageCompareSheet({
   const highlightIndex = packages.findIndex((p) => p.popular);
   const highlighted = highlightIndex >= 0 ? packages[highlightIndex] : null;
 
-  const cellBg = (i: number) => (i === highlightIndex ? "bg-[#FFF2EA] dark:bg-[#FF5A00]/10" : "");
+  const cellBg = (i: number) => (i === highlightIndex ? "bg-[#FFF2EA] dark:bg-[#E85102]/10" : "");
 
   return (
     <div className="fixed inset-0 z-[85] max-w-md mx-auto animate-fade-in">
@@ -122,7 +122,7 @@ export default function PackageCompareSheet({
             <button
               type="button"
               onClick={() => onSelectPackage(highlighted.id)}
-              className="w-full h-14 rounded-2xl bg-[#FF5A00] hover:bg-[#E05000] text-white text-base font-bold active:scale-[0.99] transition-all cursor-pointer"
+              className="w-full h-14 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white text-base font-bold active:scale-[0.99] transition-all cursor-pointer"
             >
               {highlighted.name} paketni tanlash
             </button>
