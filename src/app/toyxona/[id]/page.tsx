@@ -143,7 +143,7 @@ export default function ToyxonaDetailPage() {
     >
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[80] px-4 py-2.5 rounded-2xl bg-zinc-900/90 text-white text-xs font-semibold shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md animate-fade-in">
+        <div className="fixed top-[calc(var(--tg-safe-top)+24px)] left-1/2 transform -translate-x-1/2 z-[80] px-4 py-2.5 rounded-2xl bg-zinc-900/90 text-white text-xs font-semibold shadow-2xl flex items-center gap-2 border border-white/10 backdrop-blur-md animate-fade-in">
           <CheckCircle className="w-4 h-4 text-[#16A34A] shrink-0" />
           <span>{toastMessage}</span>
         </div>

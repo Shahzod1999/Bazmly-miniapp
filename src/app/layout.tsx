@@ -56,7 +56,9 @@ export default function RootLayout({
             <SplashScreen />
             
             {/* Centered Mobile-only Device Mock Frame */}
-            <div className="w-full max-w-md min-h-screen bg-[var(--background)] flex flex-col shadow-2xl relative border-x border-brand-light-border dark:border-brand-dark-border">
+            <div className="w-full max-w-md min-h-screen bg-[var(--background)] flex flex-col shadow-2xl relative pt-[var(--tg-safe-top)] border-x border-brand-light-border dark:border-brand-dark-border">
+              {/* Telegram fullscreen: tizim tugmalari ostidagi zonani yopib turadi (brauzerda balandligi 0) */}
+              <div aria-hidden="true" className="fixed top-0 inset-x-0 z-40 max-w-md mx-auto h-[var(--tg-safe-top)] bg-[var(--background)] pointer-events-none" />
               <AppGate>
                 {children}
                 <BottomNav />

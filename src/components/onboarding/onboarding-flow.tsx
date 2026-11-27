@@ -80,7 +80,7 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
   return (
     <div className="fixed inset-0 z-[60] max-w-md mx-auto bg-black text-white flex flex-col overflow-hidden">
       <Image src="/images/topo-bg.webp" alt="" fill sizes="448px" className="object-cover opacity-40 pointer-events-none" aria-hidden="true" />
-      <div className="relative w-full aspect-[786/725] shrink-0">
+      <div className="relative w-full aspect-[786/725] shrink-0 mt-[var(--tg-safe-top)]">
         <Image src="/images/onboarding.webp" alt="" fill priority sizes="448px" className="object-cover" />
       </div>
       <div className="relative flex-1 flex flex-col justify-between px-5 pt-8 pb-[calc(var(--tg-safe-bottom)+24px)]">

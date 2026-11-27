@@ -30,14 +30,14 @@ export default function BottomNav() {
     const parentFrame = document.getElementById("global-bottom-nav")?.parentElement;
     if (parentFrame) {
       if (isHiddenRoute) {
-        parentFrame.classList.remove("pb-20", "pb-16");
+        parentFrame.classList.remove("pb-20", "pb-16", "pb-[calc(var(--tg-safe-bottom)+80px)]");
       } else {
-        parentFrame.classList.add("pb-20");
+        parentFrame.classList.add("pb-[calc(var(--tg-safe-bottom)+80px)]");
       }
     }
     return () => {
       if (parentFrame) {
-        parentFrame.classList.remove("pb-20", "pb-16");
+        parentFrame.classList.remove("pb-20", "pb-16", "pb-[calc(var(--tg-safe-bottom)+80px)]");
       }
     };
   }, [pathname, isHiddenRoute, mounted]);
@@ -132,8 +132,14 @@ export default function BottomNav() {
   return (
     <>
       {/* Dynamic Sliding Bottom Bar Container */}
-      <div id="global-bottom-nav" className="fixed bottom-0 left-0 right-0 z-50 h-[85px] max-w-md mx-auto transition-all duration-300">
+      <div id="global-bottom-nav" className="fixed bottom-[var(--tg-safe-bottom)] left-0 right-0 z-50 h-[85px] max-w-md mx-auto transition-all duration-300">
         
+        {/* iPhone home-indicator zonasi: panel fonini pastgacha davom ettiradi (panel bilan birga yashiriladi) */}
+        <div
+          aria-hidden="true"
+          className={`absolute top-full left-0 right-0 h-[var(--tg-safe-bottom)] ${isDark ? "bg-[#333333]" : "bg-white"}`}
+        />
+
         {/* Dynamic Curved SVG Background with sliding notch */}
         <svg
           className={`absolute inset-0 w-full h-[95px] pointer-events-none transition-all duration-300 ${

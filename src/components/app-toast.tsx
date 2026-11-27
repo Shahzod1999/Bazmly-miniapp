@@ -46,7 +46,7 @@ export default function AppToast() {
     <div
       key={toast.id}
       role={toast.tone === "error" ? "alert" : "status"}
-      className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-[999] px-4 py-3 rounded-2xl text-white text-xs font-bold shadow-2xl flex items-center gap-2 border border-white/20 animate-fade-in max-w-[90vw] ${
+      className={`fixed top-[calc(var(--tg-safe-top)+80px)] left-1/2 transform -translate-x-1/2 z-[999] px-4 py-3 rounded-2xl text-white text-xs font-bold shadow-2xl flex items-center gap-2 border border-white/20 animate-fade-in max-w-[90vw] ${
         toast.tone === "error" ? "bg-red-600" : "bg-[#E85102]"
       }`}
     >

@@ -7,16 +7,13 @@ import {
   Search,
   MapPin,
   Compass,
-  Ticket,
   ChevronLeft,
   X,
   ChevronDown,
-  Sun,
-  Moon,
   Loader2,
   Check,
   Globe,
-  Bell,
+  BookmarkCheck,
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,13 +23,11 @@ import {
   venueService,
   geoService,
   userService,
-  engagementService,
   VenueListItem,
   UserAddressRead,
   VenueTypeSlug,
   RegionRead,
   DistrictRead,
-  NotificationRead,
 } from "@/lib/api";
 
 
@@ -50,12 +45,8 @@ export default function WelcomePage() {
   const [activeTab, setActiveTab] = useState<"Umumiy" | "Restoranlar" | "To'yxonalar">("Umumiy");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
 
-  // Toyxona Booking Flow Modal State
-  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationRead[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   // API dynamic states
   const [venues, setVenues] = useState<VenueListItem[]>([]);
@@ -225,23 +216,11 @@ export default function WelcomePage() {
     }
   }, [isAuthenticated, user]);
 
-  // Notifications fetch
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      engagementService.getUnreadNotificationsCount()
-        .then((cnt) => setUnreadCount(cnt || 0))
-        .catch(() => {});
-      engagementService.getNotifications(10)
-        .then((res) => setNotifications(res.items || []))
-        .catch(() => {});
-    }
-  }, [isAuthenticated, user]);
-
-  // Hide global bottom bar when Notifications or Sheets are open
+  // Hide global bottom bar when sheets are open
   useEffect(() => {
     const bottomNav = document.getElementById("global-bottom-nav");
     if (bottomNav) {
-      if (showNotificationsModal || showPartySheet || showLocationSearch) {
+      if (showPartySheet || showLocationSearch) {
         bottomNav.style.transform = "translateY(150%)";
         bottomNav.style.opacity = "0";
         bottomNav.style.pointerEvents = "none";
@@ -258,7 +237,7 @@ export default function WelcomePage() {
         bottomNav.style.pointerEvents = "auto";
       }
     };
-  }, [showNotificationsModal, showPartySheet, showLocationSearch]);
+  }, [showPartySheet, showLocationSearch]);
 
   // Load venues on filter changes
   useEffect(() => {
@@ -379,72 +358,34 @@ export default function WelcomePage() {
     <div className="flex flex-col flex-1 bg-[var(--background)] text-foreground transition-colors duration-300 relative">
         {/* ==================== ASOSIY (HOME) VIEW ==================== */}
         <div className="flex flex-col flex-1 min-h-screen bg-white dark:bg-[var(--background)]">
-          {/* Header Row */}
+          {/* Header Row (Figma: salomlashish + bronlarim belgisi) */}
           <div
-            className={`flex items-center justify-between px-6 transition-all duration-200 ${
-              theme === "dark" ? "py-5 border-b border-brand-dark-border" : "pt-6 pb-2"
+            className={`flex items-center justify-between gap-3 px-5 transition-all duration-200 ${
+              theme === "dark" ? "py-5 border-b border-brand-dark-border" : "pt-5 pb-1"
             }`}
           >
-            <div>
-              <h1
-                className={`text-xl font-extrabold tracking-tight ${
-                  theme === "dark" ? "text-white" : "text-zinc-900"
-                }`}
-              >
-                Hayrli kun! {displayName}
-              </h1>
-            </div>
+            <h1
+              className={`text-2xl font-bold tracking-tight truncate ${
+                theme === "dark" ? "text-white" : "text-zinc-900"
+              }`}
+            >
+              Hayrli kun! {displayName}
+            </h1>
 
-            <div className="flex items-center gap-2">
-              {/* Notifications Button */}
-              <button
-                type="button"
-                onClick={() => setShowNotificationsModal(true)}
-                className={`p-2.5 rounded-2xl border transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm relative ${
-                  theme === "dark"
-                    ? "bg-[#393939] border-white/5 text-white/80 hover:text-white"
-                    : "bg-white border-zinc-200 text-zinc-800 hover:text-primary"
-                }`}
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[var(--background)] animate-pulse" />
-                )}
-              </button>
-
-              {/* Theme Toggle Button */}
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className={`p-2.5 rounded-2xl transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm ${
-                  theme === "dark"
-                    ? "bg-[#393939] border border-white/5 text-white/80"
-                    : "bg-white border border-zinc-200 text-zinc-800"
-                }`}
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? <Sun className="h-5 w-5 text-[#E85102]" /> : <Moon className="h-5 w-5 text-zinc-600" />}
-              </button>
-
-              {/* Vouchers Link */}
-              <Link
-                href="/tickets"
-                className={`p-2.5 rounded-2xl border transition-all active:scale-95 flex items-center justify-center shadow-sm ${
-                  theme === "dark"
-                    ? "bg-[#393939] border-white/5 text-white/80 hover:text-white"
-                    : "bg-white border-zinc-200 text-zinc-800 hover:text-primary"
-                }`}
-                aria-label="Vouchers"
-              >
-                <Ticket className="h-5 w-5" />
-              </Link>
-            </div>
+            <Link
+              href="/tickets"
+              className={`w-10 h-10 -mr-2 shrink-0 rounded-full flex items-center justify-center transition-all active:scale-95 ${
+                theme === "dark" ? "text-white/80 hover:text-white" : "text-zinc-900 hover:text-primary"
+              }`}
+              aria-label="Bronlarim"
+            >
+              <BookmarkCheck className="h-7 w-7 stroke-[1.6]" />
+            </Link>
           </div>
 
           {/* Main Scrollable Area */}
           <main
-            className={`flex-1 overflow-y-auto px-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left ${
+            className={`flex-1 overflow-y-auto px-5 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left ${
               theme === "dark" ? "py-6" : "py-4"
             }`}
           >
@@ -452,7 +393,7 @@ export default function WelcomePage() {
             <div className="flex items-center gap-3">
               {/* Search Field */}
               <div
-                className={`flex-1 h-[52px] relative flex items-center rounded-full overflow-hidden transition-all duration-300 ${
+                className={`flex-1 h-11 relative flex items-center rounded-full overflow-hidden transition-all duration-300 ${
                   theme === "dark"
                     ? "bg-[#252525] border border-white/5 focus-within:border-[#E85102]/50"
                     : "bg-[#F2F4F7] border border-transparent focus-within:ring-2 focus-within:ring-[#E85102]/20"
@@ -466,7 +407,7 @@ export default function WelcomePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Qidirish"
-                  className={`w-full pl-3 pr-4 h-full bg-transparent text-[15px] sm:text-base font-normal outline-none ${
+                  className={`w-full pl-2.5 pr-4 h-full bg-transparent text-base font-normal outline-none ${
                     theme === "dark"
                       ? "text-white placeholder:text-zinc-500"
                       : "text-zinc-900 placeholder:text-[#717680]"
@@ -486,7 +427,7 @@ export default function WelcomePage() {
               <button
                 type="button"
                 onClick={() => setShowPartySheet(true)}
-                className={`w-[52px] h-[52px] rounded-[18px] bg-[#E85102] hover:bg-[#C94600] text-white shadow-sm shadow-[#E85102]/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer shrink-0 ${
+                className={`w-11 h-11 rounded-[14px] bg-[#E85102] hover:bg-[#C94600] text-white shadow-sm shadow-[#E85102]/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer shrink-0 ${
                   guestCountFilter ? "ring-2 ring-white ring-offset-1" : ""
                 }`}
                 aria-label="Filter"
@@ -549,7 +490,7 @@ export default function WelcomePage() {
 
 
             {/* Horizontal Tabs / Pills */}
-            <div className="flex w-full gap-2.5 pb-1 overflow-x-auto scrollbar-none">
+            <div className="flex w-full gap-3 pb-1 -mr-5 pr-5 overflow-x-auto scrollbar-none">
               {horizontalTabs.map((tab) => {
                 const isActive = activeTab === tab;
                 return (
@@ -557,11 +498,11 @@ export default function WelcomePage() {
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`flex-1 text-center py-2.5 px-5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
+                    className={`shrink-0 min-w-[44%] h-10 text-center px-5 rounded-full text-base font-medium whitespace-nowrap transition-all duration-200 border ${
                       isActive
                         ? theme === "dark"
                           ? "bg-primary text-white border-primary shadow-lg shadow-primary/10"
-                          : "bg-primary text-white border-primary shadow-md"
+                          : "bg-primary text-white border-primary"
                         : theme === "dark"
                         ? "bg-[#393939] border-white/5 text-white/60 hover:text-white"
                         : "bg-white border-[#E85102] text-zinc-900 hover:bg-[#E85102]/5"
@@ -577,7 +518,7 @@ export default function WelcomePage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center pr-1">
                 <h2
-                  className={`text-base font-extrabold tracking-tight ${
+                  className={`text-xl font-bold tracking-tight ${
                     theme === "dark" ? "text-white" : "text-zinc-900"
                   }`}
                 >
@@ -586,7 +527,7 @@ export default function WelcomePage() {
                 <button
                   type="button"
                   onClick={() => comingSoon("Aksiyalar")}
-                  className={`text-xs font-bold hover:underline transition-colors ${
+                  className={`text-sm font-medium hover:underline transition-colors ${
                     theme === "dark" ? "text-white/40" : "text-[#E85102]"
                   }`}
                 >
@@ -600,7 +541,7 @@ export default function WelcomePage() {
                   type="button"
                   aria-label="Aksiyalar"
                   onClick={() => comingSoon("Aksiyalar")}
-                  className={`block w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border shadow-lg relative ${
+                  className={`block w-full aspect-[16/9] rounded-[20px] overflow-hidden border relative ${
                     theme === "dark" ? "bg-[#393939] border-white/5" : "bg-white border-zinc-100"
                   }`}
                 >
@@ -630,7 +571,7 @@ export default function WelcomePage() {
                 </button>
 
                 {/* Indicator Dots */}
-                <div className="flex justify-center items-center gap-1.5 pt-3">
+                <div className="flex justify-center items-center gap-2 pt-3">
                   {(activeTab === "To'yxonalar"
                     ? ["/images/home/tuyxona2.webp", "/images/home/tuyxona3.webp", "/images/home/tuyxona1.webp"]
                     : BANNERS
@@ -641,12 +582,12 @@ export default function WelcomePage() {
                         key={index}
                         type="button"
                         onClick={() => setCurrentSlide(index)}
-                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${
                           isActive
-                            ? "w-4 bg-primary"
+                            ? "bg-primary"
                             : theme === "dark"
-                            ? "w-1.5 bg-white/20 hover:bg-white/40"
-                            : "w-1.5 bg-zinc-300 hover:bg-zinc-400"
+                            ? "bg-white/20 hover:bg-white/40"
+                            : "bg-zinc-300 hover:bg-zinc-400"
                         }`}
                       />
                     );
@@ -659,16 +600,16 @@ export default function WelcomePage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center pr-1">
                 <h2
-                  className={`text-base font-extrabold tracking-tight flex items-center gap-2 ${
+                  className={`text-xl font-bold tracking-tight flex items-center gap-2 ${
                     theme === "dark" ? "text-white" : "text-zinc-900"
                   }`}
                 >
-                  <span>{activeTab === "To'yxonalar" ? "Top to'yxonalar" : "Top Restoranlar & Zallar"}</span>
+                  <span>{activeTab === "To'yxonalar" ? "Top to'yxonalar" : "Top Restoranlar"}</span>
                   {loadingVenues && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
                 </h2>
                 <Link
                   href="/feed"
-                  className={`text-xs font-bold hover:underline transition-colors ${
+                  className={`text-sm font-medium hover:underline transition-colors ${
                     theme === "dark" ? "text-white/40" : "text-[#E85102]"
                   }`}
                 >
@@ -771,7 +712,7 @@ export default function WelcomePage() {
 
       {/* General Toast */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[120] px-5 py-3 rounded-2xl bg-zinc-900 text-white text-xs font-bold shadow-2xl border border-white/10 animate-fade-in flex items-center gap-2">
+        <div className="fixed top-[calc(var(--tg-safe-top)+24px)] left-1/2 transform -translate-x-1/2 z-[120] px-5 py-3 rounded-2xl bg-zinc-900 text-white text-xs font-bold shadow-2xl border border-white/10 animate-fade-in flex items-center gap-2">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -898,7 +839,7 @@ export default function WelcomePage() {
 
       {/* Location Search Overlay */}
       {showLocationSearch && (
-        <div className="fixed inset-0 z-50 bg-brand-light-surface dark:bg-[var(--background)] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-foreground dark:text-white select-none">
+        <div className="fixed inset-0 z-50 bg-brand-light-surface dark:bg-[var(--background)] flex flex-col max-w-md mx-auto pt-[var(--tg-safe-top)] shadow-2xl animate-fade-in text-foreground dark:text-white select-none">
           {/* Header Row with Search Input */}
           <div className="flex items-center gap-3 px-6 py-5 border-b border-brand-light-border dark:border-white/5 bg-brand-light-surface dark:bg-[var(--background)] z-30 sticky top-0">
             <button
@@ -1088,104 +1029,6 @@ export default function WelcomePage() {
       )}
 
 
-
-      {/* ==================== NOTIFICATIONS DRAWER MODAL ==================== */}
-      {showNotificationsModal && (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in p-4">
-          <div className="absolute inset-0" onClick={() => setShowNotificationsModal(false)} />
-          <div
-            className={`w-full max-w-md rounded-[32px] p-6 flex flex-col gap-4 z-10 border relative text-left shadow-2xl ${
-              theme === "dark" ? "bg-[#2C2C2E] border-white/10" : "bg-white border-zinc-200"
-            }`}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                  <Bell className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-black text-base">Bildirishnomalar</h3>
-                  <p className="text-[11px] text-zinc-400 font-bold">Ilova xabarnomalari</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowNotificationsModal(false)}
-                className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Quick Actions */}
-            {notifications.length > 0 && (
-              <div className="flex justify-end pt-1">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await engagementService.markAllNotificationsRead();
-                      const readAt = new Date().toISOString();
-                      setUnreadCount(0);
-                      setNotifications((prev) => prev.map((n) => ({ ...n, read_at: n.read_at ?? readAt })));
-                      setToastMessage("Barcha bildirishnomalar o'qildi deb belgilandi");
-                    } catch {
-                      setToastMessage("Bildirishnomalarni belgilab bo'lmadi");
-                    }
-                  }}
-                  className="text-xs font-bold text-primary hover:underline cursor-pointer"
-                >
-                  Barchasini o&apos;qilgan qilish
-                </button>
-              </div>
-            )}
-
-            {/* Notifications List */}
-            <div className="max-h-72 overflow-y-auto space-y-2.5 py-1">
-              {notifications.length === 0 && (
-                <p className={`py-8 text-center text-xs font-medium ${theme === "dark" ? "text-zinc-400" : "text-zinc-500"}`}>
-                  Hozircha bildirishnomalar yo&apos;q
-                </p>
-              )}
-              {notifications.map((n) => {
-                const isRead = !!n.read_at;
-                return (
-                  <div
-                    key={n.id}
-                    className={`p-3.5 rounded-2xl border transition-all text-left ${
-                      !isRead
-                        ? "bg-primary/5 border-primary/20"
-                        : theme === "dark"
-                        ? "bg-white/5 border-white/5"
-                        : "bg-zinc-50 border-zinc-100"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <h5 className="font-extrabold text-xs text-foreground dark:text-white leading-tight">
-                        {n.title}
-                      </h5>
-                      {!isRead && (
-                        <span className="w-2 h-2 rounded-full bg-primary shrink-0 mt-0.5" />
-                      )}
-                    </div>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
-                      {n.body}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowNotificationsModal(false)}
-              className="w-full py-3.5 bg-zinc-100 dark:bg-white/10 hover:bg-zinc-200 text-foreground dark:text-white font-bold text-xs rounded-2xl transition-colors cursor-pointer mt-1"
-            >
-              Yopish
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Toyxona Booking Flow Modal */}
 

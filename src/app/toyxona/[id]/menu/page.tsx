@@ -25,7 +25,7 @@ export default function ToyxonaMenuPage() {
   return (
     <div className="w-full min-h-screen flex flex-col bg-[#F7F5F3] dark:bg-[#1E1E1E] text-zinc-900 dark:text-white select-none">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-[#1E1E1E] border-b border-zinc-100 dark:border-white/5">
+      <header className="sticky top-[var(--tg-safe-top)] z-30 bg-white dark:bg-[#1E1E1E] border-b border-zinc-100 dark:border-white/5">
         <div className="h-14 px-2 flex items-center gap-1">
           <button
             type="button"

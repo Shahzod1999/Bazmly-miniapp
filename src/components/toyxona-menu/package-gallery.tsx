@@ -56,7 +56,7 @@ export default function PackageGallery({
       role="dialog"
       aria-modal="true"
       aria-label={`${pkg.name} paketi rasmlari`}
-      className="fixed inset-0 z-[90] max-w-md mx-auto flex flex-col bg-[#110D0B] text-[#F5F1EE] animate-fade-in"
+      className="fixed inset-0 z-[90] max-w-md mx-auto flex flex-col pt-[var(--tg-safe-top)] bg-[#110D0B] text-[#F5F1EE] animate-fade-in"
     >
       {/* Yuqori panel */}
       <div className="shrink-0 h-14 px-2 flex items-center gap-1">

@@ -172,7 +172,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
   return (
     <div className="fixed inset-0 z-[70] flex justify-center bg-black/50 backdrop-blur-xs animate-fade-in">
       <div
-        className={`w-full max-w-md h-full overflow-hidden flex flex-col shadow-2xl relative transition-colors duration-300 ${
+        className={`w-full max-w-md h-full overflow-hidden flex flex-col shadow-2xl relative pt-[var(--tg-safe-top)] transition-colors duration-300 ${
           isDark ? "bg-[#1E1E1E] text-white" : "bg-white text-zinc-900"
         }`}
       >

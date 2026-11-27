@@ -378,7 +378,7 @@ export default function VenueDetailPage({ params }: Props) {
     >
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2 max-w-xs text-center border border-white/20">
+        <div className="fixed top-[calc(var(--tg-safe-top)+80px)] left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2 max-w-xs text-center border border-white/20">
           <CheckCircle className="h-4 w-4 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -727,7 +727,7 @@ export default function VenueDetailPage({ params }: Props) {
       {/* Reviews Screen Overlay */}
       {showReviews && (
         <div
-          className={`fixed inset-0 z-50 flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in overflow-hidden ${
+          className={`fixed inset-0 z-50 flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in overflow-hidden pt-[var(--tg-safe-top)] ${
             isDark ? "bg-[#333333] text-white" : "bg-white text-zinc-900"
           }`}
         >
