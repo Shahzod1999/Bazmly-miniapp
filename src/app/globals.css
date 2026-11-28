@@ -106,4 +106,6 @@ body {
   --tg-viewport-height: 100dvh;
   --tg-safe-top: 0px;
   --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Pastki menyu balandligi (Figma: iPhone'da 26 + 80px; home-indicator zonasini o'z ichiga oladi) */
+  --nav-height: calc(82px + max(var(--tg-safe-bottom) - 10px, 14px));
 }
