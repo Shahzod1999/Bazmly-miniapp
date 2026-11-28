@@ -10,23 +10,28 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/AuthContext";
 import {
+  ArchiveAddIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  LocationIcon,
+  MapIcon,
+  MinusIcon,
+  PercentSquareIcon,
+  PhoneIcon,
+  PlusIcon,
+  SearchIcon,
+  ShareIcon,
+  StarIcon,
+  VoucherBoldIcon,
+} from "@/components/nav-icons";
+import {
   ChevronLeft,
   ImageOff,
-  Share2,
-  Bookmark,
-  Percent,
   ChevronRight,
-  MapPin,
-  Search,
   Star,
   CheckCircle,
-  Wallet,
-  Plus,
-  Minus,
   X,
   Loader2,
-  Phone,
-  Users,
   MessageSquare,
   Send,
 } from "lucide-react";
@@ -384,219 +389,170 @@ export default function VenueDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* Cinematic Top Image Section */}
-      <div className="relative w-full h-[280px] bg-zinc-900 border-b border-white/5 overflow-hidden">
+      {/* Figma "Menu" (2693:7448): 281px rasm, yuqorida qora gradient, orqaga/ulashish/saqlash, pastda galereya */}
+      <div className="relative w-full h-[281px] bg-zinc-900 overflow-hidden">
         {activeImage ? (
-          <Image src={activeImage} alt={venueName} fill unoptimized priority sizes="448px" className="object-cover transition-transform duration-500" />
+          <Image src={activeImage} alt={venueName} fill unoptimized priority sizes="448px" className="object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/40" aria-hidden="true">
             <ImageOff className="h-10 w-10" />
           </div>
         )}
+        <div className="absolute inset-x-0 top-0 h-[75px] bg-gradient-to-b from-black/70 to-transparent pointer-events-none" />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70 pointer-events-none" />
-
-        {/* Floating Header Actions */}
-        <div className="absolute top-5 left-6 right-6 flex items-center justify-between z-20">
-          <button
-            onClick={() => router.back()}
-            className="p-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/90 hover:text-white transition-all active:scale-90 cursor-pointer"
-          >
-            <ChevronLeft className="h-5 w-5 stroke-[2.5]" />
+        <div className="absolute top-[calc(var(--tg-safe-top)+16px)] left-5 right-5 flex items-center justify-between z-20">
+          <button onClick={() => router.back()} aria-label="Orqaga" className="w-8 h-8 flex items-center justify-center text-white active:scale-90 transition-transform cursor-pointer">
+            <ArrowLeftIcon className="w-8 h-8" />
           </button>
-
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3.5">
             <button
               onClick={handleShare}
-              className="p-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/90 hover:text-white transition-all active:scale-90 cursor-pointer"
+              aria-label="Ulashish"
+              className="w-[34px] h-[34px] rounded-full bg-black/40 backdrop-blur-[5px] flex items-center justify-center text-white active:scale-90 transition-transform cursor-pointer"
             >
-              <Share2 className="h-5 w-5" />
+              <ShareIcon className="w-[18px] h-[18px]" />
             </button>
             <button
               onClick={handleSaveToggle}
-              className="p-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-all active:scale-90 cursor-pointer"
+              aria-label="Saqlash"
+              className="w-[34px] h-[34px] rounded-full bg-black/40 backdrop-blur-[5px] flex items-center justify-center text-white active:scale-90 transition-transform cursor-pointer"
             >
-              <Bookmark
-                className={`h-5 w-5 ${
-                  isSaved ? "fill-primary text-primary" : "text-white/90 hover:text-white"
-                }`}
-              />
+              <ArchiveAddIcon filled={isSaved} className={`w-[23px] h-[23px] ${isSaved ? "text-[#FF6A00]" : ""}`} />
             </button>
           </div>
         </div>
 
-        {/* Bottom Small Image Gallery previews */}
-        <div className="absolute bottom-4 left-6 right-6 z-20 flex justify-center">
-          <div className="bg-white/95 dark:bg-zinc-900/90 rounded-[18px] p-[5px] flex gap-[6px] items-center shadow-[0_8px_30px_rgba(0,0,0,0.16)] border border-white/40 dark:border-white/10 max-w-[340px] overflow-x-auto scrollbar-none backdrop-blur-md">
-            {gallery.map((thumb, idx) => {
-              const isSel = activeImage === thumb;
-              return (
+        {gallery.length > 1 && (
+          <div className="absolute bottom-[38px] left-0 right-0 z-20 flex justify-center px-5">
+            <div className="bg-white/80 backdrop-blur-[20px] rounded-[10px] p-1 flex gap-1 max-w-full overflow-x-auto scrollbar-none">
+              {gallery.map((thumb, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setActiveImage(thumb)}
-                  className={`w-11 h-11 rounded-[12px] overflow-hidden shrink-0 transition-all duration-300 cursor-pointer ${
-                    isSel ? "border-2 border-[#E85102] scale-105" : "border-0 opacity-80 hover:opacity-100"
+                  className={`w-11 h-11 rounded-lg overflow-hidden shrink-0 cursor-pointer transition-opacity ${
+                    activeImage === thumb ? "ring-2 ring-inset ring-[#FF6A00]" : "opacity-90"
                   }`}
                 >
                   <Image src={thumb} alt={`${idx + 1}-rasm`} width={44} height={44} unoptimized className="w-full h-full object-cover" />
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Main Details Body */}
-      <main className="flex-1 px-6 py-6 pb-28 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
-        {/* Info detail block */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
+      <main
+        className={`relative -mt-[14px] rounded-t-2xl flex-1 pt-[30px] pb-28 flex flex-col gap-[50px] max-w-md mx-auto w-full text-left ${
+          isDark ? "bg-[var(--background)]" : "bg-white"
+        }`}
+      >
+        {/* Joy haqida (Figma "User Info") */}
+        <div className="px-[29px] flex flex-col gap-2.5">
+          <div className="flex items-center justify-between gap-2.5 min-h-[29px]">
             {Number(venueDetail?.venue.discount_percent || 0) > 0 ? (
-              <div className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-[#10B981] font-bold rounded-lg px-2.5 py-1 text-xs">
-                <Percent className="h-3.5 w-3.5" />
-                <span>{Math.round(Number(venueDetail?.venue.discount_percent))}% maxsus chegirma</span>
-              </div>
+              <span className={`h-[29px] px-3 rounded-[10px] flex items-center gap-2 ${isDark ? "bg-white/5" : "bg-[#F4F4F4]"}`}>
+                <VoucherBoldIcon className="w-[22px] h-[22px] text-[#39CC3F]" />
+                <span className="text-sm font-semibold text-[#39CC3F]">{Math.round(Number(venueDetail?.venue.discount_percent))}% chegirma</span>
+              </span>
             ) : (
               <span />
             )}
-
-            {/* Rating row link */}
             <button
               type="button"
               onClick={() => setShowReviews(true)}
-              className={`flex items-center gap-1 text-xs font-bold transition-colors cursor-pointer active:scale-95 ${
-                isDark ? "text-white/70 hover:text-white" : "text-zinc-650 hover:text-zinc-950"
-              }`}
+              className={`flex items-center gap-1.5 text-base font-medium active:scale-95 transition-transform cursor-pointer ${isDark ? "text-white/70" : "text-[#535353]"}`}
             >
-              <Star className="h-3.5 w-3.5 fill-[#FFB800] text-[#FFB800]" />
-              <span>
-                {venueRating} ({reviewsCount} ta sharh)
-              </span>
-              <ChevronRight className="h-4 w-4 text-[#FFB800]" />
+              <StarIcon className="w-3.5 h-3.5" />
+              <span>{venueRating} ({reviewsCount} ta sharh)</span>
+              <ArrowRightIcon className={`w-[18px] h-[18px] ${isDark ? "text-white" : "text-black"}`} />
             </button>
           </div>
 
-          {/* Restaurant Title & Status */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className={`text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-black"}`}>
-                {venueName}
-              </h2>
-              {venueDetail?.venue.tagline && (
-                <p className="text-xs text-zinc-400 mt-0.5">{venueDetail.venue.tagline}</p>
-              )}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-[#10B981] font-bold pt-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-              <span>{venueDetail?.is_open_now ? "Ochiq" : "Yopiq"}</span>
-            </div>
+          <div className="flex items-center justify-between gap-5">
+            <h2 className={`text-2xl leading-9 font-semibold truncate ${isDark ? "text-white" : "text-[#181818]"}`}>{venueName}</h2>
+            <span className={`shrink-0 flex items-center gap-1.5 text-sm font-bold ${venueDetail?.is_open_now ? "text-[#3ACD3F]" : "text-zinc-400"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${venueDetail?.is_open_now ? "bg-[#39CC3F]" : "bg-zinc-400"}`} />
+              {venueDetail?.is_open_now ? "Ochiq" : "Yopiq"}
+            </span>
           </div>
 
-          {/* Metadata Row: Capacity & Deposit */}
-          <div className="flex justify-between items-center text-xs">
-            <div
-              className={`flex items-center gap-1.5 font-semibold ${
-                isDark ? "text-white/70" : "text-zinc-600"
-              }`}
-            >
-              <Users className="h-4 w-4 text-[#E85102]" />
-              <span>Sig&apos;imi: {venueDetail?.venue.total_seats ? `${venueDetail.venue.total_seats} ta o'rin` : "—"}</span>
-            </div>
-
-            {/* Deposit Badges */}
-            {isDeposit ? (
-              <div className="flex items-center gap-1 bg-green-500/10 border border-green-500/20 text-[#10B981] font-bold rounded-lg px-2.5 py-1 text-[10px] uppercase tracking-wider">
-                <Wallet className="h-3.5 w-3.5 shrink-0" />
-                <span>Depozitlik</span>
-              </div>
-            ) : (
-              <span className="text-[11px] font-bold text-zinc-400">Depozitsiz</span>
+          <div className={`flex items-center gap-2.5 text-base font-medium ${isDark ? "text-white/80" : "text-black"}`}>
+            <span className="flex items-center gap-2.5">
+              <MapIcon className="w-[22px] h-[22px]" />
+              {venueDetail?.venue.total_seats ? `${venueDetail.venue.total_seats} ta o'rin` : "Sig'im —"}
+            </span>
+            {isDeposit && (
+              <>
+                <span className="w-2.5 h-px bg-[#8C8C8C]" aria-hidden="true" />
+                <span className="h-[29px] px-3 rounded-[10px] bg-[#39CC3F] text-white text-sm font-medium flex items-center gap-2">
+                  <PercentSquareIcon className="w-4 h-4" />
+                  Depozitlik
+                </span>
+              </>
             )}
           </div>
 
-          {/* Address */}
-          <div
-            className={`flex items-center gap-2 text-xs font-semibold leading-relaxed ${
-              isDark ? "text-white/50" : "text-zinc-600"
-            }`}
-          >
-            <MapPin className={`h-4 w-4 shrink-0 ${isDark ? "text-white/30" : "text-zinc-400"}`} />
-            <span>{venueLocation}</span>
+          <div className={`flex items-center gap-2.5 text-base font-medium ${isDark ? "text-white/80" : "text-black"}`}>
+            <LocationIcon className="w-[22px] h-[22px] shrink-0" />
+            <span className="truncate">{venueLocation}</span>
           </div>
 
-          {/* Quick Contact & Chat Buttons */}
-          <div className="flex gap-2.5 pt-1">
+          {/* Qo'ng'iroq / xabar — Figma'da yo'q, funksiya saqlangan */}
+          <div className="flex gap-2.5 pt-2">
             {venueDetail?.venue.phone && (
               <a
                 href={`tel:${venueDetail.venue.phone}`}
-                className={`flex-1 py-3 px-4 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-98 ${
-                  isDark
-                    ? "bg-[#393939] border-white/10 text-white hover:bg-white/10"
-                    : "bg-zinc-100 border-zinc-200 text-zinc-800 hover:bg-zinc-200"
+                className={`flex-1 h-10 rounded-[10px] text-sm font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform ${
+                  isDark ? "bg-white/5 text-white" : "bg-[#F4F4F4] text-black"
                 }`}
               >
-                <Phone className="h-4 w-4 text-emerald-500" />
-                <span>Qo&apos;ng&apos;iroq</span>
+                <PhoneIcon className="h-4 w-4 text-[#39CC3F]" />
+                Qo&apos;ng&apos;iroq
               </a>
             )}
             <button
               type="button"
               onClick={handleOpenChat}
-              className="flex-1 py-3 px-4 rounded-2xl bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer shadow-sm"
+              className="flex-1 h-10 rounded-[10px] bg-[#FF6A00]/10 text-[#E85102] text-sm font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform cursor-pointer"
             >
               <MessageSquare className="h-4 w-4" />
-              <span>Xabar yozish</span>
+              Xabar yozish
             </button>
           </div>
         </div>
 
-
-
-        {/* Menyu Section */}
-        <div className="space-y-4 pt-2 text-left">
-          <div className={`border-b ${isDark ? "border-white/5" : "border-zinc-100"}`}>
-            <div className="inline-block border-b-2 border-primary pb-2 pr-4 text-sm font-bold text-primary tracking-wide">
-              Menyu
+        {/* Menyu (Figma: tab chizig'i, "Menu (N mahsulot)", qidiruv) */}
+        <div className="flex flex-col gap-5 text-left">
+          <div className={`mx-5 border-b ${isDark ? "border-white/10" : "border-[#DADADA]"}`}>
+            <div className="w-[84px] flex flex-col items-center gap-[9px]">
+              <span className={`text-base leading-[22px] font-medium ${isDark ? "text-white" : "text-black"}`}>Menyu</span>
+              <span className="w-full h-[5px] rounded-t-[4px] bg-[#FF6A00]" />
             </div>
           </div>
 
-          <div className="flex justify-between items-center text-xs font-bold">
-            <span className={isDark ? "text-white/90" : "text-zinc-850"}>
-              {`Taomlar (${filteredFoods.length} mahsulot)`}
-            </span>
-          </div>
-
-          {/* Search bar inside section */}
-          <div
-            className={`flex items-center border rounded-2xl overflow-hidden transition-all duration-300 ${
-              isDark
-                ? "bg-[#393939] border-white/5 focus-within:border-[#E85102]/50"
-                : "bg-zinc-100 border-transparent focus-within:bg-zinc-200/50"
-            }`}
-          >
-            <span className={isDark ? "text-white/40 pl-4" : "text-zinc-400 pl-4"}>
-              <Search className="h-5 w-5" />
-            </span>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Taom qidirish..."
-              className={`w-full pl-3 pr-4 py-3.5 bg-transparent text-sm font-semibold outline-none ${
-                isDark ? "text-white placeholder:text-white/30" : "text-zinc-950 placeholder:text-zinc-400"
-              }`}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                className="pr-4 text-zinc-400 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+          <div className="px-[18px] flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <span className={`text-base leading-[22px] font-medium ${isDark ? "text-white" : "text-black"}`}>
+                Menu (<span className="text-[#FF6A00]">{filteredFoods.length} mahsulot</span>)
+              </span>
+              <label className={`h-11 px-3.5 rounded-[14px] flex items-center gap-2.5 ${isDark ? "bg-[#393939]" : "bg-[#F3F3F3]"}`}>
+                <SearchIcon className="w-6 h-6 shrink-0 text-[#FF6A00]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Qidirish"
+                  className={`flex-1 min-w-0 bg-transparent text-base outline-none ${isDark ? "text-white placeholder:text-white/40" : "text-black placeholder:text-[#7A7A7A]"}`}
+                />
+                {searchQuery && (
+                  <button type="button" onClick={() => setSearchQuery("")} aria-label="Tozalash" className="text-zinc-400">
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </label>
+            </div>
 
           {/* Categories Horizontal Pills */}
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
@@ -627,24 +583,13 @@ export default function VenueDetailPage({ params }: Props) {
             </p>
           )}
 
-          {/* Food Grid Display */}
-          <div className="grid grid-cols-2 gap-4 pt-1">
+          {/* Taomlar (Figma "Profile Card": 172x166 rasm r18, 45px qo'shish tugmasi, narx 20/Bold, nom 16/Regular) */}
+          <div className="grid grid-cols-2 gap-x-[13px] gap-y-5">
             {filteredFoods.map((food, idx) => {
               const qty = selectedItems[food.id] || 0;
               return (
-                <div
-                  key={idx}
-                  className={`border rounded-3xl p-3 flex flex-col gap-3 relative text-left animate-fade-in ${
-                    isDark
-                      ? "bg-[#393939] border-white/5 shadow-lg"
-                      : "bg-white border-zinc-200 shadow-sm"
-                  }`}
-                >
-                  <div
-                    className={`w-full aspect-[1.15/1] rounded-2xl overflow-hidden relative border ${
-                      isDark ? "border-white/5 bg-zinc-800" : "border-zinc-100 bg-zinc-50"
-                    }`}
-                  >
+                <div key={idx} className="flex flex-col text-left animate-fade-in">
+                  <div className={`relative w-full aspect-[172/166] rounded-[18px] overflow-hidden ring-1 ring-inset ring-white/15 ${isDark ? "bg-zinc-800" : "bg-[#F3F3F3]"}`}>
                     {food.img ? (
                       <Image src={food.img} alt={food.name} fill unoptimized sizes="200px" className="object-cover" />
                     ) : (
@@ -652,11 +597,11 @@ export default function VenueDetailPage({ params }: Props) {
                         <ImageOff className="h-6 w-6" />
                       </div>
                     )}
-
                     {qty > 0 ? (
-                      <div className="absolute bottom-2 right-2 bg-white border border-zinc-200 text-black rounded-full px-2 py-1 flex items-center gap-2 shadow-md z-10 animate-scale-up">
+                      <div className="absolute bottom-1.5 right-1.5 h-[45px] px-2.5 rounded-[27px] bg-white flex items-center gap-2.5 text-black z-10 animate-scale-up">
                         <button
                           type="button"
+                          aria-label="Kamaytirish"
                           onClick={() => {
                             setSelectedItems((prev) => {
                               const next = { ...prev };
@@ -665,62 +610,43 @@ export default function VenueDetailPage({ params }: Props) {
                               return next;
                             });
                           }}
-                          className="w-5 h-5 flex items-center justify-center font-black text-xs text-zinc-500 hover:text-black cursor-pointer active:scale-80 transition-all"
+                          className="w-5 h-5 flex items-center justify-center cursor-pointer active:scale-90"
                         >
-                          <Minus className="h-3 w-3 stroke-[3]" />
+                          <MinusIcon className="w-4 h-4" />
                         </button>
-                        <span className="text-xs font-bold text-zinc-955 select-none min-w-[8px] text-center">
-                          {qty}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleAddItem(food.id)}
-                          className="w-5 h-5 flex items-center justify-center font-black text-xs text-zinc-500 hover:text-black cursor-pointer active:scale-80 transition-all"
-                        >
-                          <Plus className="h-3 w-3 stroke-[3]" />
+                        <span className="text-base font-semibold min-w-[10px] text-center">{qty}</span>
+                        <button type="button" aria-label="Qo'shish" onClick={() => handleAddItem(food.id)} className="w-5 h-5 flex items-center justify-center cursor-pointer active:scale-90">
+                          <PlusIcon className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
                       <button
                         type="button"
+                        aria-label="Qo'shish"
                         onClick={() => handleAddItem(food.id)}
-                        className={`absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-md flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-all z-10 ${
-                          isDark
-                            ? "bg-[#E85102] text-white"
-                            : "bg-white border border-zinc-200 text-zinc-950 cursor-pointer"
-                        }`}
+                        className="absolute bottom-1.5 right-1.5 w-[45px] h-[45px] rounded-full bg-white text-black flex items-center justify-center z-10 active:scale-95 transition-transform cursor-pointer"
                       >
-                        <Plus className="h-4 w-4 stroke-[3]" />
+                        <PlusIcon className="w-5 h-5" />
                       </button>
                     )}
                   </div>
-
-                  <div className="space-y-1 pr-0.5">
-                    <p className={`text-sm font-black tracking-wide ${isDark ? "text-white" : "text-zinc-955"}`}>
-                      {food.price}
-                    </p>
-                    <p className={`text-xs font-semibold truncate ${isDark ? "text-white/50" : "text-zinc-500"}`}>
-                      {food.name}
-                    </p>
-                  </div>
+                  <p className={`mt-1.5 text-xl leading-[30px] font-bold ${isDark ? "text-white" : "text-[#181818]"}`}>{food.price}</p>
+                  <p className={`text-base leading-5 truncate ${isDark ? "text-white/50" : "text-[#646464]"}`}>{food.name}</p>
                 </div>
               );
             })}
           </div>
+          </div>
         </div>
       </main>
 
-      {/* Sticky Bottom Action Panel */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto border-t px-6 py-4 z-40 ${
-          isDark ? "bg-black/90 border-white/5" : "bg-white border-zinc-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]"
-        }`}
-      >
+      {/* Pastki tugma (Figma: 345x56, r64, 20/Bold) */}
+      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto px-6 pb-[max(var(--tg-safe-bottom),16px)] pt-3 z-40 pointer-events-none">
         <button
           onClick={() => setShowPartySheet(true)}
-          className="w-full py-4 rounded-[24px] bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#E85102]/25 cursor-pointer"
+          className="pointer-events-auto w-full h-14 rounded-[64px] bg-[#E85102] text-white text-xl leading-[22px] font-bold flex items-center justify-center active:scale-[0.98] transition-transform cursor-pointer"
         >
-          <span>{cartTotal > 0 ? `${formatPrice(cartTotal)} • Bron qilish` : "Bron qilish"}</span>
+          {cartTotal > 0 ? `${formatPrice(cartTotal)} • Keyingisi` : "Keyingisi"}
         </button>
       </div>
 
