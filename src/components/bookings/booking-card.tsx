@@ -11,7 +11,7 @@ import { useApiQuery } from "@/lib/use-api";
 import { formatPhone, formatTime, parseISODate } from "@/lib/format";
 import { ClockIcon, LocationIcon, PhoneIcon } from "@/components/nav-icons";
 
-const STATUS_TEXT: Record<string, string> = {
+export const STATUS_TEXT: Record<string, string> = {
   pending: "Tasdiq kutilmoqda",
   confirmed: "Band qilish tasdiqlandi",
   checked_in: "Mehmon keldi",
@@ -23,7 +23,7 @@ const STATUS_TEXT: Record<string, string> = {
 const ACTIVE = new Set(["pending", "confirmed"]);
 
 /** "2026-12-03" → "03/12/2026" */
-function slashDate(iso: string): string {
+export function slashDate(iso: string): string {
   const d = parseISODate(iso);
   return [d.getDate(), d.getMonth() + 1].map((n) => String(n).padStart(2, "0")).join("/") + "/" + d.getFullYear();
 }
