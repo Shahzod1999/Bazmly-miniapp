@@ -30,7 +30,7 @@ export default function BookingTicketPage({ params }: Props) {
   const query = useApiQuery(user && valid ? `booking:${bookingId}` : null, () => bookingService.getBookingDetail(bookingId));
   const [cancelling, setCancelling] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
-  useTelegramBackButton(() => router.push("/tickets"));
+  useTelegramBackButton(() => router.push("/feed"));
 
   useEffect(() => {
     if (!authLoading && !user) router.replace(`/login?next=${encodeURIComponent(`/payment/${id}`)}`);
@@ -191,10 +191,10 @@ export default function BookingTicketPage({ params }: Props) {
             Bosh sahifaga
           </Link>
           <Link
-            href="/tickets"
+            href="/feed"
             className="flex-1 inline-flex items-center justify-center rounded-2xl bg-primary py-4 text-base font-bold text-white shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all duration-200"
           >
-            Chiptalarim
+            Bronlarim
           </Link>
         </div>
       </div>
@@ -215,8 +215,8 @@ function Message({ title, text, onRetry }: { title: string; text: string; onRetr
       <h1 className="text-xl font-extrabold text-foreground">{title}</h1>
       <p className="text-sm text-foreground/60">{text}</p>
       <div className="flex justify-center gap-3 pt-2">
-        <Link href="/tickets" className="rounded-2xl border border-brand-light-border dark:border-brand-dark-border px-5 py-3 text-sm font-bold">
-          Chiptalarim
+        <Link href="/feed" className="rounded-2xl border border-brand-light-border dark:border-brand-dark-border px-5 py-3 text-sm font-bold">
+          Bronlarim
         </Link>
         {onRetry && (
           <button type="button" onClick={onRetry} className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">

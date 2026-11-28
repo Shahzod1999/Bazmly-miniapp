@@ -12,7 +12,7 @@ function Redirect() {
   const router = useRouter();
   const bookingId = useSearchParams().get("bookingId");
   useEffect(() => {
-    router.replace(bookingId && /^\d+$/.test(bookingId) ? `/payment/${bookingId}` : "/tickets");
+    router.replace(bookingId && /^\d+$/.test(bookingId) ? `/payment/${bookingId}` : "/feed");
   }, [bookingId, router]);
   return <div className="flex flex-col flex-1 bg-[var(--background)] animate-pulse" />;
 }

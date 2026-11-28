@@ -69,7 +69,7 @@ export default function BottomNav() {
       path: "/tickets",
       icon: VoucherIcon,
       activeIcon: VoucherBoldIcon,
-      isActive: pathname.startsWith("/tickets") || pathname.startsWith("/payment-success"),
+      isActive: pathname.startsWith("/tickets"),
       isAction: false,
     },
     {
@@ -102,7 +102,7 @@ export default function BottomNav() {
   // Derive the active index dynamically based on routes and scanner state
   const getActiveIndex = () => {
     if (pathname === "/") return 0;
-    if (pathname.startsWith("/tickets") || pathname.startsWith("/payment-success")) return 1;
+    if (pathname.startsWith("/tickets")) return 1;
     if (pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment")) return 3;
     if (pathname.startsWith("/login")) return 4;
     return 0; // default to Asosiy

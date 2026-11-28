@@ -899,7 +899,7 @@ export default function ToyxonaFlowModal({ isOpen, onClose, venue, theme = "ligh
               }`}
             >
               <button
-                onClick={() => router.push(booking ? `/payment/${booking.id}` : "/tickets")}
+                onClick={() => router.push(booking ? `/payment/${booking.id}` : "/feed")}
                 className="w-full py-4 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white font-bold text-base shadow-lg shadow-[#E85102]/25 active:scale-95 transition-all cursor-pointer"
               >
                 Chiptani ko‘rish

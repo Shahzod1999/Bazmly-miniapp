@@ -149,7 +149,7 @@ function BookingContent({ id }: { id: string }) {
   const goBack = () => {
     if (bookingStep === "details") setBookingStep("params");
     else if (bookingStep === "checkout") setBookingStep("details");
-    else if (bookingStep === "ticket") router.replace("/tickets"); // bron yaratilgan — qayta yuborilmasin
+    else if (bookingStep === "ticket") router.replace("/feed"); // bron yaratilgan — qayta yuborilmasin
     else if (bookingStep === "qr") setBookingStep("ticket");
     else router.back();
   };
@@ -750,10 +750,10 @@ function BookingContent({ id }: { id: string }) {
 
           <div className="space-y-2.5">
             <Link
-              href="/tickets"
+              href="/feed"
               className="w-full py-4 rounded-2xl bg-[#E85102] hover:bg-[#C94600] text-white font-extrabold text-sm tracking-wide transition-all active:scale-[0.98] shadow-lg shadow-[#E85102]/20 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Mening Chiptalarimga o&apos;tish</span>
+              <span>Band qilingan joylarga o&apos;tish</span>
               <ChevronRight className="h-4 w-4" />
             </Link>
 

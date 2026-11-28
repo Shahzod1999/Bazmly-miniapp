@@ -373,7 +373,7 @@ export default function WelcomePage() {
             </h1>
 
             <Link
-              href="/tickets"
+              href="/feed"
               className={`w-10 h-10 -mr-2 shrink-0 rounded-full flex items-center justify-center transition-all active:scale-95 ${
                 theme === "dark" ? "text-white/80 hover:text-white" : "text-zinc-900 hover:text-primary"
               }`}
