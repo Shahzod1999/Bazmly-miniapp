@@ -4,14 +4,10 @@ import React, { use, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ChevronLeft,
   MapPin,
   CheckCircle,
   Phone,
-  CreditCard,
-  Percent,
   ChevronRight,
-  ChevronDown,
   Sparkles,
   Loader2,
 } from "lucide-react";
@@ -25,6 +21,18 @@ import { addMinutes, digitsOnly, formatDate, formatSom, formatTime, parseISODate
 import { errorMessage, useApiQuery } from "@/lib/use-api";
 import { useAuth } from "@/contexts/AuthContext";
 import {
+  ArrowCircleRightIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CallIcon,
+  CardIcon,
+  CheckIcon,
+  MinusIcon,
+  PercentSquareIcon,
+  PlusIcon,
+  UserIcon,
+} from "@/components/nav-icons";
+import {
   venueService,
   bookingService,
   AvailableTableRead,
@@ -36,18 +44,39 @@ interface Props {
 }
 
 
+// Figma stepper (Select date 55:1006): 4 bosqich, 24px doiralar, 88px oraliq, 2px chiziq
+const STEPS = ["Restoranni belgilang", "Kun va vaqtni belgilang", "Menu", "Ma‘lumotlarni tasdiqlash"];
+
 function ProgressBar({ step }: { step: number }) {
   return (
-    <div className="w-full flex items-center justify-between gap-1.5 py-3 select-none">
-      {[1, 2, 3, 4, 5, 6].map((s) => {
-        const isFilled = s <= step;
+    <div className="relative mx-auto w-[288px] h-[67px] select-none" aria-label={`${step}-bosqich, jami ${STEPS.length}`}>
+      <span className="absolute left-2 right-2 top-[12px] h-0.5 bg-[#DADADA] dark:bg-white/10" aria-hidden="true" />
+      <span
+        className="absolute left-2 top-[12px] h-0.5 bg-[#E85102] transition-all duration-300"
+        style={{ width: `${((step - 1) / (STEPS.length - 1)) * 272}px` }}
+        aria-hidden="true"
+      />
+      {STEPS.map((label, i) => {
+        const n = i + 1;
+        const done = n < step;
+        const active = n <= step;
         return (
-          <div
-            key={s}
-            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-              isFilled ? "bg-[#E85102]" : "bg-zinc-200 dark:bg-zinc-800"
-            }`}
-          />
+          <div key={label} className="absolute top-0 w-6 flex flex-col items-center gap-4" style={{ left: `${i * 88}px` }}>
+            <span
+              className={`relative w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                active ? "bg-[#E85102]" : "bg-[#DADADA] dark:bg-white/15"
+              }`}
+            >
+              {done ? <CheckIcon className="w-3 h-2.5" /> : n}
+            </span>
+            <span
+              className={`w-[88px] text-center text-xs leading-4 font-semibold ${
+                active ? "text-[#1E1E1E] dark:text-white" : "text-[#DADADA] dark:text-white/30"
+              }`}
+            >
+              {label}
+            </span>
+          </div>
         );
       })}
     </div>
@@ -223,34 +252,21 @@ function BookingContent({ id }: { id: string }) {
 
   return (
     <div className="w-full max-w-md mx-auto min-h-screen bg-white dark:bg-[var(--background)] text-zinc-900 dark:text-white flex flex-col relative overflow-hidden pb-12 transition-colors duration-300">
-      {/* Dynamic Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-150 dark:border-white/5 select-none shrink-0 bg-white/80 dark:bg-[var(--background)]/80 backdrop-blur-md z-30 sticky top-0">
+      {/* Yuqori panel (Figma: 32px orqaga, markazda joy nomi 16/Medium + doirali o'q) */}
+      <div className="h-8 mt-4 px-5 flex items-center justify-between gap-3 select-none shrink-0 z-30">
         <button
           type="button"
           onClick={goBack}
-          className="w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200/80 dark:bg-white/10 dark:hover:bg-white/15 text-zinc-700 dark:text-white flex items-center justify-center transition-all active:scale-90 border border-zinc-200/60 dark:border-white/5 cursor-pointer shadow-xs"
+          className="w-8 h-8 flex items-center justify-center text-black dark:text-white active:scale-90 transition-transform cursor-pointer"
           aria-label="Orqaga"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ArrowLeftIcon className="w-8 h-8" />
         </button>
-
-        {bookingStep === "params" ? (
-          <span className="text-sm font-extrabold text-zinc-900 dark:text-white">
-            Bron qilish
-          </span>
-        ) : (
-          <h2 className="text-sm font-black tracking-wider uppercase text-zinc-800 dark:text-zinc-100">
-            {bookingStep === "details" && "Ma'lumotlarni Tasdiqlash"}
-            {bookingStep === "checkout" && "TO'LOV MA'LUMOTLARI"}
-            {bookingStep === "ticket" && "Tasdiqlandi"}
-            {bookingStep === "qr" && "QR Chipta"}
-          </h2>
-        )}
-
-        <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 select-none bg-zinc-100 dark:bg-white/5 px-3.5 py-1.5 rounded-full border border-zinc-200/70 dark:border-white/5 shadow-2xs">
-          <MapPin className="h-3.5 w-3.5 text-[#E85102]" />
-          <span className="truncate max-w-[120px]">{venueName}</span>
-        </div>
+        <span className="min-w-0 flex items-center gap-1.5 text-base font-medium text-[#1F1F1F] dark:text-white">
+          <span className="truncate">{venueName}</span>
+          <ArrowCircleRightIcon className="w-[18px] h-[18px] shrink-0 text-[#292D32] dark:text-white" />
+        </span>
+        <span className="w-8 h-8" aria-hidden="true" />
       </div>
 
       {/* Floating Toast Notification */}
@@ -261,400 +277,307 @@ function BookingContent({ id }: { id: string }) {
         </div>
       )}
 
-      {/* VIEW 1: Parameters Setup */}
+      {/* VIEW 1: Parameters Setup (Figma "Select date") */}
       {bookingStep === "params" && (
-        <div className="flex-1 flex flex-col gap-6 px-6 py-4 animate-fade-in select-none">
+        <div className="flex-1 flex flex-col pt-[42px] animate-fade-in select-none">
           <ProgressBar step={2} />
 
-          {/* Necha kishi uchun */}
-          <div className="flex justify-between items-center text-left py-2 px-1">
-            <div>
-              <h3 className="font-extrabold text-base text-zinc-900 dark:text-white tracking-tight">
-                Necha kishi uchun
-              </h3>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">
-                Mehmonlar miqdori
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 bg-zinc-100 dark:bg-[#2C2C2E] p-1.5 rounded-2xl border border-zinc-200/80 dark:border-white/5 shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-[#393939] text-zinc-800 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center justify-center font-black text-lg active:scale-95 transition-all shadow-xs border border-zinc-200/50 dark:border-white/5 cursor-pointer"
-              >
-                —
-              </button>
-              <span className="text-lg font-black w-7 text-center text-zinc-900 dark:text-white select-none">
-                {guests}
-              </span>
-              <button
-                type="button"
-                onClick={() => setGuests((prev) => prev + 1)}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-[#393939] text-zinc-800 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center justify-center font-black text-lg active:scale-95 transition-all shadow-xs border border-zinc-200/50 dark:border-white/5 cursor-pointer"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Joyni belgilash (Table Selector) */}
-          <div className="space-y-3.5 text-left py-2 px-1">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-extrabold text-base text-zinc-900 dark:text-white tracking-tight">
-                  Joyni belgilash (Stol)
-                </h3>
-                <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">
-                  {selectedTableInfo ? `Stol #${selectedTableInfo.number} tanlandi (${selectedTableInfo.seats} o'rin)` : "Bo'sh stollardan birini tanlang"}
-                </p>
-              </div>
-              {loadingTables && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
-            </div>
-
-            <div className="flex justify-between items-center gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-none -mx-1 px-1">
-              {!tablesKey && (
-                <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 py-3">Avval sana va vaqtni tanlang</p>
-              )}
-              {tablesQuery.state.status === "error" && (
-                <button type="button" onClick={tablesQuery.retry} className="text-xs font-bold text-[#E85102] py-3">
-                  Stollarni yuklab bo&apos;lmadi. Qayta urinish
+          <div className="mt-[30px] flex flex-col gap-[30px] text-left">
+            {/* Necha kishi uchun */}
+            <div className="px-6 flex items-center justify-between gap-6">
+              <h3 className="text-xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white">Necha kishi uchun</h3>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  aria-label="Kamaytirish"
+                  onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
+                  className="w-9 h-9 rounded-[14px] bg-[#F2F2F2] dark:bg-white/10 text-black dark:text-white flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
+                >
+                  <MinusIcon className="w-5 h-5" />
                 </button>
-              )}
-              {tablesQuery.state.status === "success" && freeTables.length === 0 && (
-                <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 py-3">Bu vaqtda bo&apos;sh stol yo&apos;q. Boshqa vaqtni tanlang.</p>
-              )}
-              {freeTables.map((table) => {
-                const num = table.number;
-                const isSelected = selectedTable === table.id;
-                return (
-                  <button
-                    key={table.id}
-                    type="button"
-                    onClick={() => setSelectedTable(table.id)}
-                    aria-pressed={isSelected}
-                    aria-label={`${num}-stol, ${table.seats} o'rin`}
-                    className={`flex-1 min-w-[42px] h-[72px] rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 cursor-pointer border ${
-                      isSelected
-                        ? "bg-[#E85102] border-[#E85102] text-white shadow-lg shadow-[#E85102]/25 scale-105"
-                        : "bg-zinc-100 hover:bg-zinc-200/70 dark:bg-[#2C2C2E] dark:hover:bg-zinc-700 border-zinc-200/80 dark:border-white/5 text-zinc-700 dark:text-zinc-300 shadow-2xs"
-                    }`}
-                  >
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-wider leading-none ${
-                        isSelected ? "text-white/90" : "text-zinc-400 dark:text-zinc-500"
-                      }`}
-                    >
-                      {isSelected ? "✓" : "Stol"}
-                    </span>
-                    <span
-                      className={`text-xl font-black leading-none ${
-                        isSelected ? "text-white" : "text-zinc-900 dark:text-white"
-                      }`}
-                    >
-                      {num}
-                    </span>
+                <span className="min-w-[18px] text-center text-2xl leading-[22px] font-semibold text-black dark:text-white">{guests}</span>
+                <button
+                  type="button"
+                  aria-label="Ko'paytirish"
+                  onClick={() => setGuests((prev) => prev + 1)}
+                  className="w-9 h-9 rounded-2xl bg-[#F2F2F2] dark:bg-white/10 text-black dark:text-white flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Joyni belgilash (stol) */}
+            <div className="flex flex-col gap-6">
+              <div className="px-5 flex items-center justify-between">
+                <h3 className="text-xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white">Joyni belgilash</h3>
+                {loadingTables && <Loader2 className="h-4 w-4 animate-spin text-[#E85102]" />}
+              </div>
+              <div className="px-5 flex items-center gap-5 min-h-[86px] overflow-x-auto scrollbar-none">
+                {!tablesKey && <p className="text-base text-[#B3B3B3]">Avval sana va vaqtni tanlang</p>}
+                {tablesQuery.state.status === "error" && (
+                  <button type="button" onClick={tablesQuery.retry} className="text-base font-bold text-[#E85102]">
+                    Stollarni yuklab bo&apos;lmadi. Qayta urinish
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Sanani belgilash */}
-          <div className="space-y-3.5 text-left py-2 px-1">
-            <div>
-              <h3 className="font-extrabold text-base text-zinc-900 dark:text-white tracking-tight">
-                Sanani belgilash
-              </h3>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">
-                Kerakli sanani tanlang
-              </p>
-            </div>
-
-            <div className="flex gap-2.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none -mx-1 px-1">
-              {dates.map((iso, idx) => {
-                const item = { day: weekdayShort(parseISODate(iso)), num: String(parseISODate(iso).getDate()) };
-                const isSelected = selectedDate === iso;
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setSelectedDate(iso);
-                      setSelectedTime(null);
-                      setSelectedTable(null);
-                    }}
-                    className={`w-[58px] py-3.5 rounded-2xl shrink-0 flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 cursor-pointer border ${
-                      isSelected
-                        ? "bg-[#E85102] border-[#E85102] text-white shadow-lg shadow-[#E85102]/25 scale-105"
-                        : "bg-zinc-100 hover:bg-zinc-200/70 dark:bg-[#2C2C2E] dark:hover:bg-zinc-700 border-zinc-200/80 dark:border-white/5 text-zinc-600 dark:text-zinc-400 shadow-2xs"
-                    }`}
-                  >
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-wider leading-none ${
-                        isSelected ? "text-white/90" : "text-zinc-400 dark:text-zinc-500"
+                )}
+                {tablesQuery.state.status === "success" && freeTables.length === 0 && (
+                  <p className="text-base text-[#B3B3B3]">Bu vaqtda bo&apos;sh stol yo&apos;q</p>
+                )}
+                {freeTables.map((table) => {
+                  const isSelected = selectedTable === table.id;
+                  return (
+                    <button
+                      key={table.id}
+                      type="button"
+                      onClick={() => setSelectedTable(table.id)}
+                      aria-pressed={isSelected}
+                      aria-label={`${table.number}-stol, ${table.seats} o'rin`}
+                      className={`shrink-0 h-[86px] min-w-[57px] px-4 rounded-xl flex items-center justify-center text-[40px] leading-[22px] font-bold transition-colors active:scale-95 cursor-pointer ${
+                        isSelected ? "bg-[#E85102] text-white" : "text-[#E85102]"
                       }`}
                     >
-                      {isSelected ? "✓" : item.day}
-                    </span>
-                    <span
-                      className={`text-base font-black leading-none ${
-                        isSelected ? "text-white" : "text-zinc-900 dark:text-white"
+                      {table.number}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Sanani belgilash */}
+            <div className="flex flex-col gap-6">
+              <h3 className="px-5 text-xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white">Sanani belgilash</h3>
+              <div className="px-5 flex gap-3 overflow-x-auto scrollbar-none">
+                {dates.map((iso) => {
+                  const d = parseISODate(iso);
+                  const isSelected = selectedDate === iso;
+                  return (
+                    <button
+                      key={iso}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDate(iso);
+                        setSelectedTime(null);
+                        setSelectedTable(null);
+                      }}
+                      aria-pressed={isSelected}
+                      className={`shrink-0 w-14 h-[111px] rounded-[14px] flex flex-col items-center justify-center gap-4 font-bold transition-colors active:scale-95 cursor-pointer ${
+                        isSelected ? "bg-[#E85102] text-white" : "bg-[#F2F2F2] dark:bg-white/10 text-[#E85102]"
                       }`}
                     >
-                      {item.num}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Vaqtni belgilash */}
-          <div className="space-y-3.5 text-left py-2 px-1">
-            <div>
-              <h3 className="font-extrabold text-base text-zinc-900 dark:text-white tracking-tight">
-                Vaqtni belgilash
-              </h3>
-              <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">
-                Tashrif buyurish vaqti
-              </p>
+                      <span className="text-xs leading-[9px]">{weekdayShort(d)}</span>
+                      <span className="text-2xl leading-[18px]">{d.getDate()}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="flex gap-2.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none -mx-1 px-1">
-              {!selectedDate && (
-                <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 py-3">Avval sanani tanlang</p>
-              )}
-              {selectedDate && times.length === 0 && (
-                <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 py-3">Bu kuni bo&apos;sh vaqt yo&apos;q</p>
-              )}
-              {times.map((t) => {
-                const isSelected = selectedTime === t;
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => {
-                      setSelectedTime(t);
-                      setSelectedTable(null);
-                    }}
-                    className={`px-5 py-3 rounded-2xl text-xs font-black shrink-0 flex items-center gap-1.5 active:scale-95 transition-all duration-200 cursor-pointer border ${
-                      isSelected
-                        ? "bg-[#E85102] border-[#E85102] text-white shadow-lg shadow-[#E85102]/25 scale-105"
-                        : "bg-zinc-100 hover:bg-zinc-200/70 dark:bg-[#2C2C2E] dark:hover:bg-zinc-700 border-zinc-200/80 dark:border-white/5 text-zinc-800 dark:text-white shadow-2xs"
-                    }`}
-                  >
-                    {isSelected && <span className="leading-none text-[10px]">✓</span>}
-                    <span>{t}</span>
-                  </button>
-                );
-              })}
+            {/* Vaqtni belgilash */}
+            <div className="flex flex-col gap-6">
+              <h3 className="px-5 text-xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white">Vaqtni belgilash</h3>
+              <div className="px-5 flex gap-3 overflow-x-auto scrollbar-none min-h-[44px]">
+                {!selectedDate && <p className="text-base text-[#B3B3B3] self-center">Avval sanani tanlang</p>}
+                {selectedDate && times.length === 0 && <p className="text-base text-[#B3B3B3] self-center">Bu kuni bo&apos;sh vaqt yo&apos;q</p>}
+                {times.map((t) => {
+                  const isSelected = selectedTime === t;
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTime(t);
+                        setSelectedTable(null);
+                      }}
+                      aria-pressed={isSelected}
+                      className={`shrink-0 h-11 px-6 rounded-[14px] text-base font-bold transition-colors active:scale-95 cursor-pointer ${
+                        isSelected ? "bg-[#E85102] text-white" : "bg-[#F2F2F2] dark:bg-white/10 text-[#E85102]"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           <div className="flex-1 min-h-[24px]" />
 
-          <button
-            type="button"
-            onClick={() => {
-              if (!selectedDate || !selectedTime || !selectedTable) {
-                triggerToast("Sana, vaqt va stolni tanlang");
-                return;
-              }
-              setBookingStep("details");
-            }}
-            className="w-full py-4.5 rounded-2xl font-extrabold text-sm tracking-wide transition-all bg-[#E85102] hover:bg-[#C94600] text-white active:scale-[0.98] shadow-xl shadow-[#E85102]/25 cursor-pointer select-none shrink-0"
-          >
-            Keyingisi
-          </button>
+          <div className="px-6 pb-[max(var(--tg-safe-bottom),16px)]">
+            <button
+              type="button"
+              onClick={() => {
+                if (!selectedDate || !selectedTime || !selectedTable) {
+                  triggerToast("Sana, vaqt va stolni tanlang");
+                  return;
+                }
+                setBookingStep("details");
+              }}
+              className={`w-full h-14 rounded-[64px] text-xl leading-[22px] font-bold text-white transition-colors active:scale-[0.98] cursor-pointer ${
+                selectedDate && selectedTime && selectedTable ? "bg-[#E85102]" : "bg-[#FADCCC]"
+              }`}
+            >
+              Keyingisi
+            </button>
+          </div>
         </div>
       )}
 
-      {/* VIEW 2: Fill Details */}
+      {/* VIEW 2: Fill Details (Figma "Information" 55:1541) */}
       {bookingStep === "details" && (
-        <div className="flex-1 flex flex-col gap-6 px-6 py-4 animate-fade-in select-none">
+        <div className="flex-1 flex flex-col pt-[42px] animate-fade-in select-none">
           <ProgressBar step={4} />
 
-          <div className="text-left mt-2">
-            <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
-              Ma&apos;lumotlarni to&apos;ldiring
-            </h1>
-          </div>
+          <div className="mt-10 px-6 flex flex-col gap-8 text-left">
+            <h1 className="text-2xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white">Ma&apos;lumotlarni to&apos;ldiring</h1>
 
-          <div className="space-y-6">
-            <div className="space-y-2.5 text-left">
-              <label className="block text-sm font-bold text-zinc-800 dark:text-white tracking-wide">Ism/Familiya</label>
-              <div className="flex items-center gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 focus-within:border-[#E85102] transition-colors">
-                <span className="text-zinc-500 text-base">👤</span>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-transparent border-0 p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
-                  placeholder="Ism/Familiya"
-                />
-              </div>
-            </div>
+            <label className="flex flex-col gap-6">
+              <span className="text-base leading-[22px] text-[#1F1F1F] dark:text-white/80">Ism/Familiya</span>
+              <span className="flex flex-col gap-6">
+                <span className="flex items-center gap-3">
+                  <UserIcon className="w-6 h-6 shrink-0 text-[#292D32] dark:text-white" />
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full bg-transparent p-0 text-xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white outline-none placeholder:text-[#1F1F1F] dark:placeholder:text-white/40"
+                    placeholder="Ism/Familiya"
+                  />
+                </span>
+                <span className="h-px bg-[#D9D9D9] dark:bg-white/10" />
+              </span>
+            </label>
 
-            <div className="space-y-2.5 text-left">
-              <label className="block text-sm font-bold text-zinc-800 dark:text-white tracking-wide">Telefon raqam</label>
-              <div className="flex items-center gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800 focus-within:border-[#E85102] transition-colors">
-                <span className="text-zinc-500 text-base">📞</span>
-                <input
-                  type="text"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full bg-transparent border-0 p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 font-mono"
-                  placeholder="+998 ** *** ** **"
-                />
-              </div>
-            </div>
-          </div>
+            <label className="flex flex-col gap-6">
+              <span className="text-base leading-[22px] text-[#1F1F1F] dark:text-white/80">Telefon raqam</span>
+              <span className="flex flex-col gap-6">
+                <span className="flex items-center gap-3">
+                  <CallIcon className="w-6 h-6 shrink-0 text-[#292D32] dark:text-white" />
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full bg-transparent p-0 text-xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white outline-none placeholder:text-[#1F1F1F] dark:placeholder:text-white/40"
+                    placeholder="+998 ** *** ** **"
+                  />
+                </span>
+                <span className="h-px bg-[#D9D9D9] dark:bg-white/10" />
+              </span>
+            </label>
 
-          <div className="space-y-3 text-left">
-            <label className="block text-sm font-bold text-zinc-800 dark:text-white tracking-wide">Ma&apos;lumot</label>
-            <div className="rounded-[20px] bg-zinc-100 dark:bg-[#2C2C2E] border border-zinc-200/80 dark:border-white/5 p-5 text-left shadow-2xs">
-              <p className="text-xs font-bold text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                Band qilingan vaqtgacha yetib kelishingizni so&apos;raymiz. Kechikish{" "}
-                <span className="text-zinc-900 dark:text-white font-extrabold">{venueDetail?.venue.late_grace_minutes ?? 15} daqiqadan</span> oshsa, band avtomatik bekor qilinishi mumkin.
+            <div className="flex flex-col gap-6">
+              <span className="text-base leading-[22px] text-[#1F1F1F] dark:text-white/80">Ma&apos;lumot</span>
+              <p className="rounded-2xl bg-[#F2F2F2] dark:bg-white/10 p-6 text-base leading-[26px] text-[#1F1F1F] dark:text-white">
+                Band qilingan vaqtgacha yetib kelishingizni so&apos;raymiz. Kechikish {venueDetail?.venue.late_grace_minutes ?? 15} daqiqadan oshsa, band avtomatik
+                bekor qilinishi mumkin.
               </p>
             </div>
           </div>
 
-          <div className="flex-1 min-h-[40px]" />
+          <div className="flex-1 min-h-[24px]" />
 
-          <button
-            onClick={() => setBookingStep("checkout")}
-            className="w-full py-4.5 rounded-[24px] font-extrabold text-sm tracking-wide transition-all bg-[#E85102] hover:bg-[#C94600] text-white active:scale-[0.98] shadow-xl shadow-[#E85102]/25 cursor-pointer"
-          >
-            Tasdiqlash va davom etish
-          </button>
+          <div className="px-6 pb-[max(var(--tg-safe-bottom),16px)]">
+            <button
+              onClick={() => setBookingStep("checkout")}
+              disabled={!fullName.trim() || digitsOnly(phoneNumber).length < 9}
+              className="w-full h-14 rounded-[64px] text-xl leading-[22px] font-bold text-white bg-[#E85102] disabled:bg-[#FADCCC] transition-colors active:scale-[0.98] cursor-pointer"
+            >
+              Keyingisi
+            </button>
+          </div>
         </div>
       )}
 
-      {/* VIEW 3: To'lov Ma'lumotlari */}
+      {/* VIEW 3: To'lov (Figma "Information" 2283:4773 — "To'lov usuli") */}
       {bookingStep === "checkout" && (
-        <div className="flex-1 flex flex-col gap-4.5 px-5 py-4 animate-fade-in text-left">
-          {/* Payment Card Selector */}
-          <button
-            type="button"
-            onClick={() => comingSoon("Onlayn to'lov")}
-            className="rounded-[26px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-4.5 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none hover:border-[#E85102]/40 transition-all cursor-pointer group"
-          >
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-[#E85102]/10 dark:bg-[#E85102]/15 border border-[#E85102]/20 flex items-center justify-center text-[#E85102] shadow-xs group-hover:scale-105 transition-transform shrink-0">
-                <CreditCard className="h-6 w-6" />
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-[#E85102] transition-colors">
-                  Onlayn to&apos;lov
-                </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                  Tez orada. Hozircha to&apos;lov muassasa bilan kelishiladi
-                </p>
-              </div>
-            </div>
+        <div className="flex-1 flex flex-col pt-[42px] animate-fade-in text-left">
+          <ProgressBar step={4} />
 
-            <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200/60 dark:border-transparent flex items-center justify-center text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-white transition-colors">
-              <ChevronDown className="h-4 w-4" />
-            </div>
-          </button>
+          <div className="mt-10 px-6 flex flex-col gap-8">
+            <h1 className="text-2xl leading-[22px] font-bold text-[#1F1F1F] dark:text-white">To&apos;lov usuli</h1>
 
-          {/* Promokod field */}
-          <button
-            type="button"
-            onClick={() => comingSoon("Promokodlar")}
-            className="rounded-[26px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-4.5 flex items-center justify-between cursor-pointer hover:border-[#E85102]/40 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none group"
-          >
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-[#E85102]/10 dark:bg-[#E85102]/15 border border-[#E85102]/20 flex items-center justify-center text-[#E85102] shadow-xs group-hover:scale-105 transition-transform shrink-0">
-                <Percent className="h-6 w-6" />
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-sm font-extrabold text-zinc-900 dark:text-white group-hover:text-[#E85102] transition-colors">
-                  Promokod kiriting
-                </p>
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">Tez orada</p>
-              </div>
-            </div>
-
-            <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200/60 dark:border-transparent flex items-center justify-center text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-white transition-colors">
-              <ChevronRight className="h-4 w-4" />
-            </div>
-          </button>
-
-          {/* Invoicing calculations Card */}
-          <div className="rounded-[28px] border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-[#2C2C2E] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-white/5 pb-3">
-              <h3 className="font-black text-xs text-zinc-400 dark:text-zinc-400 uppercase tracking-widest">
-                HISOB VARAG&apos;I
-              </h3>
-              <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-white/5 px-2.5 py-0.5 rounded-full">
-                Tafsilotlar
-              </span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 dark:text-zinc-400 font-medium">Sana va vaqt:</span>
-                <span className="font-extrabold text-zinc-900 dark:text-white bg-zinc-50 dark:bg-white/5 px-2.5 py-1 rounded-lg border border-zinc-200/50 dark:border-white/5">
-                  {dateLabel(selectedDate)} • {selectedTime}
-                </span>
+            <div className="flex flex-col gap-4">
+              {/* Karta */}
+              <div className="w-[250px] rounded-[20px] border border-[#E85102] bg-white dark:bg-[#2C2C2E] p-3 flex flex-col gap-5">
+                <CardIcon className="w-[41px] h-[41px] text-[#E85102]" />
+                <button
+                  type="button"
+                  onClick={() => comingSoon("Onlayn to'lov")}
+                  className="h-11 px-3.5 rounded-[20px] bg-[#FF6A00] text-white flex items-center gap-2.5 self-start shadow-[0_0_60px_rgba(255,255,255,0.5)] active:scale-[0.98] transition-transform cursor-pointer"
+                >
+                  <span className="w-[27px] h-[27px] rounded-full bg-white text-black flex items-center justify-center">
+                    <PlusIcon className="w-[13px] h-[13px]" />
+                  </span>
+                  <span className="text-xl leading-[22px] font-medium">Karta qo&apos;shish</span>
+                </button>
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 dark:text-zinc-400 font-medium">Mehmonlar:</span>
-                <span className="font-extrabold text-zinc-900 dark:text-white">
-                  {guests} kishi{selectedTableInfo ? ` (${selectedTableInfo.number}-stol)` : ""}
-                </span>
-              </div>
-
-              {preorderCount > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-zinc-500 dark:text-zinc-400 font-medium">Oldindan buyurtma ({preorderCount} ta):</span>
-                  <span className="font-extrabold text-zinc-900 dark:text-white">{formatPrice(preorderTotal)}</span>
+              {/* To'lov tafsilotlari */}
+              <div className="rounded-[20px] bg-[#F2F2F2] dark:bg-white/10 px-3.5 py-3 flex flex-col gap-5">
+                <div className="flex flex-col gap-1.5 px-0.5">
+                  <span className="text-sm leading-8 font-medium text-[#181818] dark:text-white">To&apos;lov</span>
+                  <button
+                    type="button"
+                    onClick={() => comingSoon("Promokodlar")}
+                    className="flex items-center justify-between gap-4 cursor-pointer"
+                  >
+                    <span className="flex items-center gap-4">
+                      <span className="w-7 h-7 rounded-[17.5px] bg-[#742CFF] text-white flex items-center justify-center">
+                        <PercentSquareIcon className="w-[18px] h-[18px]" />
+                      </span>
+                      <span className="text-xl leading-8 font-semibold text-black dark:text-white">Promokod</span>
+                    </span>
+                    <ArrowRightIcon className="w-5 h-5 rotate-90 text-black dark:text-white" />
+                  </button>
                 </div>
-              )}
+
+                <div className="rounded-[10px] bg-white dark:bg-[#2C2C2E] px-2 py-1.5">
+                  <div className="px-1.5 py-1.5 flex flex-col gap-1">
+                    <span className="text-xs leading-[17px] text-[#494949] dark:text-white/60">
+                      {dateLabel(selectedDate)} • {selectedTime} · {guests} kishi{selectedTableInfo ? ` · ${selectedTableInfo.number}-stol` : ""}
+                    </span>
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="text-base leading-[22px] text-[#181818] dark:text-white">Jami to&apos;lov:</span>
+                      <span className="text-xl leading-7 font-semibold text-[#181818] dark:text-white">
+                        {preorderCount > 0 ? formatPrice(preorderTotal) : "Muassasada"}
+                      </span>
+                    </span>
+                    {preorderCount > 0 && (
+                      <span className="text-xs leading-[17px] text-[#494949] dark:text-white/60">Oldindan buyurtma: {preorderCount} ta</span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="border-t border-dashed border-zinc-200 dark:border-white/10 pt-4 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
-                  JAMI SUMMA
-                </span>
-                <span className="text-xs text-zinc-400">Muassasa bron yaratilgach hisoblaydi</span>
+            {submitError && (
+              <div role="alert" className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-500 text-center font-semibold">
+                {submitError}
               </div>
-              {preorderCount > 0 && (
-                <div className="text-2xl sm:text-3xl font-black text-[#E85102] tracking-tight">
-                  {formatPrice(preorderTotal)}
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
-          {submitError && (
-            <div role="alert" className="rounded-2xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
-              {submitError}
-            </div>
-          )}
+          <div className="flex-1 min-h-[24px]" />
 
-          <div className="flex-1 min-h-[30px]" />
-
-          <button
-            type="button"
-            onClick={handleCompletePayment}
-            disabled={loading}
-            className="w-full py-4.5 rounded-2xl bg-gradient-to-r from-[#E85102] to-[#E85102] hover:from-[#C94600] hover:to-[#E85102] text-white font-black text-base tracking-wide transition-all active:scale-[0.98] shadow-xl shadow-[#E85102]/30 flex items-center justify-center gap-2 select-none cursor-pointer disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin h-5 w-5 text-white" />
-                <span>Bron qilinmoqda...</span>
-              </>
-            ) : (
-              <span>{submitError ? "Qayta urinish" : "Bron qilish"}</span>
-            )}
-          </button>
+          <div className="px-6 pb-[max(var(--tg-safe-bottom),16px)]">
+            <button
+              type="button"
+              onClick={handleCompletePayment}
+              disabled={loading}
+              className="w-full h-14 rounded-[64px] bg-[#E85102] disabled:bg-[#FADCCC] text-white text-xl leading-[22px] font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-colors cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5" />
+                  Bron qilinmoqda...
+                </>
+              ) : submitError ? (
+                "Qayta urinish"
+              ) : (
+                "Tasdiqlash va band qilish"
+              )}
+            </button>
+          </div>
         </div>
       )}
 
