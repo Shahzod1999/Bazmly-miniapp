@@ -8,14 +8,13 @@ import {
   MapPin,
   CheckCircle,
   Loader2,
-  Calendar,
   Ticket,
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/AuthContext";
-import { bookingStatus } from "@/lib/booking";
-import { formatDate, formatSom, formatTime } from "@/lib/format";
 import { useApiQuery } from "@/lib/use-api";
+import { BookingCard } from "@/components/bookings/booking-card";
+import { LocationPinIcon } from "@/components/nav-icons";
 import {
   geoService,
   bookingService,
@@ -388,34 +387,23 @@ export default function FeedPage() {
       ) : (
         /* ==================== REGISTERED BOOKINGS HISTORY VIEW ==================== */
         <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
-          {/* Top Bar Header */}
-          <div
-            className={`relative flex items-center justify-between px-6 py-5 border-b ${
-              isDark ? "border-white/5" : "border-zinc-100"
-            }`}
-          >
-            <h1 className={`text-xl font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>
-              Band qilingan joylar
-            </h1>
-
-            {/* Location selector trigger button */}
+          {/* Sarlavha (Figma: "Band qilingan" 20/Bold, shahar 16/Medium) */}
+          <div className="flex items-center justify-between px-5 pt-4 h-[48px] box-content">
+            <h1 className={`text-xl leading-[22px] font-bold ${isDark ? "text-white" : "text-black"}`}>Band qilingan</h1>
             <button
-              onClick={() => {
-                setShowLocationSelect(true);
-              }}
-              className={`flex items-center gap-1.5 text-xs font-semibold active:scale-95 transition-all px-3 py-1.5 rounded-full cursor-pointer ${
-                isDark
-                  ? "text-white/80 bg-white/5 border border-white/5 hover:bg-white/10"
-                  : "text-zinc-800 bg-transparent hover:bg-zinc-100"
+              type="button"
+              onClick={() => setShowLocationSelect(true)}
+              className={`flex items-center gap-[7px] text-base font-medium active:scale-95 transition-transform cursor-pointer ${
+                isDark ? "text-white" : "text-black"
               }`}
             >
-              <MapPin className={`h-4 w-4 shrink-0 ${isDark ? "text-primary" : "text-zinc-700"}`} />
+              <LocationPinIcon className="h-[19px] w-[19px] shrink-0" />
               <span>{currentLocation.split(", ").pop()}</span>
             </button>
           </div>
 
           {/* Scrollable Bookings List */}
-          <main className="flex-1 overflow-y-auto px-6 py-6 pb-10 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+          <main className="flex-1 overflow-y-auto px-5 pt-5 pb-10 flex flex-col gap-5 max-w-md mx-auto w-full text-left">
             {!authLoading && !isAuthenticated ? (
               <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
                 <Ticket className="h-10 w-10 text-zinc-400" />
@@ -438,85 +426,7 @@ export default function FeedPage() {
                 <p className="text-xs text-zinc-400">Bronlar yuklanmoqda...</p>
               </div>
             ) : bookings.length > 0 ? (
-              bookings.map((booking) => (
-                <Link
-                  key={booking.id}
-                  href={`/payment/${booking.id}`}
-                  className={`w-full rounded-3xl p-5 flex flex-col gap-4 transition-all duration-300 block text-left ${
-                    isDark
-                      ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10"
-                      : "bg-white border border-[#E85102] shadow-md hover:shadow-lg"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div
-                      aria-hidden="true"
-                      className={`w-20 h-20 rounded-2xl shrink-0 border shadow-md flex items-center justify-center text-primary bg-primary/10 ${
-                        isDark ? "border-white/5" : "border-zinc-100"
-                      }`}
-                    >
-                      <Ticket className="h-8 w-8" />
-                    </div>
-
-                    <div className="space-y-1 pr-1 w-full min-w-0">
-                      <h2
-                        className={`text-base font-bold tracking-wide truncate ${
-                          isDark ? "text-white" : "text-zinc-900"
-                        }`}
-                      >
-                        {booking.venue_name}
-                      </h2>
-
-                      <div
-                        className={`flex items-center gap-1.5 text-xs font-medium ${
-                          isDark ? "text-white/50" : "text-zinc-500"
-                        }`}
-                      >
-                        <Calendar className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-                        <span>{formatDate(booking.booking_date)}</span>
-                        <span className={isDark ? "text-white/20" : "text-zinc-300"}>|</span>
-                        <span>{formatTime(booking.start_time)}</span>
-                      </div>
-
-                      <div
-                        className={`flex items-center gap-1.5 text-xs font-medium ${
-                          isDark ? "text-white/60" : "text-zinc-600"
-                        }`}
-                      >
-                        <Ticket className="h-3.5 w-3.5 shrink-0 text-primary" />
-                        <span>{booking.guests_count} kishi</span>
-                        {booking.table_number && <span>• {booking.table_number}-stol</span>}
-                      </div>
-                    </div>
-                  </div>
-
-                  <hr className={`border-t ${isDark ? "border-white/5" : "border-zinc-100"}`} />
-
-                  <div className="space-y-2.5 text-xs font-semibold">
-                    <div className="flex justify-between items-center">
-                      <span className={isDark ? "text-white/40" : "text-zinc-400"}>Holat</span>
-                      <span
-                        className={`font-bold px-2 py-0.5 rounded-md text-[11px] ${
-                          booking.status === "confirmed" || booking.status === "checked_in"
-                            ? "bg-emerald-500/10 text-emerald-500"
-                            : booking.status === "pending"
-                            ? "bg-amber-500/10 text-amber-500"
-                            : "bg-red-500/10 text-red-500"
-                        }`}
-                      >
-                        {bookingStatus(booking.status).label}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className={isDark ? "text-white/40" : "text-zinc-400"}>Jami summa:</span>
-                      <span className="font-bold text-primary">
-                        {formatSom(booking.total_amount)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))
+              bookings.map((booking) => <BookingCard key={booking.id} booking={booking} dark={isDark} />)
             ) : (
               <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
                 <Ticket className="h-10 w-10 text-zinc-400" />

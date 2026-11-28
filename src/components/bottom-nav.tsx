@@ -8,7 +8,16 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
 import { comingSoon } from "@/components/app-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { HomeIcon, VoucherIcon, ReceiptIcon, UserIcon, ScanIcon } from "@/components/nav-icons";
+import {
+  HomeIcon,
+  VoucherIcon,
+  VoucherBoldIcon,
+  ReceiptIcon,
+  ReceiptBoldIcon,
+  UserIcon,
+  UserBoldIcon,
+  ScanIcon,
+} from "@/components/nav-icons";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -51,6 +60,7 @@ export default function BottomNav() {
       name: "Asosiy",
       path: "/",
       icon: HomeIcon,
+      activeIcon: HomeIcon,
       isActive: pathname === "/",
       isAction: false,
     },
@@ -58,6 +68,7 @@ export default function BottomNav() {
       name: "Voucher",
       path: "/tickets",
       icon: VoucherIcon,
+      activeIcon: VoucherBoldIcon,
       isActive: pathname.startsWith("/tickets") || pathname.startsWith("/payment-success"),
       isAction: false,
     },
@@ -65,6 +76,7 @@ export default function BottomNav() {
       name: "Skaner",
       path: "#scan",
       icon: ScanIcon,
+      activeIcon: ScanIcon,
       isActive: false,
       isAction: true,
       action: handleScanClick,
@@ -73,6 +85,7 @@ export default function BottomNav() {
       name: "Joylar",
       path: "/feed",
       icon: ReceiptIcon,
+      activeIcon: ReceiptBoldIcon,
       isActive: pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment"),
       isAction: false,
     },
@@ -80,6 +93,7 @@ export default function BottomNav() {
       name: "Profilim",
       path: "/login",
       icon: UserIcon,
+      activeIcon: UserBoldIcon,
       isActive: pathname.startsWith("/login"),
       isAction: false,
     },
@@ -106,7 +120,8 @@ export default function BottomNav() {
 
   const renderItem = (item: (typeof navItems)[number], index: number) => {
     const isActive = index === activeIdx;
-    const Icon = item.icon;
+    // Figma: faol elementda vuesax/bold ikonka
+    const Icon = isActive ? item.activeIcon : item.icon;
     const color = isActive ? (isDark ? "text-white" : "text-[#FF6A00]") : isDark ? "text-[#8E8E93]" : "text-[#8D8D8D]";
     return (
       <Link
