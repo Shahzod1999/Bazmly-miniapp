@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import { HomeIcon } from "@/components/nav-icons";
 
 export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
@@ -29,16 +29,8 @@ export default function SplashScreen() {
       }`}
       style={{ backgroundColor: "#E85102" }}
     >
-      <div className="flex flex-col items-center justify-center animate-pulse">
-        <Image
-          src="/logo-loading.webp"
-          alt="Bazmly"
-          width={91}
-          height={99}
-          priority
-          className="h-28 w-auto object-contain"
-        />
-      </div>
+      {/* Figma "Onboarding" (2757:5275): to'q sariq fon, markazda 91x99 oq "B" belgisi */}
+      <HomeIcon viewBox="0 0 21 23" className="w-[91px] h-[99px] text-white" role="img" aria-hidden={false} aria-label="Bazmly" />
     </div>
   );
 }

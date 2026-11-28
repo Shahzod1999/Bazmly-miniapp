@@ -79,14 +79,15 @@ function LogoScreen() {
 function IntroScreen({ onNext }: { onNext: () => void }) {
   return (
     <div className="fixed inset-0 z-[60] max-w-md mx-auto bg-black text-white flex flex-col overflow-hidden">
-      <Image src="/images/topo-bg.webp" alt="" fill sizes="448px" className="object-cover opacity-40 pointer-events-none" aria-hidden="true" />
-      <div className="relative w-full aspect-[786/725] shrink-0 mt-[var(--tg-safe-top)]">
-        <Image src="/images/onboarding.webp" alt="" fill priority sizes="448px" className="object-cover" />
+      {/* Figma "Onboarding" (2691:4851): fon rasmi va 440px doira ichidagi rasm (Figma'dan eksport) */}
+      <Image src="/images/onboarding-bg.png" alt="" fill priority sizes="448px" className="object-cover pointer-events-none" aria-hidden="true" />
+      <div className="relative w-full aspect-[393/440] shrink-0 mt-[var(--tg-safe-top)]">
+        <Image src="/images/onboarding-hero.png" alt="" fill priority sizes="448px" className="object-cover" />
       </div>
-      <div className="relative flex-1 flex flex-col justify-between px-5 pt-8 pb-[calc(var(--tg-safe-bottom)+24px)]">
+      <div className="relative flex-1 flex flex-col justify-between px-5 pt-[30px] pb-[max(86px,calc(var(--tg-safe-bottom)+52px))]">
         <div>
-          <h1 className="text-[40px] leading-[1.1] font-extrabold tracking-tight">Bazmlarni oson rejalashtiring</h1>
-          <p className="mt-4 text-lg leading-snug text-white/75">
+          <h1 className="text-[46px] leading-[54px] font-extrabold">Bazmlarni oson rejalashtiring</h1>
+          <p className="mt-5 text-xl leading-[25px] text-[#C8C8C8]">
             Qidiruv va oson band qilish uchun ilovadan to‘liq ro‘yxatdan o‘ting
           </p>
         </div>
@@ -96,7 +97,7 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
             hapticSelection();
             onNext();
           }}
-          className="mt-8 w-full h-14 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white text-lg font-bold active:scale-[0.99] transition-all"
+          className="mt-8 w-full h-14 rounded-[64px] bg-[#E85102] text-white text-xl leading-[22px] font-bold active:scale-[0.99] transition-transform"
         >
           Ro‘yxatdan o‘tish
         </button>
@@ -110,20 +111,20 @@ export function LanguageList({ selected, onSelect }: { selected: string; onSelec
   const [query, setQuery] = useState("");
   const list = LANGUAGES.filter((l) => l.name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden">
-      <label className="flex items-center gap-3 px-4 h-14 border-b border-zinc-200 dark:border-white/10">
-        <Search className="w-6 h-6 text-zinc-900 dark:text-white shrink-0" aria-hidden="true" />
+    <div className="rounded-2xl border border-[#E3E2E2] dark:border-white/10 overflow-hidden">
+      <label className="flex items-center gap-2.5 px-4 h-[55px] border-b border-[#E3E2E2] dark:border-white/10">
+        <Search className="w-7 h-7 text-[#12110D] dark:text-white shrink-0" strokeWidth={2} aria-hidden="true" />
         <span className="sr-only">Tilni qidirish</span>
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Qidirish"
-          className="flex-1 bg-transparent text-lg outline-none placeholder:text-zinc-400"
+          className="flex-1 min-w-0 bg-transparent text-xl font-medium outline-none text-[#12110D] dark:text-white placeholder:text-[#ACACAB]"
         />
       </label>
 
-      <div role="radiogroup" aria-label="Til" className="p-2 space-y-1">
+      <div role="radiogroup" aria-label="Til" className="pt-2.5 pb-1 px-px">
         {list.map((lang) => {
           const active = lang.code === selected;
           return (
@@ -136,17 +137,19 @@ export function LanguageList({ selected, onSelect }: { selected: string; onSelec
                 onSelect(lang.code);
                 hapticSelection();
               }}
-              className={`w-full flex items-center gap-3 px-3 h-14 rounded-2xl text-left transition-colors ${
-                active ? "bg-[#FBF5EA] dark:bg-[#E85102]/15" : "hover:bg-zinc-50 dark:hover:bg-white/5"
+              className={`w-full flex items-center gap-3 px-3 text-left transition-colors ${
+                active ? "h-[49px] rounded-[20px] bg-[#FBF7EB] dark:bg-[#E85102]/15" : "h-[61px]"
               }`}
             >
-              <Image src={lang.flag} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover shrink-0" />
-              <span className="flex-1 text-lg">{lang.name}</span>
+              <Image src={lang.flag} alt="" width={37} height={37} className="w-[37px] h-[37px] rounded-full object-cover shrink-0 bg-white" />
+              <span className="flex-1 text-xl font-medium text-[#12110D] dark:text-white">{lang.name}</span>
               <span
                 aria-hidden="true"
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${active ? "bg-[#E85102] text-white" : "border border-zinc-200 dark:border-white/20"}`}
+                className={`w-5 h-5 rounded-[28px] flex items-center justify-center shadow-[0_4px_20px_rgba(18,17,13,0.12)] ${
+                  active ? "bg-[#FF6A00] text-white" : "border border-[#E6E6E6] dark:border-white/20"
+                }`}
               >
-                {active && <Check className="w-4 h-4 stroke-[3]" />}
+                {active && <Check className="w-3 h-3" strokeWidth={2.5} />}
               </span>
             </button>
           );
@@ -175,8 +178,8 @@ function LanguageScreen({ onNext }: { onNext: () => void }) {
   const [selected, setSelected] = useState(savedLanguage);
 
   return (
-    <div className="fixed inset-0 z-[60] max-w-md mx-auto bg-white text-zinc-900 flex flex-col px-4 pt-[calc(var(--tg-safe-top)+24px)] pb-[calc(var(--tg-safe-bottom)+24px)]">
-      <h1 className="text-2xl font-bold tracking-tight">Tizim tilini tanlang</h1>
+    <div className="fixed inset-0 z-[60] max-w-md mx-auto bg-white text-[#12110D] flex flex-col px-[18px] pt-[calc(var(--tg-safe-top)+16px)] pb-[calc(var(--tg-safe-bottom)+24px)]">
+      <h1 className="text-2xl leading-[30px] font-bold text-black">Tizim tilini tanlang</h1>
       <div className="mt-5">
         <LanguageList selected={selected} onSelect={setSelected} />
       </div>
@@ -184,7 +187,7 @@ function LanguageScreen({ onNext }: { onNext: () => void }) {
       <button
         type="button"
         onClick={() => applyLanguage(selected) && onNext()}
-        className="w-full h-14 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white text-lg font-semibold active:scale-[0.99] transition-all"
+        className="w-full h-[55px] rounded-[20px] bg-[#E85102] text-[#FCFCFD] text-2xl font-medium active:scale-[0.99] transition-transform"
       >
         Davom etish
       </button>
@@ -266,17 +269,21 @@ function AuthScreen() {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="Ismingiz"
-            className="w-full h-14 px-4 rounded-2xl border border-zinc-200 bg-zinc-50 text-lg outline-none focus:border-[#E85102]"
+            className="w-full h-[55px] px-4 rounded-[20px] border border-[#D0D5DD] bg-[#FDFAFE] text-xl font-medium text-[#101828] outline-none placeholder:text-[#98A2B3] focus:border-[#E85102]"
           />
         </label>
       )}
-      <div className="flex gap-2">
-        <div className="h-14 px-4 rounded-2xl border border-zinc-200 bg-zinc-50 flex items-center gap-2 shrink-0">
-          <Image src="/icons/uzb.webp" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover" />
-          <span className="text-lg">+998</span>
+      <div className="flex gap-2.5">
+        <div className="w-[121px] h-[55px] px-4 rounded-[20px] border border-[#D0D5DD] bg-[#FDFAFE] flex items-center gap-2.5 shrink-0">
+          <Image src="/icons/uzb.webp" alt="" width={29} height={29} className="w-[29px] h-[29px] rounded-full object-cover" />
+          <span className="text-xl font-medium text-[#101828]">+998</span>
         </div>
-        <div className="flex-1 h-14 px-4 rounded-2xl border border-zinc-200 bg-zinc-50 flex items-center text-lg">
-          {user.phone ? <span>{formatPhone(user.phone).replace(/^\+998\s?/, "")}</span> : <span className="text-zinc-400">Telefon raqami</span>}
+        <div className="flex-1 min-w-0 h-[55px] px-4 rounded-[20px] border border-[#D0D5DD] bg-[#FDFAFE] flex items-center text-xl font-medium">
+          {user.phone ? (
+            <span className="text-[#101828] truncate">{formatPhone(user.phone).replace(/^\+998\s?/, "")}</span>
+          ) : (
+            <span className="text-[#98A2B3] truncate">Telefon raqami</span>
+          )}
         </div>
       </div>
       {error && <ErrorText>{error}</ErrorText>}
@@ -298,10 +305,10 @@ function AuthScreen() {
 
 function ScreenShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-[60] max-w-md mx-auto bg-white text-zinc-900 flex flex-col gap-4 px-4 pt-[calc(var(--tg-safe-top)+24px)] pb-[calc(var(--tg-safe-bottom)+24px)]">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-        <p className="mt-2 text-base text-zinc-500">{subtitle}</p>
+    <div className="fixed inset-0 z-[60] max-w-md mx-auto bg-white text-[#101828] flex flex-col gap-5 px-[18px] pt-[calc(var(--tg-safe-top)+20px)] pb-[calc(var(--tg-safe-bottom)+24px)]">
+      <div className="mb-[23px]">
+        <h1 className="text-xl leading-5 font-bold">{title}</h1>
+        <p className="mt-3 text-base text-[#667085]">{subtitle}</p>
       </div>
       {children}
     </div>
@@ -314,7 +321,7 @@ function PrimaryButton({ children, onClick, disabled }: { children: React.ReactN
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="mt-auto w-full h-14 rounded-full bg-[#E85102] hover:bg-[#C94600] text-white text-lg font-semibold active:scale-[0.99] transition-all disabled:opacity-50"
+      className="mt-auto w-full h-[55px] rounded-[20px] bg-[#E85102] text-[#FCFCFD] text-2xl font-medium active:scale-[0.99] transition-transform disabled:opacity-50"
     >
       {children}
     </button>
