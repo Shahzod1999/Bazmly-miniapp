@@ -9,14 +9,10 @@ import { LanguageList, applyLanguage, savedLanguage } from "@/components/onboard
 import { useTheme } from "@/components/theme-provider";
 import {
   Globe,
-  User,
   ChevronLeft,
   MapPin,
   Bell,
-  Wallet,
   Clock,
-  Languages,
-  Headset,
   HelpCircle,
   LogOut,
   ChevronRight,
@@ -28,6 +24,16 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { BookingHistoryList, NotificationsList } from "@/components/profile/profile-lists";
+import {
+  ArrowRightIcon,
+  BellIcon,
+  ClockIcon,
+  HelpIcon,
+  LanguageIcon,
+  LocationPinIcon,
+  LogoutIcon,
+  WalletIcon,
+} from "@/components/nav-icons";
 import { useAuth } from "@/contexts/AuthContext";
 
 
@@ -206,22 +212,22 @@ function LoginContent() {
   const menuItems = [
     {
       label: "Xabarlar",
-      icon: Bell,
+      icon: BellIcon,
       action: () => setShowMessages(true),
     },
     {
       label: "Mening kartalarim",
-      icon: Wallet,
+      icon: WalletIcon,
       action: () => comingSoon("Kartalar"),
     },
     {
       label: "Tarix",
-      icon: Clock,
+      icon: ClockIcon,
       action: () => setShowHistory(true),
     },
     {
       label: "Tillar",
-      icon: Languages,
+      icon: LanguageIcon,
       action: () => {
         setTempLanguage(selectedLang || "uz");
         setShowLanguages(true);
@@ -229,12 +235,12 @@ function LoginContent() {
     },
     {
       label: "Yordam",
-      icon: Headset,
+      icon: HelpIcon,
       action: () => setShowHelp(true),
     },
     {
       label: "Chiqish",
-      icon: LogOut,
+      icon: LogoutIcon,
       action: () => setActiveModal("logout_profile"),
     },
   ];
@@ -602,44 +608,26 @@ function LoginContent() {
             <>
               <Navbar />
 
-              <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 pb-0 max-w-md mx-auto w-full">
-                {/* Header Title */}
-                <h1 className={`text-xl font-black mb-6 ${isDark ? "text-white" : "text-zinc-900"}`}>
+              <main className="flex-1 flex flex-col items-center justify-start pt-4 pb-6 px-5 max-w-md mx-auto w-full">
+                {/* Figma "Settings" (2329:2147): sarlavha, 150px avatar, ism, joylashuv, 2 tugma, ro'yxat kartasi */}
+                <h1 className={`h-8 flex items-center text-xl leading-[22px] font-bold ${isDark ? "text-white" : "text-black"}`}>
                   Sozlamalar
                 </h1>
 
-                {/* Profile Card Info */}
-                <div className="w-full flex flex-col items-center text-center mb-8">
-                  {/* Circle Avatar with custom styling */}
-                  <div className="relative">
-                    <div className={`w-36 h-36 rounded-full overflow-hidden relative ${
-                      isDark 
-                        ? "border-4 border-primary/20 bg-zinc-800 shadow-2xl" 
-                        : "bg-zinc-150 shadow-md"
-                    }`}>
-                      <ProfileAvatar avatarUrl={user?.avatar_url ?? null} name={userFullName} />
-                    </div>
-                    {isDark && (
-                      <div className="absolute bottom-0 right-1 bg-primary text-white p-2.5 rounded-full shadow-lg border-2 border-brand-dark">
-                        <User className="h-4.5 w-4.5" />
-                      </div>
-                    )}
+                <div className="mt-6 flex flex-col items-center text-center">
+                  <div className={`relative w-[150px] h-[150px] rounded-full overflow-hidden ring-1 ring-inset ${isDark ? "ring-white/10" : "ring-[#E7E6E6]/85"}`}>
+                    <ProfileAvatar avatarUrl={user?.avatar_url ?? null} name={userFullName} />
                   </div>
 
-                  <div className="mt-5 space-y-1.5">
-                    <h2 className={`text-2xl font-bold tracking-tight ${isDark ? "text-white" : "text-black"}`}>
-                      {userFullName || "Foydalanuvchi"}
-                    </h2>
-                    <div className={`flex items-center justify-center gap-2 ${
-                      isDark ? "text-xs font-medium text-white/60" : "text-base font-semibold text-black"
-                    }`}>
-                      <MapPin className={isDark ? "h-4 w-4 text-primary" : "h-5.5 w-5.5 text-black"} />
-                      <span>{isDark ? location.split(",")[0] : location}</span>
-                    </div>
+                  <h2 className={`mt-2 text-lg leading-[23px] font-semibold ${isDark ? "text-white" : "text-black"}`}>
+                    {userFullName || "Foydalanuvchi"}
+                  </h2>
+                  <div className={`mt-[11px] flex items-center justify-center gap-2.5 text-[13px] font-medium ${isDark ? "text-white/70" : "text-black"}`}>
+                    <LocationPinIcon className="h-[19px] w-[19px] shrink-0" />
+                    <span>{location}</span>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-center gap-3.5 w-full max-w-xs mt-6">
+                  <div className="mt-[17px] flex items-center justify-center gap-[17px]">
                     <button
                       onClick={() => {
                         setEditName(userFullName);
@@ -647,66 +635,41 @@ function LoginContent() {
                         setEditPhone(user?.phone ?? "");
                         setIsEditing(true);
                       }}
-                      className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-sm ${
-                        isDark 
-                          ? "bg-white/5 border border-white/10 text-white hover:bg-[#252528]" 
-                          : "bg-white border border-primary text-primary hover:bg-[#E85102]/5"
+                      className={`min-w-[124px] h-[35px] px-3 rounded-[11px] border text-[15px] transition-transform active:scale-95 ${
+                        isDark ? "border-white/20 text-white" : "bg-white border-[#E85102] text-[#E85102]"
                       }`}
                     >
-                      Profilni tahrirlash
+                      Tahrirlash
                     </button>
                     <button
                       onClick={() => comingSoon("Do'stlarni taklif qilish")}
-                      className="flex-1 py-3 px-4 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-all active:scale-95"
+                      className="min-w-[124px] h-[35px] px-3 rounded-[11px] bg-[#E85102] text-[15px] text-white transition-transform active:scale-95"
                     >
-                      Do&apos;stlarni taklif qilish
+                      Do&apos;st qo&apos;shish
                     </button>
                   </div>
                 </div>
 
-                {/* Options List Dashboard Container */}
-                <div className={`w-full border rounded-[32px] p-5.5 space-y-4 bg-transparent shadow-xl ${
-                  isDark ? "border-white/5" : "border-zinc-100 bg-white/50"
-                }`}>
-                  {menuItems.map((item, index) => {
+                <div
+                  className={`mt-[23px] w-[calc(100%-10px)] rounded-[20px] border-2 px-4 py-3 flex flex-col gap-5 ${
+                    isDark ? "border-white/5" : "bg-white border-[#F2F2F2]"
+                  }`}
+                >
+                  {menuItems.map((item) => {
                     const Icon = item.icon;
-                    const isChiqish = item.label === "Chiqish";
-                    
-                    if (isChiqish) {
-                      return (
-                        <button
-                          key={index}
-                          onClick={item.action}
-                          className={`w-full flex items-center justify-between py-4 px-5 rounded-[20px] active:scale-[0.99] border transition-all duration-200 text-left cursor-pointer ${
-                            isDark
-                              ? "bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-500"
-                              : "bg-red-50/60 border-red-100/80 hover:bg-red-100/50 text-red-500"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3.5">
-                            <Icon className="w-5.5 h-5.5 text-red-500 shrink-0" />
-                            <span className="text-sm font-extrabold text-red-500 tracking-wide">{item.label}</span>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-red-500/70" />
-                        </button>
-                      );
-                    }
-                    
                     return (
                       <button
-                        key={index}
+                        key={item.label}
                         onClick={item.action}
-                        className={`w-full flex items-center justify-between py-4 px-5 rounded-[20px] active:scale-[0.99] transition-all duration-200 text-left cursor-pointer shadow-sm ${
-                          isDark
-                            ? "bg-[#393939] hover:bg-[#484848] text-white"
-                            : "bg-zinc-100 hover:bg-zinc-200 text-zinc-900"
+                        className={`w-full h-11 px-2.5 flex items-center justify-between rounded-[10px] text-left transition-transform active:scale-[0.99] ${
+                          isDark ? "bg-[#393939]" : "bg-[#F2F2F2]"
                         }`}
                       >
-                        <div className="flex items-center gap-3.5">
-                          <Icon className={`w-5.5 h-5.5 shrink-0 ${isDark ? "text-white/90" : "text-zinc-650"}`} />
-                          <span className={`text-sm font-semibold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>{item.label}</span>
-                        </div>
-                        <ChevronRight className={`w-5 h-5 ${isDark ? "text-white/70" : "text-zinc-400"}`} />
+                        <span className="flex items-center gap-5">
+                          <Icon className={`w-6 h-6 shrink-0 ${isDark ? "text-white/60" : "text-[#8D8D8D]"}`} />
+                          <span className={`text-base font-medium ${isDark ? "text-white" : "text-black"}`}>{item.label}</span>
+                        </span>
+                        <ArrowRightIcon className={`w-6 h-6 shrink-0 ${isDark ? "text-white" : "text-black"}`} />
                       </button>
                     );
                   })}
