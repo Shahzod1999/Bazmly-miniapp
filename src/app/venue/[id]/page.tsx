@@ -22,13 +22,12 @@ import {
   SearchIcon,
   ShareIcon,
   StarIcon,
+  SendPlaneIcon,
   VoucherBoldIcon,
 } from "@/components/nav-icons";
+import { ReviewCard } from "@/components/reviews/review-card";
 import {
-  ChevronLeft,
   ImageOff,
-  ChevronRight,
-  Star,
   CheckCircle,
   X,
   Loader2,
@@ -650,146 +649,60 @@ export default function VenueDetailPage({ params }: Props) {
         </button>
       </div>
 
-      {/* Reviews Screen Overlay */}
+      {/* Sharhlar (Figma "Sharhlar" 3905:44343): 32px orqaga, kartochkalar ro'yxati, pastda "Yozish" maydoni */}
       {showReviews && (
         <div
-          className={`fixed inset-0 z-50 flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in overflow-hidden pt-[var(--tg-safe-top)] ${
-            isDark ? "bg-[#333333] text-white" : "bg-white text-zinc-900"
+          className={`fixed inset-0 z-50 flex flex-col max-w-md mx-auto animate-fade-in overflow-hidden pt-[var(--tg-safe-top)] ${
+            isDark ? "bg-[var(--background)] text-white" : "bg-white text-[#323232]"
           }`}
         >
-          <div
-            className={`relative py-6 px-6 flex items-center justify-between z-20 border-b ${
-              isDark ? "border-white/5 bg-[#333333]" : "border-zinc-100 bg-white"
-            }`}
-          >
+          <div className="h-8 mt-[22px] px-5 flex items-center justify-between shrink-0">
             <button
               onClick={() => setShowReviews(false)}
-              className={`w-9 h-9 rounded-full transition-all flex items-center justify-center cursor-pointer active:scale-90 ${
-                isDark ? "bg-white/10 text-white hover:bg-white/20" : "bg-zinc-100 text-zinc-800 hover:bg-zinc-200"
-              }`}
+              aria-label="Orqaga"
+              className={`w-8 h-8 flex items-center justify-center active:scale-90 transition-transform cursor-pointer ${isDark ? "text-white" : "text-black"}`}
             >
-              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+              <ArrowLeftIcon className="w-8 h-8" />
             </button>
-            <div
-              className={`absolute left-1/2 -translate-x-1/2 font-bold text-base tracking-wide ${
-                isDark ? "text-white" : "text-zinc-950"
-              }`}
-            >
-              Sharhlar ({reviewsList.length})
-            </div>
-            <div className="w-9" />
+            <span className={`flex items-center gap-1.5 text-base font-medium ${isDark ? "text-white/70" : "text-[#535353]"}`}>
+              <StarIcon className="w-3.5 h-3.5" />
+              {venueRating} ({reviewsCount})
+            </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 py-6 pb-20 flex flex-col gap-4">
-            {/* Aggregate Score Header */}
-            <div
-              className={`p-4 rounded-2xl border flex items-center justify-between text-left ${
-                isDark ? "bg-[#393939] border-white/5" : "bg-zinc-50 border-zinc-200"
-              }`}
-            >
-              <div>
-                <span className="text-3xl font-black text-[#FFB800]">{venueRating}</span>
-                <span className="text-xs text-zinc-400 block mt-0.5">5.0 ballik shkalada</span>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center gap-0.5 text-[#FFB800] justify-end">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-[#FFB800] text-[#FFB800]" />
-                  ))}
-                </div>
-                <span className="text-xs font-bold text-zinc-400 block mt-0.5">
-                  {reviewsCount} ta umumiy baho
-                </span>
-              </div>
-            </div>
-
+          <div className="flex-1 overflow-y-auto px-5 pt-5 pb-28 flex flex-col gap-2.5">
             {reviewsList.length === 0 ? (
-              <div className="py-12 text-center text-zinc-400 text-xs">
-                Hozircha sharhlar mavjud emas. Birinchi bo&apos;lib sharh qoldiring!
-              </div>
+              <p className={`py-12 text-center text-sm ${isDark ? "text-white/50" : "text-[#7A7A7A]"}`}>
+                Hozircha sharhlar yo&apos;q. Birinchi bo&apos;lib sharh qoldiring!
+              </p>
             ) : (
-              reviewsList.map((rev, idx) => (
-                <div
-                  key={rev.id || idx}
-                  className={`border rounded-[22px] p-5 relative text-left animate-slide-up ${
-                    isDark ? "bg-[#393939] border-white/5 shadow-lg" : "bg-white border-zinc-200 shadow-sm"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-3.5">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-9 h-9 rounded-full overflow-hidden shrink-0 border ${
-                          isDark ? "border-white/10 bg-zinc-800" : "border-zinc-200 bg-zinc-50"
-                        }`}
-                      >
-                        {rev.author.avatar_url ? (
-                          <Image src={rev.author.avatar_url} alt={rev.author.first_name} width={36} height={36} unoptimized className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="w-full h-full flex items-center justify-center text-xs font-bold text-[#E85102]">
-                            {rev.author.first_name?.[0]?.toUpperCase() ?? "?"}
-                          </span>
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-sm font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-950"}`}>
-                            {rev.author.first_name} {rev.author.last_name || ""}
-                          </span>
-                          {rev.is_verified && (
-                            <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-[4px] font-semibold tracking-wide ml-1">
-                              Tasdiqlangan
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-0.5 text-[#FFB800]">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className="text-xs">
-                          {i < rev.rating ? "★" : "☆"}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <p className={`text-xs font-medium leading-relaxed ${isDark ? "text-white/80" : "text-zinc-850"}`}>
-                    {rev.comment}
-                  </p>
-                </div>
-              ))
+              reviewsList.map((rev, idx) => <ReviewCard key={rev.id || idx} review={rev} dark={isDark} />)
             )}
           </div>
 
-          <div
-            className={`absolute bottom-0 left-0 right-0 px-6 py-4 border-t pb-6 z-10 ${
-              isDark ? "bg-[#333333] border-white/5" : "bg-white border-zinc-150"
-            }`}
+          <form
+            onSubmit={handleSendReview}
+            className={`absolute bottom-0 left-0 right-0 px-[18px] pt-2.5 pb-[max(var(--tg-safe-bottom),16px)] ${isDark ? "bg-[var(--background)]" : "bg-white"}`}
           >
-            <form
-              onSubmit={handleSendReview}
-              className={`flex items-center rounded-full px-4 py-3 gap-3 border transition-all ${
-                isDark
-                  ? "bg-[#393939] border-white/5 focus-within:border-[#E85102]/40"
-                  : "bg-zinc-100 border-transparent focus-within:bg-zinc-200/50"
-              }`}
-            >
+            <label className={`h-11 px-3.5 rounded-[14px] flex items-center gap-2.5 ${isDark ? "bg-[#393939]" : "bg-[#F3F3F3]"}`}>
+              <span className="sr-only">Sharh yozish</span>
               <input
                 type="text"
                 value={newReviewText}
                 onChange={(e) => setNewReviewText(e.target.value)}
-                placeholder="Sharh qoldirish..."
-                className={`flex-1 bg-transparent text-sm outline-none ${
-                  isDark ? "text-white placeholder:text-zinc-500" : "text-zinc-950 placeholder:text-zinc-450"
-                }`}
+                placeholder="Yozish"
+                className={`flex-1 min-w-0 bg-transparent text-base outline-none ${isDark ? "text-white placeholder:text-white/40" : "text-black placeholder:text-[#7A7A7A]"}`}
               />
               <button
                 type="submit"
+                aria-label="Yuborish"
                 disabled={!newReviewText.trim()}
-                className="p-1.5 rounded-full bg-transparent text-[#E85102] hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 flex items-center justify-center cursor-pointer"
+                className="shrink-0 text-[#FF6A00] disabled:opacity-40 active:scale-90 transition-transform cursor-pointer"
               >
-                <ChevronRight className="w-5 h-5" />
+                <SendPlaneIcon className="w-[23px] h-[23px]" />
               </button>
-            </form>
-          </div>
+            </label>
+          </form>
         </div>
       )}
 
